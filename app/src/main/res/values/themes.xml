@@ -1,0 +1,4 @@
+<resources>
+
+    <style name="Theme.pobvolchecklists" parent="Theme.MaterialComponents.Light" />
+</resources>
