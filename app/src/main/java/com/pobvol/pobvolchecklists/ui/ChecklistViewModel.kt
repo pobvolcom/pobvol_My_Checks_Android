@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.pobvol.pobvolchecklists.data.local.ChecklistEntity
 import com.pobvol.pobvolchecklists.data.repository.ChecklistRepository
+import com.pobvol.pobvolchecklists.data.repository.DataRepository
+import com.pobvol.pobvolchecklists.data.repository.DataRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +16,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ChecklistViewModel(
-    private val repository: ChecklistRepository
+    /* private val repository: ChecklistRepository */
+    private val repository: DataRepository
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -167,7 +170,7 @@ class ChecklistViewModel(
     }
 
     companion object {
-        fun Factory(repository: ChecklistRepository): ViewModelProvider.Factory =
+        fun Factory(repository: DataRepositoryImpl): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {

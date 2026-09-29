@@ -1,7 +1,6 @@
 package com.pobvol.pobvolchecklists
 
 import android.os.Bundle
-
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,7 +11,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pobvol.pobvolchecklists.data.local.AppDatabase
 import com.pobvol.pobvolchecklists.data.local.LanguageEntity
-import com.pobvol.pobvolchecklists.data.repository.ChecklistRepositoryImpl
+import com.pobvol.pobvolchecklists.data.repository.DataRepositoryImpl
 import com.pobvol.pobvolchecklists.ui.ChecklistViewModel
 import com.pobvol.pobvolchecklists.ui.screens.ChecklistListScreen
 import com.pobvol.pobvolchecklists.ui.theme.pobvolchecklistsTheme
@@ -23,7 +22,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         val database = AppDatabase.getDatabase(applicationContext)
-        val repository = ChecklistRepositoryImpl(database.checklistDao())
+        /* val repository = ChecklistRepositoryImpl(database.checklistDao()) */
+        val repository = DataRepositoryImpl(database.appDao())
 
         setContent {
             pobvolchecklistsTheme {

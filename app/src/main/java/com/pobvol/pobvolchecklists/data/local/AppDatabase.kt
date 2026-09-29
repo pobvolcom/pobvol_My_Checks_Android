@@ -29,6 +29,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun checklistquestionDao(): ChecklistQuestionDao
     abstract fun checklistsubmissionDao(): ChecklistSubmissionDao
     abstract fun checklistanswerDao(): ChecklistAnswerDao
+    abstract fun appDao(): AppDAO
 
     companion object {
         @Volatile
