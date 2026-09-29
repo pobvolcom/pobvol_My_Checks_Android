@@ -60,7 +60,7 @@ class ChecklistViewModel(
         val filteredChecklists = checklists.filter { checklist ->
             val matchesQuery = query.isBlank() ||
                     checklist.title.contains(query, ignoreCase = true) ||
-                    checklist.description.contains(query, ignoreCase = true) ||
+                    checklist.description!!.contains(query, ignoreCase = true) ||
                     checklist.category.contains(query, ignoreCase = true)
 
             val matchesCategory = category == null || category.equals("All", ignoreCase = true) ||

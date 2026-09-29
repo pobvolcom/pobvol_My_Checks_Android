@@ -8,7 +8,6 @@ class ChecklistRepositoryImpl(
     private val checklistDao: ChecklistDao
 ) : ChecklistRepository {
 
-    /* table: checklists */
     override fun getAllChecklists(): Flow<List<ChecklistEntity>> = checklistDao.getAllChecklists()
 
     override suspend fun getChecklistById(id: Int): ChecklistEntity? = checklistDao.getChecklistById(id)

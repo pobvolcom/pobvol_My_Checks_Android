@@ -80,7 +80,9 @@ fun ChecklistListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var isSearchActive by remember { mutableStateOf(false) }
 
-    val categories = listOf("All", "General", "Work", "Personal", "Important", "Ideas")
+    val categories = listOf(
+        "All", "UVV", "Health"
+    )
 
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let { message ->
@@ -104,7 +106,7 @@ fun ChecklistListScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "SQLite Checklists",
+                            text = "Checklists",
                             fontWeight = FontWeight.Bold
                         )
                     }

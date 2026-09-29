@@ -1,0 +1,15 @@
+package com.pobvol.pobvolchecklists.data.repository
+
+import com.pobvol.pobvolchecklists.data.local.ChecklistQuestionEntity
+import kotlinx.coroutines.flow.Flow
+
+interface ChecklistQuestionRepository {
+
+    fun getAllChecklistQuestions(): Flow<List<ChecklistQuestionEntity>>
+    suspend fun getChecklistQuestionById(id: Int): ChecklistQuestionEntity?
+    suspend fun getChecklistQuestionsByChecklistId(checklistid: Int): ChecklistQuestionEntity?
+    suspend fun insertChecklistQuestion(question: ChecklistQuestionEntity): Long
+    suspend fun updateChecklistQuestion(question: ChecklistQuestionEntity)
+    suspend fun deleteChecklistQuestion(question: ChecklistQuestionEntity)
+
+}

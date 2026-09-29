@@ -1,10 +1,25 @@
 <component name="ProjectDictionaryState">
   <dictionary name="project">
     <words>
+      <w>Español</w>
+      <w>answeroptions</w>
+      <w>answertype</w>
+      <w>answertypes</w>
+      <w>checklistanswer</w>
+      <w>checklistanswers</w>
+      <w>checklistid</w>
+      <w>checklistquestion</w>
+      <w>checklistquestions</w>
       <w>checklistrepository</w>
+      <w>checklistsubmission</w>
+      <w>checklistsubmissions</w>
+      <w>combobox</w>
       <w>fakechecklistdao</w>
       <w>fakerecorddao</w>
+      <w>questionid</w>
       <w>recordrepository</w>
+      <w>sortno</w>
+      <w>submissionid</w>
     </words>
   </dictionary>
 </component>

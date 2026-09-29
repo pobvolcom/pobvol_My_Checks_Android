@@ -1,0 +1,111 @@
+package com.pobvol.pobvolchecklists.data.local
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+
+/* table: records */
+@Entity(tableName = "records")
+data class RecordEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val title: String,
+    val description: String,
+    val category: String = "General",
+    val timestamp: Long = System.currentTimeMillis()
+)
+
+/*
+table: languages
+de          Deutsch
+en          English
+es          Español
+fr          French
+*/
+@Entity(tableName = "languages")
+data class LanguageEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val language: String = "en",
+    val title: String = "English"
+)
+
+/*
+table: answer_types
+checkbox    Checkbox
+combobox    Combobox
+number      Number
+text        Text
+ */
+@Entity(tableName = "answer_types")
+data class AnswerTypeEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val type: String,
+    val title: String
+)
+
+/*
+table: categories
+HEALTH      Health
+UVV         UVV
+*/
+@Entity(tableName = "categories")
+data class CategoryEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val category: String,
+    val title: String
+)
+
+
+/* table: checklists */
+@Entity(tableName = "checklists")
+data class ChecklistEntity(
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
+    var title: String,
+    var language: String = "de", // NOT NULL
+    var description: String = "", // OPTIONAL
+    var category: String = "UVV",
+    var icon: String = "", // OPTIONAL
+    var timestamp: Long = System.currentTimeMillis()
+)
+
+/* table: checklist_questions */
+@Entity(tableName = "checklist_questions")
+data class ChecklistQuestionEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val checklistid: Int = 0,
+    val sortno: Int = 0,
+    val title: String,
+    val description: String?,
+    val type: String,
+    val options: String?,
+    val required: Boolean = true,
+    val timestamp: Long = System.currentTimeMillis()
+)
+
+/* table: checklist_submissions */
+@Entity(tableName = "checklist_submissions")
+data class ChecklistSubmissionEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val checklistid: Int = 0,
+    val status: String,
+    val inspector: String?,
+    val notes: String?,
+    val timestamp: Long = System.currentTimeMillis()
+)
+
+/* table: checklist_answers */
+@Entity(tableName = "checklist_answers")
+data class ChecklistAnswerEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val submissionid: Int = 0,
+    val questionid: Int = 0,
+    val value: String,
+    val timestamp: Long = System.currentTimeMillis()
+)

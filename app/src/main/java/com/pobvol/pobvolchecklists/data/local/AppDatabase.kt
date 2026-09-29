@@ -6,14 +6,29 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(entities =
-    [RecordEntity::class, ChecklistEntity::class],
-    version = 1,
+    [
+        RecordEntity::class,
+        LanguageEntity::class,
+        AnswerTypeEntity::class,
+        CategoryEntity::class,
+        ChecklistEntity::class,
+        ChecklistQuestionEntity::class,
+        ChecklistSubmissionEntity::class,
+        ChecklistAnswerEntity::class
+    ],
+    version = 3,
     exportSchema = false
 )
 
 abstract class AppDatabase : RoomDatabase() {
     abstract fun recordDao(): RecordDao
+    abstract fun languageDao(): LanguageDao
+    abstract fun answertypeDao(): AnswerTypeDao
+    abstract fun categoryDao(): CategoryDao
     abstract fun checklistDao(): ChecklistDao
+    abstract fun checklistquestionDao(): ChecklistQuestionDao
+    abstract fun checklistsubmissionDao(): ChecklistSubmissionDao
+    abstract fun checklistanswerDao(): ChecklistAnswerDao
 
     companion object {
         @Volatile

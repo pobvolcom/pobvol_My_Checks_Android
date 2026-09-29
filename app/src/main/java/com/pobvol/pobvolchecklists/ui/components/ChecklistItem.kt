@@ -85,7 +85,7 @@ fun ChecklistItem(
                 )
             }
 
-            if (checklist.description.isNotBlank()) {
+            if (checklist.description!!.isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = checklist.description,

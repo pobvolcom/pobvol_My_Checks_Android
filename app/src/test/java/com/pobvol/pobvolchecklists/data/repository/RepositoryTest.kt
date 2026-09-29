@@ -2,8 +2,11 @@ package com.pobvol.pobvolchecklists.data.repository
 
 import com.pobvol.pobvolchecklists.data.local.RecordDao
 import com.pobvol.pobvolchecklists.data.local.ChecklistDao
+import com.pobvol.pobvolchecklists.data.local.LanguageDao
 import com.pobvol.pobvolchecklists.data.local.RecordEntity
 import com.pobvol.pobvolchecklists.data.local.ChecklistEntity
+import com.pobvol.pobvolchecklists.data.local.LanguageEntity
+import com.pobvol.pobvolchecklists.data.repository.LanguageRepositoryImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -17,8 +20,12 @@ class RepositoryTest {
 
     private lateinit var fakerecorddao: FakeRecordDao
     private lateinit var fakechecklistdao: FakeChecklistDao
+    private lateinit var fakelanguagedao: FakeLanguageDao
     private lateinit var recordrepository: RecordRepository
     private lateinit var checklistrepository: ChecklistRepository
+
+    private lateinit var languagerepository: LanguageRepository
+
 
     @Before
     fun setUp() {
@@ -26,6 +33,8 @@ class RepositoryTest {
         recordrepository = RecordRepositoryImpl(fakerecorddao)
         fakechecklistdao = FakeChecklistDao()
         checklistrepository = ChecklistRepositoryImpl(fakechecklistdao)
+        fakelanguagedao = FakeLanguageDao()
+        languagerepository = LanguageRepositoryImpl(fakelanguagedao)
     }
 
     @Test
@@ -44,8 +53,22 @@ class RepositoryTest {
         val insertedId = checklistrepository.insertChecklist(checklist)
 
         assertEquals(1L, insertedId)
-        val fetchedRecord = checklistrepository.getChecklistById(1)
-        assertEquals(checklist, fetchedRecord)
+        val fetchedChecklist = checklistrepository.getChecklistById(1)
+
+        assertEquals(checklist, fetchedChecklist)
+    }
+
+    @Test
+    fun insertAndGetLanguage() = runTest {
+        LanguageEntity(language = "de", title = "Deutsch")
+        LanguageEntity(language = "es", title = "Español")
+        LanguageEntity(language = "fr", title = "French")
+        val language = LanguageEntity(language = "en", title = "English")
+        val insertedLanguage = languagerepository.insertLanguage(language)
+
+        assertEquals(1L, insertedLanguage)
+        val fetchedLanguage = languagerepository.getLanguageByLang("en")
+        assertEquals(language, fetchedLanguage)
     }
 
     @Test
@@ -151,6 +174,25 @@ class RepositoryTest {
         }
     }
 
+    private class FakeLanguageDao : LanguageDao {
+        private val languagesMap = mutableMapOf<String, LanguageEntity>()
+        private val languagesFlow = MutableStateFlow<List<LanguageEntity>>(emptyList())
+
+        override fun getAllLanguages(): Flow<List<LanguageEntity>> = languagesFlow
+
+        override suspend fun getLanguageByLang(lang: String): LanguageEntity? {
+            return languagesMap[lang]
+        }
+
+        override suspend fun insertLanguage(language: LanguageEntity): Long {
+            val lang = if (language.language == "Null") "en" else "en"
+            val newLanguage = language.copy(language = lang)
+            languagesMap[lang] = newLanguage
+            return lang.toLong()
+        }
+
+    }
+
     private class FakeChecklistDao : ChecklistDao {
         private val checklistsMap = mutableMapOf<Int, ChecklistEntity>()
         private val checklistsFlow = MutableStateFlow<List<ChecklistEntity>>(emptyList())
@@ -166,7 +208,11 @@ class RepositoryTest {
         }
 
         override suspend fun insertChecklist(checklist: ChecklistEntity): Long {
-            val id = if (checklist.id == 0) (checklistsMap.keys.maxOrNull() ?: 0) + 1 else checklist.id
+
+
+
+            val id =
+                if (checklist.id == 0) (checklistsMap.keys.maxOrNull() ?: 0) + 1 else checklist.id
             val newChecklist = checklist.copy(id = id)
             checklistsMap[id] = newChecklist
             updateFlow()

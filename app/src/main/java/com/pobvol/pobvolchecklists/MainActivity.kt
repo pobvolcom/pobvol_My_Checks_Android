@@ -1,6 +1,7 @@
 package com.pobvol.pobvolchecklists
 
 import android.os.Bundle
+
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -10,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pobvol.pobvolchecklists.data.local.AppDatabase
+import com.pobvol.pobvolchecklists.data.local.LanguageEntity
 import com.pobvol.pobvolchecklists.data.repository.ChecklistRepositoryImpl
 import com.pobvol.pobvolchecklists.ui.ChecklistViewModel
 import com.pobvol.pobvolchecklists.ui.screens.ChecklistListScreen
@@ -27,6 +29,11 @@ class MainActivity : ComponentActivity() {
             pobvolchecklistsTheme {
                 val viewModel: ChecklistViewModel = viewModel(factory = ChecklistViewModel.Factory(repository))
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+                LanguageEntity(language = "de", title = "Deutsch")
+                LanguageEntity(language = "es", title = "Español")
+                LanguageEntity(language = "fr", title = "French")
+                LanguageEntity(language = "en", title = "English")
 
                 ChecklistListScreen(
                     uiState = uiState,

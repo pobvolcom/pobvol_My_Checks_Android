@@ -104,7 +104,7 @@ fun RecordListScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "SQLite Records",
+                            text = "Records",
                             fontWeight = FontWeight.Bold
                         )
                     }
