@@ -11,39 +11,41 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.pobvol.pobvolchecklists.data.local.RecordEntity
-import com.pobvol.pobvolchecklists.data.local.ChecklistEntity
+import com.pobvol.pobvolchecklists.data.local.ChecklistQuestionEntity
 import com.pobvol.pobvolchecklists.ui.theme.pobvolchecklistsTheme
 
 @Composable
-fun DeleteRecordConfirmationDialog(
-    record: RecordEntity,
+fun DeleteQuestionConfirmationDialog(
+    question: ChecklistQuestionEntity,
     onDismiss: () -> Unit,
-    onConfirmDelete: () -> Unit
+    onConfirmDelete: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        modifier = modifier,
         icon = {
             Icon(
                 imageVector = Icons.Rounded.Warning,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.error
+                tint = MaterialTheme.colorScheme.error,
             )
         },
         title = {
             Text(
-                text = "Delete Record?",
+                text = "Delete Question?",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         },
         text = {
             Text(
-                text = "Are you sure you want to delete \"${record.title}\"? This action cannot be undone.",
-                style = MaterialTheme.typography.bodyMedium
+                text = "Are you sure you want to delete \"${question.title}\"? This action cannot be undone.",
+                style = MaterialTheme.typography.bodyMedium,
             )
         },
         confirmButton = {
@@ -51,9 +53,9 @@ fun DeleteRecordConfirmationDialog(
                 onClick = onConfirmDelete,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError
+                    contentColor = MaterialTheme.colorScheme.onError,
                 ),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
             ) {
                 Text("Delete")
             }
@@ -61,31 +63,30 @@ fun DeleteRecordConfirmationDialog(
         dismissButton = {
             TextButton(
                 onClick = onDismiss,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
             ) {
                 Text("Cancel")
             }
         },
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(20.dp),
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun DeleteRecordConfirmationDialogPreview() {
+fun DeleteQuestionConfirmationDialogPreview() {
     pobvolchecklistsTheme {
-        DeleteChecklistConfirmationDialog(
-            checklist = ChecklistEntity(
+        DeleteQuestionConfirmationDialog(
+            question = ChecklistQuestionEntity(
                 id = 1,
-                language = "English",
-                title = "Important Document",
-                description = "Scan of passport",
-                category = "Important",
-                icon = "Null"
-
+                title = "Is safety equipment worn?",
+                description = "Check compliance",
+                type = "checkbox",
+                options = null,
+                required = true,
             ),
             onDismiss = {},
-            onConfirmDelete = {}
+            onConfirmDelete = {},
         )
     }
 }

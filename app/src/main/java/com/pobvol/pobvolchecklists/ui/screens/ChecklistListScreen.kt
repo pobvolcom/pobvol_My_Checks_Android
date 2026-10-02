@@ -68,6 +68,7 @@ fun ChecklistListScreen(
     onSearchQueryChange: (String) -> Unit,
     onCategoryFilterChange: (String?) -> Unit,
     onAddClick: () -> Unit,
+    onQuestionsClick: (ChecklistEntity) -> Unit,
     onEditClick: (ChecklistEntity) -> Unit,
     onDeleteClick: (ChecklistEntity) -> Unit,
     onDismissAddEditDialog: () -> Unit,
@@ -151,7 +152,6 @@ fun ChecklistListScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // Search Bar Input
             AnimatedVisibility(
                 visible = isSearchActive,
                 enter = fadeIn(),
@@ -185,7 +185,6 @@ fun ChecklistListScreen(
                 )
             }
 
-            // Category Filter Chips
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -215,7 +214,6 @@ fun ChecklistListScreen(
                 }
             }
 
-            // Main Checklists Content
             if (uiState.checklists.isEmpty()) {
                 EmptyStateView(
                     isFiltering = uiState.searchQuery.isNotEmpty() || (uiState.selectedCategory != null && uiState.selectedCategory != "All"),
@@ -240,6 +238,7 @@ fun ChecklistListScreen(
                     ) { checklist ->
                         ChecklistItem(
                             checklist = checklist,
+                            onQuestionsClick = onQuestionsClick,
                             onEditClick = onEditClick,
                             onDeleteClick = onDeleteClick
                         )
@@ -248,7 +247,6 @@ fun ChecklistListScreen(
             }
         }
 
-        // Add/Edit Dialog
         if (uiState.isAddEditDialogVisible) {
             AddEditChecklistDialog(
                 checklistToEdit = uiState.checklistToEdit,
@@ -257,7 +255,6 @@ fun ChecklistListScreen(
             )
         }
 
-        // Delete Confirmation Dialog
         if (uiState.checklistToDelete != null) {
             DeleteChecklistConfirmationDialog(
                 checklist = uiState.checklistToDelete,
@@ -368,6 +365,7 @@ fun ChecklistListScreenPreview() {
             onSearchQueryChange = {},
             onCategoryFilterChange = {},
             onAddClick = {},
+            onQuestionsClick = {},
             onEditClick = {},
             onDeleteClick = {},
             onDismissAddEditDialog = {},
@@ -388,6 +386,7 @@ fun ChecklistListScreenEmptyPreview() {
             onSearchQueryChange = {},
             onCategoryFilterChange = {},
             onAddClick = {},
+            onQuestionsClick = {},
             onEditClick = {},
             onDeleteClick = {},
             onDismissAddEditDialog = {},

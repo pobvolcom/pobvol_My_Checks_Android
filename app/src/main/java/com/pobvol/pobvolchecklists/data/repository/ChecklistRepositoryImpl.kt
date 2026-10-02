@@ -1,11 +1,11 @@
 package com.pobvol.pobvolchecklists.data.repository
 
-import com.pobvol.pobvolchecklists.data.local.ChecklistDao
+import com.pobvol.pobvolchecklists.data.local.ChecklistDAO
 import com.pobvol.pobvolchecklists.data.local.ChecklistEntity
 import kotlinx.coroutines.flow.Flow
 
 class ChecklistRepositoryImpl(
-    private val checklistDao: ChecklistDao
+    private val checklistDao: ChecklistDAO
 ) : ChecklistRepository {
 
     override fun getAllChecklists(): Flow<List<ChecklistEntity>> = checklistDao.getAllChecklists()

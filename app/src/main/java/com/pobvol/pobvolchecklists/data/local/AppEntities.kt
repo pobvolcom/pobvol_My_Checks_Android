@@ -24,10 +24,8 @@ fr          French
 */
 @Entity(tableName = "languages")
 data class LanguageEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val language: String = "en",
-    val title: String = "English"
+    @PrimaryKey val language: String = "de",
+    val title: String = "Deutsch"
 )
 
 /*
@@ -66,9 +64,9 @@ data class ChecklistEntity(
     var id: Int = 0,
     var title: String,
     var language: String = "de", // NOT NULL
-    var description: String = "", // OPTIONAL
+    var description: String = "",
     var category: String = "UVV",
-    var icon: String = "", // OPTIONAL
+    var icon: String?, // OPTIONAL
     var timestamp: Long = System.currentTimeMillis()
 )
 

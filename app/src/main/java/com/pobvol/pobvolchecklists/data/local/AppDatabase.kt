@@ -4,32 +4,32 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities =
-    [
+@Database(
+    entities = [
         RecordEntity::class,
         LanguageEntity::class,
-        AnswerTypeEntity::class,
         CategoryEntity::class,
+        AnswerTypeEntity::class,
         ChecklistEntity::class,
         ChecklistQuestionEntity::class,
         ChecklistSubmissionEntity::class,
-        ChecklistAnswerEntity::class
+        ChecklistAnswerEntity::class,
     ],
     version = 3,
-    exportSchema = false
+    exportSchema = false,
 )
-
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun recordDao(): RecordDao
-    abstract fun languageDao(): LanguageDao
-    abstract fun answertypeDao(): AnswerTypeDao
-    abstract fun categoryDao(): CategoryDao
-    abstract fun checklistDao(): ChecklistDao
-    abstract fun checklistquestionDao(): ChecklistQuestionDao
-    abstract fun checklistsubmissionDao(): ChecklistSubmissionDao
-    abstract fun checklistanswerDao(): ChecklistAnswerDao
-    abstract fun appDao(): AppDAO
+
+    abstract fun recordDao(): RecordDAO
+    abstract fun languageDao(): LanguageDAO
+    abstract fun answertypeDao(): AnswerTypeDAO
+    abstract fun categoryDao(): CategoryDAO
+    abstract fun checklistDao(): ChecklistDAO
+    abstract fun checklistquestionDao(): ChecklistQuestionDAO
+    abstract fun checklistsubmissionDao(): ChecklistSubmissionDAO
+    abstract fun checklistanswerDao(): ChecklistAnswerDAO
 
     companion object {
         @Volatile
@@ -40,8 +40,28 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "database.sqlite3"
-                ).build()
+                    "database.sqlite3",
+                )
+                    .addCallback(
+                        object : Callback() {
+                            override fun onCreate(db: SupportSQLiteDatabase) {
+                                super.onCreate(db)
+                                db.execSQL("INSERT OR IGNORE INTO languages (language, title) VALUES ('de', 'Deutsch')")
+                                db.execSQL("INSERT OR IGNORE INTO languages (language, title) VALUES ('en', 'English')")
+                                db.execSQL("INSERT OR IGNORE INTO languages (language, title) VALUES ('es', 'Español')")
+                                db.execSQL("INSERT OR IGNORE INTO languages (language, title) VALUES ('fr', 'French')")
+
+                                db.execSQL("INSERT OR IGNORE INTO answer_types (type, title) VALUES ('checkbox', 'Checkbox')")
+                                db.execSQL("INSERT OR IGNORE INTO answer_types (type, title) VALUES ('combobox', 'Combobox')")
+                                db.execSQL("INSERT OR IGNORE INTO answer_types (type, title) VALUES ('number', 'Number')")
+                                db.execSQL("INSERT OR IGNORE INTO answer_types (type, title) VALUES ('text', 'Text')")
+
+                                db.execSQL("INSERT OR IGNORE INTO categories (category, title) VALUES ('HEALTH', 'Health')")
+                                db.execSQL("INSERT OR IGNORE INTO categories (category, title) VALUES ('UVV', 'UVV')")
+                            }
+                        },
+                    )
+                    .build()
                 INSTANCE = instance
                 instance
             }

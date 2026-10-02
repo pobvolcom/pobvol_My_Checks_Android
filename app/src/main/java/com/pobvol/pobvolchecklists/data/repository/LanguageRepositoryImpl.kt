@@ -1,11 +1,11 @@
 package com.pobvol.pobvolchecklists.data.repository
 
-import com.pobvol.pobvolchecklists.data.local.LanguageDao
+import com.pobvol.pobvolchecklists.data.local.LanguageDAO
 import com.pobvol.pobvolchecklists.data.local.LanguageEntity
 import kotlinx.coroutines.flow.Flow
 
 class LanguageRepositoryImpl(
-    private val languageDao: LanguageDao
+    private val languageDao: LanguageDAO
 ) : LanguageRepository {
     override fun getAllLanguages(): Flow<List<LanguageEntity>> = languageDao.getAllLanguages()
     override suspend fun getLanguageByLang(lang: String): LanguageEntity? = languageDao.getLanguageByLang(lang)

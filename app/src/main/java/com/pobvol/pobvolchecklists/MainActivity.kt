@@ -10,10 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pobvol.pobvolchecklists.data.local.AppDatabase
-import com.pobvol.pobvolchecklists.data.local.LanguageEntity
-import com.pobvol.pobvolchecklists.data.repository.DataRepositoryImpl
+import com.pobvol.pobvolchecklists.data.repository.ChecklistQuestionRepositoryImpl
+import com.pobvol.pobvolchecklists.data.repository.ChecklistRepositoryImpl
 import com.pobvol.pobvolchecklists.ui.ChecklistViewModel
 import com.pobvol.pobvolchecklists.ui.screens.ChecklistListScreen
+import com.pobvol.pobvolchecklists.ui.screens.ChecklistQuestionsScreen
 import com.pobvol.pobvolchecklists.ui.theme.pobvolchecklistsTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,33 +23,49 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         val database = AppDatabase.getDatabase(applicationContext)
-        /* val repository = ChecklistRepositoryImpl(database.checklistDao()) */
-        val repository = DataRepositoryImpl(database.appDao())
+        val repository = ChecklistRepositoryImpl(database.checklistDao())
+        val questionRepository = ChecklistQuestionRepositoryImpl(database.checklistquestionDao())
 
         setContent {
             pobvolchecklistsTheme {
-                val viewModel: ChecklistViewModel = viewModel(factory = ChecklistViewModel.Factory(repository))
+                val viewModel: ChecklistViewModel = viewModel(
+                    factory = ChecklistViewModel.Factory(repository, questionRepository),
+                )
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-                LanguageEntity(language = "de", title = "Deutsch")
-                LanguageEntity(language = "es", title = "Español")
-                LanguageEntity(language = "fr", title = "French")
-                LanguageEntity(language = "en", title = "English")
-
-                ChecklistListScreen(
-                    uiState = uiState,
-                    onSearchQueryChange = viewModel::onSearchQueryChange,
-                    onCategoryFilterChange = viewModel::onCategoryFilterChange,
-                    onAddClick = viewModel::openAddDialog,
-                    onEditClick = viewModel::openEditDialog,
-                    onDeleteClick = viewModel::requestDeleteConfirmation,
-                    onDismissAddEditDialog = viewModel::dismissAddEditDialog,
-                    onSaveChecklist = viewModel::saveChecklist,
-                    onDismissDeleteDialog = viewModel::dismissDeleteConfirmation,
-                    onConfirmDelete = viewModel::confirmDelete,
-                    onUserMessageShown = viewModel::userMessageShown,
-                    modifier = Modifier.fillMaxSize()
-                )
+                val selectedChecklist = uiState.selectedChecklistForQuestions
+                if (selectedChecklist != null) {
+                    ChecklistQuestionsScreen(
+                        checklist = selectedChecklist,
+                        uiState = uiState,
+                        onBackClick = viewModel::closeQuestionsScreen,
+                        onAddQuestionClick = viewModel::openAddQuestionDialog,
+                        onEditQuestionClick = viewModel::openEditQuestionDialog,
+                        onDeleteQuestionClick = viewModel::requestDeleteQuestionConfirmation,
+                        onDismissAddEditQuestionDialog = viewModel::dismissAddEditQuestionDialog,
+                        onSaveQuestion = viewModel::saveQuestion,
+                        onDismissDeleteQuestionDialog = viewModel::dismissDeleteQuestionConfirmation,
+                        onConfirmDeleteQuestion = viewModel::confirmDeleteQuestion,
+                        onUserMessageShown = viewModel::userMessageShown,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                } else {
+                    ChecklistListScreen(
+                        uiState = uiState,
+                        onSearchQueryChange = viewModel::onSearchQueryChange,
+                        onCategoryFilterChange = viewModel::onCategoryFilterChange,
+                        onAddClick = viewModel::openAddDialog,
+                        onQuestionsClick = viewModel::openQuestionsForChecklist,
+                        onEditClick = viewModel::openEditDialog,
+                        onDeleteClick = viewModel::requestDeleteConfirmation,
+                        onDismissAddEditDialog = viewModel::dismissAddEditDialog,
+                        onSaveChecklist = viewModel::saveChecklist,
+                        onDismissDeleteDialog = viewModel::dismissDeleteConfirmation,
+                        onConfirmDelete = viewModel::confirmDelete,
+                        onUserMessageShown = viewModel::userMessageShown,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
             }
         }
     }

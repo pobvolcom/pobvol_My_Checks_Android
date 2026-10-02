@@ -1,11 +1,11 @@
 package com.pobvol.pobvolchecklists.data.repository
 
-import com.pobvol.pobvolchecklists.data.local.RecordDao
+import com.pobvol.pobvolchecklists.data.local.RecordDAO
 import com.pobvol.pobvolchecklists.data.local.RecordEntity
 import kotlinx.coroutines.flow.Flow
 
 class RecordRepositoryImpl(
-    private val recordDao: RecordDao
+    private val recordDao: RecordDAO
 ) : RecordRepository {
 
     /* table: records */

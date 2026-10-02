@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.QuestionAnswer
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -37,27 +38,28 @@ import java.util.Locale
 @Composable
 fun ChecklistItem(
     checklist: ChecklistEntity,
+    onQuestionsClick: (ChecklistEntity) -> Unit,
     onEditClick: (ChecklistEntity) -> Unit,
     onDeleteClick: (ChecklistEntity) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = checklist.title,
@@ -66,7 +68,7 @@ fun ChecklistItem(
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 )
 
                 AssistChip(
@@ -74,14 +76,14 @@ fun ChecklistItem(
                     label = {
                         Text(
                             text = checklist.category,
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
                         )
                     },
                     colors = AssistChipDefaults.assistChipColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        labelColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     ),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
                 )
             }
 
@@ -92,7 +94,7 @@ fun ChecklistItem(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 3,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
 
@@ -101,31 +103,39 @@ fun ChecklistItem(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Schedule,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.outline,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(16.dp),
                     )
                     Text(
                         text = formatTimestamp(checklist.timestamp),
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.outline
+                        color = MaterialTheme.colorScheme.outline,
                     )
                 }
 
                 Row {
+                    IconButton(onClick = { onQuestionsClick(checklist) }) {
+                        Icon(
+                            imageVector = Icons.Rounded.QuestionAnswer,
+                            contentDescription = "Manage questions",
+                            tint = MaterialTheme.colorScheme.secondary,
+                        )
+                    }
+
                     IconButton(onClick = { onEditClick(checklist) }) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = "Edit checklist",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
 
@@ -133,7 +143,7 @@ fun ChecklistItem(
                         Icon(
                             imageVector = Icons.Rounded.Delete,
                             contentDescription = "Delete checklist",
-                            tint = MaterialTheme.colorScheme.error
+                            tint = MaterialTheme.colorScheme.error,
                         )
                     }
                 }
@@ -159,11 +169,12 @@ fun ChecklistItemPreview() {
                 description = "Updated Room database to version 2 with indices for title and timestamp.",
                 category = "Work",
                 icon = "Null",
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
             ),
+            onQuestionsClick = {},
             onEditClick = {},
             onDeleteClick = {},
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         )
     }
 }
