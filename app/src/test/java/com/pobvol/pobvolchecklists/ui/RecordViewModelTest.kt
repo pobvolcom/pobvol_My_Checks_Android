@@ -28,6 +28,7 @@ import com.pobvol.pobvolchecklists.data.repository.SettingsRepository
 import com.pobvol.pobvolchecklists.data.repository.ThemeMode
 import com.pobvol.pobvolchecklists.data.repository.UserSettings
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -159,6 +160,28 @@ class RecordViewModelTest {
     }
 
     @Test
+    fun deleteChecklistRemovesChecklistAndRelatedQuestions() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+
+        val checklist = ChecklistEntity(id = 1, title = "To Delete", language = "en", description = "Desc", category = "General", icon = "")
+        repository.insertChecklist(checklist)
+
+        val question = ChecklistQuestionEntity(id = 1, checklistid = 1, title = "Q1", description = null, type = "text", options = null, required = true)
+        questionRepository.insertChecklistQuestion(question)
+
+        viewModel.requestDeleteConfirmation(checklist)
+        viewModel.confirmDelete()
+
+        val fetchedChecklist = repository.getChecklistById(1)
+        assertNull(fetchedChecklist)
+
+        val questions = questionRepository.getChecklistQuestionsByChecklistId(1).first()
+        assertEquals(true, questions.isEmpty())
+    }
+
+    @Test
     fun searchQueryFiltersChecklists() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -217,12 +240,13 @@ class RecordViewModelTest {
         repository.insertChecklist(checklist)
 
         val answers = mapOf(1 to "true", 2 to "Morning")
-        viewModel.submitChecklistAnswers(10, "John Inspector", "All clear", answers)
+        viewModel.submitChecklistAnswers(10, "John Inspector", "All clear", date = "", answers = answers)
 
         val submission = submissionRepository.getChecklistSubmissionsByChecklistId(10)
         assertNotNull(submission)
         assertEquals("John Inspector", submission?.inspector)
         assertEquals("All clear", submission?.notes)
+        assertNotNull(submission?.date)
 
         val uiState = viewModel.uiState.value
         assertEquals("Checklist submitted successfully", uiState.userMessage)
@@ -266,7 +290,7 @@ class RecordViewModelTest {
         private val questionsFlow = MutableStateFlow<List<ChecklistQuestionEntity>>(emptyList())
 
         private fun updateFlow() {
-            questionsFlow.value = questionsMap.values.toList().sortedByDescending { it.timestamp }
+            questionsFlow.value = questionsMap.values.toList().sortedWith(compareBy({ it.sortno }, { it.id }))
         }
 
         override fun getAllChecklistQuestions(): Flow<List<ChecklistQuestionEntity>> = questionsFlow
@@ -274,7 +298,7 @@ class RecordViewModelTest {
         override suspend fun getChecklistQuestionById(id: Int): ChecklistQuestionEntity? = questionsMap[id]
 
         override fun getChecklistQuestionsByChecklistId(checklistid: Int): Flow<List<ChecklistQuestionEntity>> {
-            return MutableStateFlow(questionsMap.values.filter { it.checklistid == checklistid }.sortedByDescending { it.timestamp })
+            return MutableStateFlow(questionsMap.values.filter { it.checklistid == checklistid }.sortedWith(compareBy({ it.sortno }, { it.id })))
         }
 
         override suspend fun insertChecklistQuestion(question: ChecklistQuestionEntity): Long {
@@ -325,6 +349,11 @@ class RecordViewModelTest {
             categoriesMap[id] = newCat
             categoriesFlow.value = categoriesMap.values.toList()
             return id.toLong()
+        }
+
+        override suspend fun deleteCategory(category: CategoryEntity) {
+            categoriesMap.entries.removeAll { it.value.category.equals(category.category, ignoreCase = true) }
+            categoriesFlow.value = categoriesMap.values.toList()
         }
     }
 

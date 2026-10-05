@@ -1,6 +1,8 @@
 package com.pobvol.pobvolchecklists.data.local
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 
@@ -24,7 +26,7 @@ fr          French
 */
 @Entity(tableName = "languages")
 data class LanguageEntity(
-    @PrimaryKey val language: String = "de",
+    @PrimaryKey val language: String = "en",
     val title: String = "Deutsch"
 )
 
@@ -34,8 +36,12 @@ checkbox    Checkbox
 combobox    Combobox
 number      Number
 text        Text
+NFC         NFC
  */
-@Entity(tableName = "answer_types")
+@Entity(
+    tableName = "answer_types",
+    indices = [Index(value = ["type"], unique = true)]
+)
 data class AnswerTypeEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -48,7 +54,10 @@ table: categories
 HEALTH      Health
 UVV         UVV
 */
-@Entity(tableName = "categories")
+@Entity(
+    tableName = "categories",
+    indices = [Index(value = ["category"], unique = true)]
+)
 data class CategoryEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -63,7 +72,7 @@ data class ChecklistEntity(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     var title: String,
-    var language: String = "de", // NOT NULL
+    var language: String = "en", // NOT NULL
     var description: String = "",
     var category: String = "UVV",
     var icon: String?, // OPTIONAL
@@ -71,7 +80,17 @@ data class ChecklistEntity(
 )
 
 /* table: checklist_questions */
-@Entity(tableName = "checklist_questions")
+@Entity(
+    tableName = "checklist_questions",
+    foreignKeys = [
+        ForeignKey(
+            entity = ChecklistEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["checklistid"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class ChecklistQuestionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -94,6 +113,7 @@ data class ChecklistSubmissionEntity(
     val status: String,
     val inspector: String?,
     val notes: String?,
+    val date: String,
     val timestamp: Long = System.currentTimeMillis()
 )
 

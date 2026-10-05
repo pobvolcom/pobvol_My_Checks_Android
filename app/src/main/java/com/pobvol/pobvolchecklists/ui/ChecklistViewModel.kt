@@ -24,8 +24,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ChecklistViewModel(
     private val repository: ChecklistRepository,
@@ -43,6 +47,17 @@ class ChecklistViewModel(
     private val _selectedCategory = MutableStateFlow<String?>(null)
     val selectedCategory: StateFlow<String?> = _selectedCategory.asStateFlow()
 
+    private val _selectedSubmissionStatus = MutableStateFlow<String?>(null)
+    val selectedSubmissionStatus: StateFlow<String?> = _selectedSubmissionStatus.asStateFlow()
+
+    private val _scannedNfcTag = MutableStateFlow<String?>(null)
+    val scannedNfcTag: StateFlow<String?> = _scannedNfcTag.asStateFlow()
+
+    fun onNfcTagScanned(tagId: String) {
+        _scannedNfcTag.value = tagId
+        _userMessage.value = "NFC Tag scanned: $tagId"
+    }
+
     private val _checklistToEdit = MutableStateFlow<ChecklistEntity?>(null)
     val checklistToEdit: StateFlow<ChecklistEntity?> = _checklistToEdit.asStateFlow()
 
@@ -57,6 +72,9 @@ class ChecklistViewModel(
 
     private val _selectedChecklistToAnswer = MutableStateFlow<ChecklistEntity?>(null)
     val selectedChecklistToAnswer: StateFlow<ChecklistEntity?> = _selectedChecklistToAnswer.asStateFlow()
+
+    private val _isChecklistListVisible = MutableStateFlow(false)
+    val isChecklistListVisible: StateFlow<Boolean> = _isChecklistListVisible.asStateFlow()
 
     private val _isSubmissionsOverviewVisible = MutableStateFlow(false)
     val isSubmissionsOverviewVisible: StateFlow<Boolean> = _isSubmissionsOverviewVisible.asStateFlow()
@@ -97,6 +115,7 @@ class ChecklistViewModel(
         val questionToDelete: ChecklistQuestionEntity?,
         val message: String?,
         val selectedChecklistToAnswer: ChecklistEntity?,
+        val submissionToDelete: ChecklistSubmissionEntity?,
     )
 
     private val _dialogState = combine(
@@ -110,6 +129,7 @@ class ChecklistViewModel(
         _questionToDelete,
         _userMessage,
         _selectedChecklistToAnswer,
+        _submissionToDelete,
     ) { states ->
         DialogState(
             isAddEditVisible = states[0] as Boolean,
@@ -122,6 +142,7 @@ class ChecklistViewModel(
             questionToDelete = states[7] as ChecklistQuestionEntity?,
             message = states[8] as String?,
             selectedChecklistToAnswer = states[9] as ChecklistEntity?,
+            submissionToDelete = states[10] as ChecklistSubmissionEntity?,
         )
     }
 
@@ -146,7 +167,7 @@ class ChecklistViewModel(
         val answers: List<ChecklistAnswerEntity>,
         val isOverviewVisible: Boolean,
         val selectedSubmissionToEdit: ChecklistSubmissionEntity?,
-        val submissionToDelete: ChecklistSubmissionEntity?,
+        val isChecklistListVisible: Boolean,
     )
 
     private val _submissionState = combine(
@@ -154,9 +175,15 @@ class ChecklistViewModel(
         answerRepository.getAllChecklistAnswers(),
         _isSubmissionsOverviewVisible,
         _selectedSubmissionToEdit,
-        _submissionToDelete,
-    ) { submissions, answers, isOverviewVisible, selectedToEdit, toDelete ->
-        SubmissionState(submissions, answers, isOverviewVisible, selectedToEdit, toDelete)
+        _isChecklistListVisible,
+    ) { submissions, answers, isOverviewVisible, selectedToEdit, isChecklistListVisible ->
+        SubmissionState(
+            submissions,
+            answers,
+            isOverviewVisible,
+            selectedToEdit,
+            isChecklistListVisible,
+        )
     }
 
     private data class GlobalState(
@@ -175,6 +202,7 @@ class ChecklistViewModel(
         _dialogState,
         _globalState,
     ) { checklists, query, category, dialogState, globalState ->
+        val selectedStatus = _selectedSubmissionStatus.value
         val filteredChecklists = checklists.filter { checklist ->
             val matchesQuery = query.isBlank() ||
                     checklist.title.contains(query, ignoreCase = true) ||
@@ -189,6 +217,20 @@ class ChecklistViewModel(
                     }
 
             matchesQuery && matchesCategory
+        }
+
+        val checklistMap = checklists.associateBy { it.id }
+        val filteredSubmissions = globalState.submissionState.submissions.filter { submission ->
+            val matchesSearch = query.isBlank() ||
+                    submission.inspector?.contains(query, ignoreCase = true) == true ||
+                    submission.notes?.contains(query, ignoreCase = true) == true ||
+                    submission.date.contains(query, ignoreCase = true) == true ||
+                    (checklistMap[submission.checklistid]?.title?.contains(query, ignoreCase = true) == true)
+
+            val matchesStatus = selectedStatus == null || selectedStatus.equals("All", ignoreCase = true) ||
+                    submission.status.equals(selectedStatus, ignoreCase = true)
+
+            matchesSearch && matchesStatus
         }
 
         ChecklistUiState(
@@ -209,11 +251,14 @@ class ChecklistViewModel(
             isSettingsDialogVisible = globalState.settingsState.isVisible,
             categories = globalState.settingsState.categories,
             selectedChecklistToAnswer = dialogState.selectedChecklistToAnswer,
-            submissions = globalState.submissionState.submissions,
+            submissions = filteredSubmissions,
             answers = globalState.submissionState.answers,
             isSubmissionsOverviewVisible = globalState.submissionState.isOverviewVisible,
             selectedSubmissionToEdit = globalState.submissionState.selectedSubmissionToEdit,
-            submissionToDelete = globalState.submissionState.submissionToDelete,
+            submissionToDelete = dialogState.submissionToDelete,
+            isChecklistListVisible = globalState.submissionState.isChecklistListVisible,
+            selectedSubmissionStatus = selectedStatus,
+            scannedNfcTag = _scannedNfcTag.value,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -221,12 +266,24 @@ class ChecklistViewModel(
         initialValue = ChecklistUiState(),
     )
 
+    fun onSubmissionStatusFilterChange(status: String?) {
+        _selectedSubmissionStatus.value = status
+    }
+
     fun onSearchQueryChange(newQuery: String) {
         _searchQuery.value = newQuery
     }
 
     fun onCategoryFilterChange(category: String?) {
         _selectedCategory.value = category
+    }
+
+    fun openChecklistsScreen() {
+        _isChecklistListVisible.value = true
+    }
+
+    fun closeChecklistsScreen() {
+        _isChecklistListVisible.value = false
     }
 
     fun openAddDialog() {
@@ -255,6 +312,8 @@ class ChecklistViewModel(
 
         val currentEdit = _checklistToEdit.value
         viewModelScope.launch {
+            categoryRepository.insertCategory(CategoryEntity(category = trimmedCategory, title = trimmedCategory))
+
             if (currentEdit == null) {
                 val newChecklist = ChecklistEntity(
                     title = trimmedTitle,
@@ -282,6 +341,23 @@ class ChecklistViewModel(
         }
     }
 
+    fun addCategory(categoryName: String) {
+        val trimmed = categoryName.trim()
+        if (trimmed.isNotBlank()) {
+            viewModelScope.launch {
+                categoryRepository.insertCategory(CategoryEntity(category = trimmed, title = trimmed))
+                _userMessage.value = "Category added successfully"
+            }
+        }
+    }
+
+    fun deleteCategory(category: CategoryEntity) {
+        viewModelScope.launch {
+            categoryRepository.deleteCategory(category)
+            _userMessage.value = "Category deleted successfully"
+        }
+    }
+
     fun requestDeleteConfirmation(checklist: ChecklistEntity) {
         _checklistToDelete.value = checklist
     }
@@ -293,6 +369,10 @@ class ChecklistViewModel(
     fun confirmDelete() {
         val checklist = _checklistToDelete.value ?: return
         viewModelScope.launch {
+            val questions = questionRepository.getChecklistQuestionsByChecklistId(checklist.id).first()
+            questions.forEach { question ->
+                questionRepository.deleteChecklistQuestion(question)
+            }
             repository.deleteChecklist(checklist)
             _checklistToDelete.value = null
             _userMessage.value = "Checklist deleted successfully"
@@ -335,16 +415,23 @@ class ChecklistViewModel(
         checklistId: Int,
         inspector: String?,
         notes: String?,
-        answers: Map<Int, String>,
+        date: String = "",
+        answers: Map<Int, String>
     ) {
         viewModelScope.launch {
+            val formattedDate = date.ifBlank {
+                SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
+            }
+
             val submission = ChecklistSubmissionEntity(
                 checklistid = checklistId,
                 status = "COMPLETED",
                 inspector = inspector?.ifBlank { null },
                 notes = notes?.ifBlank { null },
+                date = formattedDate,
                 timestamp = System.currentTimeMillis(),
             )
+
             val submissionId = submissionRepository.insertChecklistSubmission(submission)
 
             answers.forEach { (questionId, value) ->
@@ -456,7 +543,14 @@ class ChecklistViewModel(
         _questionToEdit.value = null
     }
 
-    fun saveQuestion(title: String, description: String, type: String, options: String, required: Boolean) {
+    fun saveQuestion(
+        title: String,
+        description: String,
+        type: String,
+        options: String,
+        required: Boolean,
+        sortno: Int = 0,
+    ) {
         val checklistId = _selectedChecklistForQuestions.value?.id ?: return
         val trimmedTitle = title.trim()
         if (trimmedTitle.isBlank()) return
@@ -464,8 +558,11 @@ class ChecklistViewModel(
         val currentEdit = _questionToEdit.value
         viewModelScope.launch {
             if (currentEdit == null) {
+                val currentQuestions = _questions.value.filter { it.checklistid == checklistId }
+                val autoSortNo = if (sortno > 0) sortno else ((currentQuestions.maxOfOrNull { it.sortno } ?: 0) + 1)
                 val newQuestion = ChecklistQuestionEntity(
                     checklistid = checklistId,
+                    sortno = autoSortNo,
                     title = trimmedTitle,
                     description = description.trim(),
                     type = type,
@@ -476,7 +573,9 @@ class ChecklistViewModel(
                 questionRepository.insertChecklistQuestion(newQuestion)
                 _userMessage.value = "Question added successfully"
             } else {
+                val autoSortNo = if (sortno > 0) sortno else currentEdit.sortno
                 val updatedQuestion = currentEdit.copy(
+                    sortno = autoSortNo,
                     title = trimmedTitle,
                     description = description.trim(),
                     type = type,
@@ -488,6 +587,52 @@ class ChecklistViewModel(
                 _userMessage.value = "Question updated successfully"
             }
             dismissAddEditQuestionDialog()
+        }
+    }
+
+    fun moveQuestionUp(question: ChecklistQuestionEntity) {
+        val currentQuestions = _questions.value
+            .filter { it.checklistid == question.checklistid }
+            .sortedWith(compareBy({ it.sortno }, { it.id }))
+
+        val index = currentQuestions.indexOfFirst { it.id == question.id }
+        if (index > 0) {
+            val newList = currentQuestions.toMutableList()
+            val temp = newList[index]
+            newList[index] = newList[index - 1]
+            newList[index - 1] = temp
+
+            viewModelScope.launch {
+                newList.forEachIndexed { idx, q ->
+                    val newSortNo = idx + 1
+                    if (q.sortno != newSortNo) {
+                        questionRepository.updateChecklistQuestion(q.copy(sortno = newSortNo))
+                    }
+                }
+            }
+        }
+    }
+
+    fun moveQuestionDown(question: ChecklistQuestionEntity) {
+        val currentQuestions = _questions.value
+            .filter { it.checklistid == question.checklistid }
+            .sortedWith(compareBy({ it.sortno }, { it.id }))
+
+        val index = currentQuestions.indexOfFirst { it.id == question.id }
+        if (index >= 0 && index < currentQuestions.size - 1) {
+            val newList = currentQuestions.toMutableList()
+            val temp = newList[index]
+            newList[index] = newList[index + 1]
+            newList[index + 1] = temp
+
+            viewModelScope.launch {
+                newList.forEachIndexed { idx, q ->
+                    val newSortNo = idx + 1
+                    if (q.sortno != newSortNo) {
+                        questionRepository.updateChecklistQuestion(q.copy(sortno = newSortNo))
+                    }
+                }
+            }
         }
     }
 

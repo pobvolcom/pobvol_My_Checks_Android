@@ -29,6 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,7 +42,7 @@ import com.pobvol.pobvolchecklists.ui.theme.pobvolchecklistsTheme
 fun AddEditQuestionDialog(
     questionToEdit: ChecklistQuestionEntity?,
     onDismiss: () -> Unit,
-    onSave: (title: String, description: String, type: String, options: String, required: Boolean) -> Unit,
+    onSave: (title: String, description: String, type: String, options: String, required: Boolean, sortno: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var title by remember { mutableStateOf(questionToEdit?.title ?: "") }
@@ -48,11 +50,12 @@ fun AddEditQuestionDialog(
     var type by remember { mutableStateOf(questionToEdit?.type ?: "text") }
     var options by remember { mutableStateOf(questionToEdit?.options ?: "") }
     var required by remember { mutableStateOf(questionToEdit?.required ?: true) }
+    var sortnoText by remember { mutableStateOf(questionToEdit?.sortno?.let { if (it <= 0) "" else it.toString() } ?: "") }
 
     var titleError by remember { mutableStateOf(false) }
     var typeExpanded by remember { mutableStateOf(false) }
 
-    val answerTypes = listOf("text", "number", "checkbox", "combobox")
+    val answerTypes = listOf("text", "number", "checkbox", "combobox", "nfc")
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -105,6 +108,17 @@ fun AddEditQuestionDialog(
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3,
+                )
+
+                OutlinedTextField(
+                    value = sortnoText,
+                    onValueChange = { sortnoText = it.filter { char -> char.isDigit() } },
+                    label = { Text("Sort Order (Optional)") },
+                    placeholder = { Text("e.g. 1, 2, 3...") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
                 )
 
                 ExposedDropdownMenuBox(
@@ -174,7 +188,8 @@ fun AddEditQuestionDialog(
                     if (title.isBlank()) {
                         titleError = true
                     } else {
-                        onSave(title, description, type, options, required)
+                        val sortnoVal = sortnoText.toIntOrNull() ?: 0
+                        onSave(title, description, type, options, required, sortnoVal)
                     }
                 },
                 shape = RoundedCornerShape(12.dp),
@@ -200,7 +215,7 @@ fun AddEditQuestionDialogPreview() {
         AddEditQuestionDialog(
             questionToEdit = null,
             onDismiss = {},
-            onSave = { _, _, _, _, _ -> },
+            onSave = { _, _, _, _, _, _ -> },
         )
     }
 }

@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.FactCheck
 import androidx.compose.material.icons.automirrored.rounded.NoteAdd
 import androidx.compose.material.icons.rounded.Add
@@ -30,6 +31,9 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Storage
+import androidx.compose.material3.Button
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,6 +47,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.pobvol.pobvolchecklists.data.local.CategoryEntity
 import com.pobvol.pobvolchecklists.data.local.ChecklistEntity
 import com.pobvol.pobvolchecklists.data.repository.ThemeMode
 import com.pobvol.pobvolchecklists.ui.ChecklistUiState
@@ -81,16 +87,20 @@ fun ChecklistListScreen(
     onDismissDeleteDialog: () -> Unit,
     onConfirmDelete: () -> Unit,
     onUserMessageShown: () -> Unit,
-    onOpenSubmissionsOverviewClick: () -> Unit = {},
-    onOpenSettingsClick: () -> Unit = {},
+    onBackClick: () -> Unit = {},
+    /*onOpenSubmissionsOverviewClick: () -> Unit = {},*/
+    /*onOpenSettingsClick: () -> Unit = {},*/
     onDismissSettingsDialog: () -> Unit = {},
     onThemeModeSelected: (ThemeMode) -> Unit = {},
     onLanguageSelected: (String) -> Unit = {},
     onUserNameChanged: (String) -> Unit = {},
+    onAddCategory: (String) -> Unit = {},
+    onDeleteCategory: (CategoryEntity) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var isSearchActive by remember { mutableStateOf(false) }
+    var isAddCategoryDialogVisible by remember { mutableStateOf(false) }
 
     val categories = remember(uiState.categories) {
         val dbCategoryTitles = uiState.categories.map { it.title.ifBlank { it.category } }
@@ -123,12 +133,22 @@ fun ChecklistListScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = if (uiState.userSettings.userName.isNotBlank()) {
+                            text =
+                                /*if (uiState.userSettings.userName.isNotBlank()) {
                                 "Checklists (${uiState.userSettings.userName})"
                             } else {
-                                "Checklists"
-                            },
+                                "Checklists Overview"
+                            },*/
+                                "Checklists Overview",
                             fontWeight = FontWeight.Bold
+                        )
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = "Back to dashboard",
                         )
                     }
                 },
@@ -146,18 +166,18 @@ fun ChecklistListScreen(
                             contentDescription = if (isSearchActive) "Close search" else "Search checklists"
                         )
                     }
-                    IconButton(onClick = onOpenSubmissionsOverviewClick) {
+                    /*IconButton(onClick = onOpenSubmissionsOverviewClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.FactCheck,
                             contentDescription = "Submissions Overview"
                         )
-                    }
-                    IconButton(onClick = onOpenSettingsClick) {
+                    }*/
+                    /*IconButton(onClick = onOpenSettingsClick) {
                         Icon(
                             imageVector = Icons.Rounded.Settings,
                             contentDescription = "Settings"
                         )
-                    }
+                    }*/
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
@@ -222,8 +242,22 @@ fun ChecklistListScreen(
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
+                AssistChip(
+                    onClick = { isAddCategoryDialogVisible = true },
+                    label = { Text("+ Category") },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Add,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                )
+
                 categories.forEach { category ->
                     val isSelected = if (category == "All") {
                         uiState.selectedCategory == null || uiState.selectedCategory == "All"
@@ -241,9 +275,62 @@ fun ChecklistListScreen(
                             }
                         },
                         label = { Text(category) },
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
                     )
                 }
+            }
+
+            if (isAddCategoryDialogVisible) {
+                var newCategoryName by remember { mutableStateOf("") }
+                var isError by remember { mutableStateOf(false) }
+
+                AlertDialog(
+                    onDismissRequest = { isAddCategoryDialogVisible = false },
+                    title = { Text("Add New Category", fontWeight = FontWeight.Bold) },
+                    text = {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = newCategoryName,
+                                onValueChange = {
+                                    newCategoryName = it
+                                    if (it.isNotBlank()) isError = false
+                                },
+                                label = { Text("Category Name *") },
+                                isError = isError,
+                                singleLine = true,
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            if (isError) {
+                                Text("Category name cannot be empty", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                if (newCategoryName.isBlank()) {
+                                    isError = true
+                                } else {
+                                    onAddCategory(newCategoryName.trim())
+                                    isAddCategoryDialogVisible = false
+                                }
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                        ) {
+                            Text("Add")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { isAddCategoryDialogVisible = false },
+                            shape = RoundedCornerShape(12.dp),
+                        ) {
+                            Text("Cancel")
+                        }
+                    },
+                    shape = RoundedCornerShape(20.dp),
+                )
             }
 
             if (uiState.checklists.isEmpty()) {
@@ -301,9 +388,12 @@ fun ChecklistListScreen(
             SettingsDialog(
                 userSettings = uiState.userSettings,
                 languages = uiState.availableLanguages,
+                categories = uiState.categories,
                 onThemeModeSelected = onThemeModeSelected,
                 onLanguageSelected = onLanguageSelected,
                 onUserNameChanged = onUserNameChanged,
+                onAddCategory = onAddCategory,
+                onDeleteCategory = onDeleteCategory,
                 onDismissRequest = onDismissSettingsDialog,
             )
         }

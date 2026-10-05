@@ -31,4 +31,7 @@ data class ChecklistUiState(
     val isSubmissionsOverviewVisible: Boolean = false,
     val selectedSubmissionToEdit: ChecklistSubmissionEntity? = null,
     val submissionToDelete: ChecklistSubmissionEntity? = null,
+    val isChecklistListVisible: Boolean = false,
+    val selectedSubmissionStatus: String? = null,
+    val scannedNfcTag: String? = null,
 )

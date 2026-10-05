@@ -41,13 +41,13 @@ fun AddEditChecklistDialog(
     var title by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.title ?: "") }
     var language by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.language ?: "English") }
     var description by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.description ?: "") }
-    var category by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.category ?: "General") }
+    var category by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.category ?: "UVV") }
     var icon by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.icon ?: "") }
     var isTitleError by remember { mutableStateOf(false) }
 
     val categoriesList = remember(availableCategories) {
         val dbCategories = availableCategories.map { it.title.ifBlank { it.category } }
-        if (dbCategories.isEmpty()) listOf("General", "Work", "Personal", "UVV", "Ideas") else dbCategories
+        if (dbCategories.isEmpty()) listOf("UVV", "Health") else dbCategories
     }
 
     AlertDialog(

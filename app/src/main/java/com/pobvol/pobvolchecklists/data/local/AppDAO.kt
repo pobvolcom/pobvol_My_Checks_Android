@@ -68,12 +68,15 @@ interface CategoryDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategory(category: CategoryEntity): Long
 
+    @Delete
+    suspend fun deleteCategory(category: CategoryEntity)
+
 }
 
 @Dao
 interface ChecklistDAO {
 
-    @Query("SELECT * FROM checklists ORDER BY timestamp DESC")
+    @Query("SELECT * FROM checklists ORDER BY title ASC")
     fun getAllChecklists(): Flow<List<ChecklistEntity>>
 
     @Query("SELECT * FROM checklists WHERE id = :id")
@@ -93,13 +96,13 @@ interface ChecklistDAO {
 @Dao
 interface ChecklistQuestionDAO {
 
-    @Query("SELECT * FROM checklist_questions ORDER BY timestamp DESC")
+    @Query("SELECT * FROM checklist_questions ORDER BY sortno ASC, id ASC")
     fun getAllChecklistQuestions(): Flow<List<ChecklistQuestionEntity>>
 
     @Query("SELECT * FROM checklist_questions WHERE id = :id")
     suspend fun getChecklistQuestionById(id: Int): ChecklistQuestionEntity?
 
-    @Query("SELECT * FROM checklist_questions WHERE checklistid = :checklistid ORDER BY timestamp DESC")
+    @Query("SELECT * FROM checklist_questions WHERE checklistid = :checklistid ORDER BY sortno ASC, id ASC")
     fun getChecklistQuestionsByChecklistId(checklistid: Int): Flow<List<ChecklistQuestionEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -1,5 +1,10 @@
 package com.pobvol.pobvolchecklists
 
+import android.app.PendingIntent
+import android.content.Intent
+import android.nfc.NfcAdapter
+import android.nfc.Tag
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,14 +28,27 @@ import com.pobvol.pobvolchecklists.ui.ChecklistViewModel
 import com.pobvol.pobvolchecklists.ui.screens.ChecklistListScreen
 import com.pobvol.pobvolchecklists.ui.screens.ChecklistQuestionsScreen
 import com.pobvol.pobvolchecklists.ui.screens.FillChecklistScreen
+import com.pobvol.pobvolchecklists.ui.screens.StartScreen
 import com.pobvol.pobvolchecklists.ui.screens.SubmissionDetailScreen
 import com.pobvol.pobvolchecklists.ui.screens.SubmissionsOverviewScreen
 import com.pobvol.pobvolchecklists.ui.theme.pobvolchecklistsTheme
 
 class MainActivity : ComponentActivity() {
+
+    private var nfcAdapter: NfcAdapter? = null
+    private var pendingIntent: PendingIntent? = null
+    private var viewModelRef: ChecklistViewModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        pendingIntent = PendingIntent.getActivity(
+            this, 0,
+            Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         val database = AppDatabase.getDatabase(applicationContext)
         val repository = ChecklistRepositoryImpl(database.checklistDao())
@@ -53,6 +71,7 @@ class MainActivity : ComponentActivity() {
                     answerRepository = answerRepository,
                 ),
             )
+            viewModelRef = viewModel
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
             val darkTheme = when (uiState.userSettings.themeMode) {
@@ -80,6 +99,8 @@ class MainActivity : ComponentActivity() {
                 } else if (uiState.isSubmissionsOverviewVisible) {
                     SubmissionsOverviewScreen(
                         uiState = uiState,
+                        onSearchQueryChange = viewModel::onSearchQueryChange,
+                        onStatusFilterChange = viewModel::onSubmissionStatusFilterChange,
                         onBackClick = viewModel::closeSubmissionsOverview,
                         onEditSubmissionClick = viewModel::openEditSubmission,
                         onDeleteSubmissionClick = viewModel::requestDeleteSubmission,
@@ -93,7 +114,15 @@ class MainActivity : ComponentActivity() {
                         checklist = selectedChecklistToAnswer,
                         uiState = uiState,
                         onBackClick = viewModel::closeFillChecklist,
-                        onSubmit = viewModel::submitChecklistAnswers,
+                        onSubmit = { checklistId, inspector, notes, date, answers ->
+                            viewModel.submitChecklistAnswers(
+                                checklistId = checklistId,
+                                inspector = inspector,
+                                notes = notes,
+                                date = date,
+                                answers = answers,
+                            )
+                        },
                         onUserMessageShown = viewModel::userMessageShown,
                         modifier = Modifier.fillMaxSize(),
                     )
@@ -105,6 +134,8 @@ class MainActivity : ComponentActivity() {
                         onAddQuestionClick = viewModel::openAddQuestionDialog,
                         onEditQuestionClick = viewModel::openEditQuestionDialog,
                         onDeleteQuestionClick = viewModel::requestDeleteQuestionConfirmation,
+                        onMoveQuestionUp = viewModel::moveQuestionUp,
+                        onMoveQuestionDown = viewModel::moveQuestionDown,
                         onDismissAddEditQuestionDialog = viewModel::dismissAddEditQuestionDialog,
                         onSaveQuestion = viewModel::saveQuestion,
                         onDismissDeleteQuestionDialog = viewModel::dismissDeleteQuestionConfirmation,
@@ -112,7 +143,7 @@ class MainActivity : ComponentActivity() {
                         onUserMessageShown = viewModel::userMessageShown,
                         modifier = Modifier.fillMaxSize(),
                     )
-                } else {
+                } else if (uiState.isChecklistListVisible) {
                     ChecklistListScreen(
                         uiState = uiState,
                         onSearchQueryChange = viewModel::onSearchQueryChange,
@@ -127,15 +158,66 @@ class MainActivity : ComponentActivity() {
                         onDismissDeleteDialog = viewModel::dismissDeleteConfirmation,
                         onConfirmDelete = viewModel::confirmDelete,
                         onUserMessageShown = viewModel::userMessageShown,
-                        onOpenSubmissionsOverviewClick = viewModel::openSubmissionsOverview,
+                        onBackClick = viewModel::closeChecklistsScreen,
+                        /*onOpenSubmissionsOverviewClick = viewModel::openSubmissionsOverview,*/
+                        /*onOpenSettingsClick = viewModel::openSettingsDialog,*/
+                        onDismissSettingsDialog = viewModel::dismissSettingsDialog,
+                        onThemeModeSelected = viewModel::updateThemeMode,
+                        onLanguageSelected = viewModel::updatePreferredLanguage,
+                        onUserNameChanged = viewModel::updateUserName,
+                        onAddCategory = viewModel::addCategory,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                } else {
+                    StartScreen(
+                        uiState = uiState,
+                        onOpenChecklistsClick = viewModel::openChecklistsScreen,
+                        onOpenSubmissionsClick = viewModel::openSubmissionsOverview,
                         onOpenSettingsClick = viewModel::openSettingsDialog,
                         onDismissSettingsDialog = viewModel::dismissSettingsDialog,
                         onThemeModeSelected = viewModel::updateThemeMode,
                         onLanguageSelected = viewModel::updatePreferredLanguage,
                         onUserNameChanged = viewModel::updateUserName,
+                        onAddCategory = viewModel::addCategory,
+                        onDeleteCategory = viewModel::deleteCategory,
+                        onUserMessageShown = viewModel::userMessageShown,
                         modifier = Modifier.fillMaxSize(),
                     )
                 }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        nfcAdapter?.enableForegroundDispatch(this, pendingIntent, null, null)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        nfcAdapter?.disableForegroundDispatch(this)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleNfcIntent(intent)
+    }
+
+    private fun handleNfcIntent(intent: Intent) {
+        val action = intent.action
+        if (NfcAdapter.ACTION_TAG_DISCOVERED == action ||
+            NfcAdapter.ACTION_TECH_DISCOVERED == action ||
+            NfcAdapter.ACTION_NDEF_DISCOVERED == action) {
+            val tag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, Tag::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
+            }
+            val tagIdBytes = tag?.id
+            if (tagIdBytes != null) {
+                val tagIdHex = tagIdBytes.joinToString(":") { "%02X".format(it) }
+                viewModelRef?.onNfcTagScanned(tagIdHex)
             }
         }
     }

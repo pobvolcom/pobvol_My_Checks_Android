@@ -12,13 +12,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpCenter
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.AssistChip
@@ -34,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -62,8 +65,10 @@ fun ChecklistQuestionsScreen(
     onAddQuestionClick: () -> Unit,
     onEditQuestionClick: (ChecklistQuestionEntity) -> Unit,
     onDeleteQuestionClick: (ChecklistQuestionEntity) -> Unit,
+    onMoveQuestionUp: (ChecklistQuestionEntity) -> Unit = {},
+    onMoveQuestionDown: (ChecklistQuestionEntity) -> Unit = {},
     onDismissAddEditQuestionDialog: () -> Unit,
-    onSaveQuestion: (title: String, description: String, type: String, options: String, required: Boolean) -> Unit,
+    onSaveQuestion: (title: String, description: String, type: String, options: String, required: Boolean, sortno: Int) -> Unit,
     onDismissDeleteQuestionDialog: () -> Unit,
     onConfirmDeleteQuestion: () -> Unit,
     onUserMessageShown: () -> Unit,
@@ -91,8 +96,8 @@ fun ChecklistQuestionsScreen(
                             overflow = TextOverflow.Ellipsis,
                         )
                         Text(
-                            text = "Manage Questions",
-                            style = MaterialTheme.typography.labelMedium,
+                            text = "Manage checklist questions",
+                            style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.outline,
                         )
                     }
@@ -168,12 +173,16 @@ fun ChecklistQuestionsScreen(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(
+                    itemsIndexed(
                         items = uiState.questionsForSelectedChecklist,
-                        key = { it.id },
-                    ) { question ->
+                        key = { _, question -> question.id },
+                    ) { index, question ->
                         QuestionItem(
                             question = question,
+                            isFirst = index == 0,
+                            isLast = index == uiState.questionsForSelectedChecklist.lastIndex,
+                            onMoveUpClick = { onMoveQuestionUp(question) },
+                            onMoveDownClick = { onMoveQuestionDown(question) },
                             onEditClick = { onEditQuestionClick(question) },
                             onDeleteClick = { onDeleteQuestionClick(question) },
                         )
@@ -203,6 +212,10 @@ fun ChecklistQuestionsScreen(
 @Composable
 fun QuestionItem(
     question: ChecklistQuestionEntity,
+    isFirst: Boolean,
+    isLast: Boolean,
+    onMoveUpClick: () -> Unit,
+    onMoveDownClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -275,22 +288,63 @@ fun QuestionItem(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                IconButton(onClick = onEditClick) {
-                    Icon(
-                        imageVector = Icons.Rounded.Edit,
-                        contentDescription = "Edit question",
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                ) {
+                    IconButton(
+                        onClick = onMoveUpClick,
+                        enabled = !isFirst,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowUpward,
+                            contentDescription = "Move question up",
+                            tint = if (!isFirst) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.38f),
+                        )
+                    }
+                    IconButton(
+                        onClick = onMoveDownClick,
+                        enabled = !isLast,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowDownward,
+                            contentDescription = "Move question down",
+                            tint = if (!isLast) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.38f),
+                        )
+                    }
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    ) {
+                        Text(
+                            text = "#${question.sortno}",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        )
+                    }
                 }
-                IconButton(onClick = onDeleteClick) {
-                    Icon(
-                        imageVector = Icons.Rounded.Delete,
-                        contentDescription = "Delete question",
-                        tint = MaterialTheme.colorScheme.error,
-                    )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IconButton(onClick = onEditClick) {
+                        Icon(
+                            imageVector = Icons.Rounded.Edit,
+                            contentDescription = "Edit question",
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                    IconButton(onClick = onDeleteClick) {
+                        Icon(
+                            imageVector = Icons.Rounded.Delete,
+                            contentDescription = "Delete question",
+                            tint = MaterialTheme.colorScheme.error,
+                        )
+                    }
                 }
             }
         }
@@ -308,6 +362,7 @@ fun ChecklistQuestionsScreenPreview() {
                     ChecklistQuestionEntity(
                         id = 1,
                         checklistid = 1,
+                        sortno = 1,
                         title = "Are all guards in place?",
                         description = "Check machine covers.",
                         type = "checkbox",
@@ -317,6 +372,7 @@ fun ChecklistQuestionsScreenPreview() {
                     ChecklistQuestionEntity(
                         id = 2,
                         checklistid = 1,
+                        sortno = 2,
                         title = "Select shift",
                         description = null,
                         type = "combobox",
@@ -329,8 +385,10 @@ fun ChecklistQuestionsScreenPreview() {
             onAddQuestionClick = {},
             onEditQuestionClick = {},
             onDeleteQuestionClick = {},
+            onMoveQuestionUp = {},
+            onMoveQuestionDown = {},
             onDismissAddEditQuestionDialog = {},
-            onSaveQuestion = { _, _, _, _, _ -> },
+            onSaveQuestion = { _, _, _, _, _, _ -> },
             onDismissDeleteQuestionDialog = {},
             onConfirmDeleteQuestion = {},
             onUserMessageShown = {},
