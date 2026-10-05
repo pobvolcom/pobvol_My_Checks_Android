@@ -150,6 +150,9 @@ interface ChecklistAnswerDAO {
     @Query("SELECT * FROM checklist_answers WHERE submissionid = :submissionid")
     suspend fun getChecklistAnswersBySubmissionId(submissionid: Int): ChecklistAnswerEntity?
 
+    @Query("SELECT * FROM checklist_answers WHERE submissionid = :submissionid")
+    suspend fun getChecklistAnswersListBySubmissionId(submissionid: Int): List<ChecklistAnswerEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChecklistAnswer(answer: ChecklistAnswerEntity): Long
     @Update

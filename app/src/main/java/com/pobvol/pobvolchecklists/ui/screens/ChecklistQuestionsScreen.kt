@@ -17,10 +17,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.HelpCenter
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.HelpCenter
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
@@ -142,7 +142,7 @@ fun ChecklistQuestionsScreen(
                         verticalArrangement = Arrangement.Center,
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.HelpCenter,
+                            imageVector = Icons.AutoMirrored.Rounded.HelpCenter,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
                             modifier = Modifier.size(80.dp),
@@ -231,27 +231,26 @@ fun QuestionItem(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f),
                 )
-
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    AssistChip(
-                        onClick = {},
-                        label = { Text(question.type) },
-                        colors = AssistChipDefaults.assistChipColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        ),
-                        shape = RoundedCornerShape(12.dp),
-                    )
-                    AssistChip(
-                        onClick = {},
-                        label = { Text(if (question.required) "Required" else "Optional") },
-                        colors = AssistChipDefaults.assistChipColors(
-                            containerColor = if (question.required) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.tertiaryContainer,
-                            labelColor = if (question.required) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onTertiaryContainer,
-                        ),
-                        shape = RoundedCornerShape(12.dp),
-                    )
-                }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                AssistChip(
+                    onClick = {},
+                    label = { Text(question.type) },
+                    colors = AssistChipDefaults.assistChipColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                )
+                AssistChip(
+                    onClick = {},
+                    label = { Text(if (question.required) "Required" else "Optional") },
+                    colors = AssistChipDefaults.assistChipColors(
+                        containerColor = if (question.required) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.tertiaryContainer,
+                        labelColor = if (question.required) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onTertiaryContainer,
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                )
             }
 
             if (!question.description.isNullOrBlank()) {

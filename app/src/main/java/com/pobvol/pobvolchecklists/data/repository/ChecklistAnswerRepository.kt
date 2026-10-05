@@ -8,6 +8,7 @@ interface ChecklistAnswerRepository {
     suspend fun getChecklistAnswerById(id: Int): ChecklistAnswerEntity?
     suspend fun getChecklistAnswerByQuestionId(questionid: Int): ChecklistAnswerEntity?
     suspend fun getChecklistAnswersBySubmissionId(submissionid: Int): ChecklistAnswerEntity?
+    suspend fun getChecklistAnswersListBySubmissionId(submissionid: Int): List<ChecklistAnswerEntity>
     suspend fun insertChecklistAnswer(answer: ChecklistAnswerEntity): Long
     suspend fun updateChecklistAnswer(answer: ChecklistAnswerEntity)
     suspend fun deleteChecklistAnswer(answer: ChecklistAnswerEntity)

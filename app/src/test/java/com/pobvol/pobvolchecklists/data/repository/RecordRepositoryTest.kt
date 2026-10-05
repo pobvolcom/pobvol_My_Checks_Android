@@ -1,6 +1,6 @@
 package com.pobvol.pobvolchecklists.data.repository
 
-import com.pobvol.pobvolchecklists.data.local.RecordDao
+import com.pobvol.pobvolchecklists.data.local.RecordDAO
 import com.pobvol.pobvolchecklists.data.local.RecordEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,7 +67,7 @@ class RecordRepositoryTest {
         assertNull(fetched)
     }
 
-    private class FakeRecordDao : RecordDao {
+    private class FakeRecordDao : RecordDAO {
         private val recordsMap = mutableMapOf<Int, RecordEntity>()
         private val recordsFlow = MutableStateFlow<List<RecordEntity>>(emptyList())
 

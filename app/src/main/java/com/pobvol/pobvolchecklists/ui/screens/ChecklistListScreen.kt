@@ -21,12 +21,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.FactCheck
 import androidx.compose.material.icons.automirrored.rounded.NoteAdd
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.SearchOff
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -55,10 +57,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pobvol.pobvolchecklists.data.local.ChecklistEntity
+import com.pobvol.pobvolchecklists.data.repository.ThemeMode
 import com.pobvol.pobvolchecklists.ui.ChecklistUiState
 import com.pobvol.pobvolchecklists.ui.components.AddEditChecklistDialog
-import com.pobvol.pobvolchecklists.ui.components.DeleteChecklistConfirmationDialog
 import com.pobvol.pobvolchecklists.ui.components.ChecklistItem
+import com.pobvol.pobvolchecklists.ui.components.DeleteChecklistConfirmationDialog
+import com.pobvol.pobvolchecklists.ui.components.SettingsDialog
 import com.pobvol.pobvolchecklists.ui.theme.pobvolchecklistsTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,6 +72,7 @@ fun ChecklistListScreen(
     onSearchQueryChange: (String) -> Unit,
     onCategoryFilterChange: (String?) -> Unit,
     onAddClick: () -> Unit,
+    onSelectChecklist: (ChecklistEntity) -> Unit = {},
     onQuestionsClick: (ChecklistEntity) -> Unit,
     onEditClick: (ChecklistEntity) -> Unit,
     onDeleteClick: (ChecklistEntity) -> Unit,
@@ -76,14 +81,25 @@ fun ChecklistListScreen(
     onDismissDeleteDialog: () -> Unit,
     onConfirmDelete: () -> Unit,
     onUserMessageShown: () -> Unit,
+    onOpenSubmissionsOverviewClick: () -> Unit = {},
+    onOpenSettingsClick: () -> Unit = {},
+    onDismissSettingsDialog: () -> Unit = {},
+    onThemeModeSelected: (ThemeMode) -> Unit = {},
+    onLanguageSelected: (String) -> Unit = {},
+    onUserNameChanged: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var isSearchActive by remember { mutableStateOf(false) }
 
-    val categories = listOf(
-        "All", "UVV", "Health"
-    )
+    val categories = remember(uiState.categories) {
+        val dbCategoryTitles = uiState.categories.map { it.title.ifBlank { it.category } }
+        if (dbCategoryTitles.isEmpty()) {
+            listOf("All", "UVV", "Health")
+        } else {
+            listOf("All") + dbCategoryTitles
+        }
+    }
 
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let { message ->
@@ -107,7 +123,11 @@ fun ChecklistListScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "Checklists",
+                            text = if (uiState.userSettings.userName.isNotBlank()) {
+                                "Checklists (${uiState.userSettings.userName})"
+                            } else {
+                                "Checklists"
+                            },
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -124,6 +144,18 @@ fun ChecklistListScreen(
                         Icon(
                             imageVector = if (isSearchActive) Icons.Rounded.Close else Icons.Rounded.Search,
                             contentDescription = if (isSearchActive) "Close search" else "Search checklists"
+                        )
+                    }
+                    IconButton(onClick = onOpenSubmissionsOverviewClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.FactCheck,
+                            contentDescription = "Submissions Overview"
+                        )
+                    }
+                    IconButton(onClick = onOpenSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Rounded.Settings,
+                            contentDescription = "Settings"
                         )
                     }
                 },
@@ -238,6 +270,7 @@ fun ChecklistListScreen(
                     ) { checklist ->
                         ChecklistItem(
                             checklist = checklist,
+                            onSelectChecklist = onSelectChecklist,
                             onQuestionsClick = onQuestionsClick,
                             onEditClick = onEditClick,
                             onDeleteClick = onDeleteClick
@@ -250,6 +283,7 @@ fun ChecklistListScreen(
         if (uiState.isAddEditDialogVisible) {
             AddEditChecklistDialog(
                 checklistToEdit = uiState.checklistToEdit,
+                availableCategories = uiState.categories,
                 onDismiss = onDismissAddEditDialog,
                 onSave = onSaveChecklist
             )
@@ -260,6 +294,17 @@ fun ChecklistListScreen(
                 checklist = uiState.checklistToDelete,
                 onDismiss = onDismissDeleteDialog,
                 onConfirmDelete = onConfirmDelete
+            )
+        }
+
+        if (uiState.isSettingsDialogVisible) {
+            SettingsDialog(
+                userSettings = uiState.userSettings,
+                languages = uiState.availableLanguages,
+                onThemeModeSelected = onThemeModeSelected,
+                onLanguageSelected = onLanguageSelected,
+                onUserNameChanged = onUserNameChanged,
+                onDismissRequest = onDismissSettingsDialog,
             )
         }
     }

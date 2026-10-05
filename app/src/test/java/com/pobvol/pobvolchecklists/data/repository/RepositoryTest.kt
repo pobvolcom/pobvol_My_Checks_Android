@@ -1,8 +1,8 @@
 package com.pobvol.pobvolchecklists.data.repository
 
-import com.pobvol.pobvolchecklists.data.local.RecordDao
-import com.pobvol.pobvolchecklists.data.local.ChecklistDao
-import com.pobvol.pobvolchecklists.data.local.LanguageDao
+import com.pobvol.pobvolchecklists.data.local.RecordDAO
+import com.pobvol.pobvolchecklists.data.local.ChecklistDAO
+import com.pobvol.pobvolchecklists.data.local.LanguageDAO
 import com.pobvol.pobvolchecklists.data.local.RecordEntity
 import com.pobvol.pobvolchecklists.data.local.ChecklistEntity
 import com.pobvol.pobvolchecklists.data.local.LanguageEntity
@@ -141,7 +141,7 @@ class RepositoryTest {
         assertNull(fetched)
     }
 
-    private class FakeRecordDao : RecordDao {
+    private class FakeRecordDao : RecordDAO {
         private val recordsMap = mutableMapOf<Int, RecordEntity>()
         private val recordsFlow = MutableStateFlow<List<RecordEntity>>(emptyList())
 
@@ -174,7 +174,7 @@ class RepositoryTest {
         }
     }
 
-    private class FakeLanguageDao : LanguageDao {
+    private class FakeLanguageDao : LanguageDAO {
         private val languagesMap = mutableMapOf<String, LanguageEntity>()
         private val languagesFlow = MutableStateFlow<List<LanguageEntity>>(emptyList())
 
@@ -193,7 +193,7 @@ class RepositoryTest {
 
     }
 
-    private class FakeChecklistDao : ChecklistDao {
+    private class FakeChecklistDao : ChecklistDAO {
         private val checklistsMap = mutableMapOf<Int, ChecklistEntity>()
         private val checklistsFlow = MutableStateFlow<List<ChecklistEntity>>(emptyList())
 

@@ -1,5 +1,6 @@
 package com.pobvol.pobvolchecklists.ui.components
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,12 +27,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.pobvol.pobvolchecklists.data.local.CategoryEntity
 import com.pobvol.pobvolchecklists.data.local.ChecklistEntity
 import com.pobvol.pobvolchecklists.ui.theme.pobvolchecklistsTheme
 
 @Composable
 fun AddEditChecklistDialog(
     checklistToEdit: ChecklistEntity?,
+    availableCategories: List<CategoryEntity> = emptyList(),
     onDismiss: () -> Unit,
     onSave: (title: String, language: String, description: String, category: String, icon: String) -> Unit
 ) {
@@ -42,8 +45,10 @@ fun AddEditChecklistDialog(
     var icon by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.icon ?: "") }
     var isTitleError by remember { mutableStateOf(false) }
 
-    val predefinedCategories = listOf("General", "Work", "Personal", "UVV", "Ideas")
-    val predefinedLanguages = listOf("English", "Deutsch")
+    val categoriesList = remember(availableCategories) {
+        val dbCategories = availableCategories.map { it.title.ifBlank { it.category } }
+        if (dbCategories.isEmpty()) listOf("General", "Work", "Personal", "UVV", "Ideas") else dbCategories
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -88,23 +93,12 @@ fun AddEditChecklistDialog(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    predefinedCategories.take(3).forEach { cat ->
-                        FilterChip(
-                            selected = category.equals(cat, ignoreCase = true),
-                            onClick = { category = cat },
-                            label = { Text(cat, style = MaterialTheme.typography.labelSmall) }
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    predefinedCategories.drop(3).forEach { cat ->
+                    categoriesList.forEach { cat ->
                         FilterChip(
                             selected = category.equals(cat, ignoreCase = true),
                             onClick = { category = cat },

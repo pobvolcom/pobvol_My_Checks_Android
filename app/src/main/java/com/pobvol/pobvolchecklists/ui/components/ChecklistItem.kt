@@ -1,5 +1,6 @@
 package com.pobvol.pobvolchecklists.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Assignment
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.QuestionAnswer
@@ -38,13 +40,16 @@ import java.util.Locale
 @Composable
 fun ChecklistItem(
     checklist: ChecklistEntity,
+    onSelectChecklist: (ChecklistEntity) -> Unit = {},
     onQuestionsClick: (ChecklistEntity) -> Unit,
     onEditClick: (ChecklistEntity) -> Unit,
     onDeleteClick: (ChecklistEntity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onSelectChecklist(checklist) },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -123,6 +128,14 @@ fun ChecklistItem(
                 }
 
                 Row {
+                    IconButton(onClick = { onSelectChecklist(checklist) }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Assignment,
+                            contentDescription = "Fill out checklist",
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+
                     IconButton(onClick = { onQuestionsClick(checklist) }) {
                         Icon(
                             imageVector = Icons.Rounded.QuestionAnswer,
@@ -135,7 +148,7 @@ fun ChecklistItem(
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = "Edit checklist",
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = MaterialTheme.colorScheme.outline,
                         )
                     }
 
@@ -171,6 +184,7 @@ fun ChecklistItemPreview() {
                 icon = "Null",
                 timestamp = System.currentTimeMillis(),
             ),
+            onSelectChecklist = {},
             onQuestionsClick = {},
             onEditClick = {},
             onDeleteClick = {},
