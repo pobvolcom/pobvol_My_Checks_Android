@@ -44,11 +44,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        pendingIntent = PendingIntent.getActivity(
-            this, 0,
-            Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
-            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
+        if (nfcAdapter != null) {
+            val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+            pendingIntent = PendingIntent.getActivity(
+                this, 0,
+                Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                flags
+            )
+        }
 
         val database = AppDatabase.getDatabase(applicationContext)
         val repository = ChecklistRepositoryImpl(database.checklistDao())
@@ -101,6 +108,7 @@ class MainActivity : ComponentActivity() {
                         uiState = uiState,
                         onSearchQueryChange = viewModel::onSearchQueryChange,
                         onStatusFilterChange = viewModel::onSubmissionStatusFilterChange,
+                        onClearChecklistFilter = viewModel::clearChecklistSubmissionsFilter,
                         onBackClick = viewModel::closeSubmissionsOverview,
                         onEditSubmissionClick = viewModel::openEditSubmission,
                         onDeleteSubmissionClick = viewModel::requestDeleteSubmission,
@@ -149,7 +157,8 @@ class MainActivity : ComponentActivity() {
                         onSearchQueryChange = viewModel::onSearchQueryChange,
                         onCategoryFilterChange = viewModel::onCategoryFilterChange,
                         onAddClick = viewModel::openAddDialog,
-                        onSelectChecklist = viewModel::openFillChecklist,
+                        onSelectChecklist = viewModel::openSubmissionsForChecklist,
+                        onFillClick = viewModel::openFillChecklist,
                         onQuestionsClick = viewModel::openQuestionsForChecklist,
                         onEditClick = viewModel::openEditDialog,
                         onDeleteClick = viewModel::requestDeleteConfirmation,
@@ -190,12 +199,24 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        nfcAdapter?.enableForegroundDispatch(this, pendingIntent, null, null)
+        if (nfcAdapter != null && pendingIntent != null) {
+            try {
+                nfcAdapter?.enableForegroundDispatch(this, pendingIntent, null, null)
+            } catch (_: Exception) {
+                // Ignore
+            }
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        nfcAdapter?.disableForegroundDispatch(this)
+        if (nfcAdapter != null) {
+            try {
+                nfcAdapter?.disableForegroundDispatch(this)
+            } catch (_: Exception) {
+                // Ignore
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

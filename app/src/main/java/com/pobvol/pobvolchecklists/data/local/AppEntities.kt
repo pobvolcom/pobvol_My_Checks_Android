@@ -89,6 +89,9 @@ data class ChecklistEntity(
             childColumns = ["checklistid"],
             onDelete = ForeignKey.CASCADE
         )
+    ],
+    indices = [
+        Index(value = ["checklistid"])
     ]
 )
 data class ChecklistQuestionEntity(
@@ -105,7 +108,20 @@ data class ChecklistQuestionEntity(
 )
 
 /* table: checklist_submissions */
-@Entity(tableName = "checklist_submissions")
+@Entity(
+    tableName = "checklist_submissions",
+    foreignKeys = [
+        ForeignKey(
+            entity = ChecklistEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["checklistid"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index(value = ["checklistid"])
+    ]
+)
 data class ChecklistSubmissionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -118,7 +134,27 @@ data class ChecklistSubmissionEntity(
 )
 
 /* table: checklist_answers */
-@Entity(tableName = "checklist_answers")
+@Entity(
+    tableName = "checklist_answers",
+    foreignKeys = [
+        ForeignKey(
+            entity = ChecklistSubmissionEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["submissionid"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = ChecklistQuestionEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["questionid"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index(value = ["submissionid"]),
+        Index(value = ["questionid"])
+    ]
+)
 data class ChecklistAnswerEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,

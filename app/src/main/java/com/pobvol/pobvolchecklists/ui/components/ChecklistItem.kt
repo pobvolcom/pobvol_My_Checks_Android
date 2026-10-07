@@ -41,6 +41,7 @@ import java.util.Locale
 fun ChecklistItem(
     checklist: ChecklistEntity,
     onSelectChecklist: (ChecklistEntity) -> Unit = {},
+    onFillClick: (ChecklistEntity) -> Unit = {},
     onQuestionsClick: (ChecklistEntity) -> Unit,
     onEditClick: (ChecklistEntity) -> Unit,
     onDeleteClick: (ChecklistEntity) -> Unit,
@@ -52,7 +53,8 @@ fun ChecklistItem(
             .clickable { onSelectChecklist(checklist) },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
@@ -70,7 +72,7 @@ fun ChecklistItem(
                     text = checklist.title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
@@ -85,8 +87,8 @@ fun ChecklistItem(
                         )
                     },
                     colors = AssistChipDefaults.assistChipColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f),
+                        labelColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     ),
                     shape = RoundedCornerShape(12.dp),
                 )
@@ -97,7 +99,7 @@ fun ChecklistItem(
                 Text(
                     text = checklist.description,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -117,22 +119,22 @@ fun ChecklistItem(
                     Icon(
                         imageVector = Icons.Rounded.Schedule,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.outline,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                         modifier = Modifier.size(16.dp),
                     )
                     Text(
                         text = formatTimestamp(checklist.timestamp),
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.outline,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                     )
                 }
 
                 Row {
-                    IconButton(onClick = { onSelectChecklist(checklist) }) {
+                    IconButton(onClick = { onFillClick(checklist) }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.Assignment,
                             contentDescription = "Fill out checklist",
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
                     }
 
@@ -140,7 +142,7 @@ fun ChecklistItem(
                         Icon(
                             imageVector = Icons.Rounded.QuestionAnswer,
                             contentDescription = "Manage questions",
-                            tint = MaterialTheme.colorScheme.secondary,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
                     }
 
@@ -148,7 +150,7 @@ fun ChecklistItem(
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = "Edit checklist",
-                            tint = MaterialTheme.colorScheme.outline,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                         )
                     }
 

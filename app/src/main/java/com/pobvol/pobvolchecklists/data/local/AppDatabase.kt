@@ -18,7 +18,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         ChecklistSubmissionEntity::class,
         ChecklistAnswerEntity::class,
     ],
-    version = 10,
+    version = 11,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -80,6 +80,54 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_checklist_questions_checklistid` ON `checklist_questions` (`checklistid`)")
+
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `checklist_submissions_new` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `checklistid` INTEGER NOT NULL,
+                        `status` TEXT NOT NULL,
+                        `inspector` TEXT,
+                        `notes` TEXT,
+                        `date` TEXT NOT NULL,
+                        `timestamp` INTEGER NOT NULL,
+                        FOREIGN KEY(`checklistid`) REFERENCES `checklists`(`id`) ON DELETE CASCADE
+                    )
+                """)
+                db.execSQL("""
+                    INSERT INTO `checklist_submissions_new` (`id`, `checklistid`, `status`, `inspector`, `notes`, `date`, `timestamp`)
+                    SELECT `id`, `checklistid`, `status`, `inspector`, `notes`, `date`, `timestamp`
+                    FROM `checklist_submissions`
+                """)
+                db.execSQL("DROP TABLE `checklist_submissions`")
+                db.execSQL("ALTER TABLE `checklist_submissions_new` RENAME TO `checklist_submissions`")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_checklist_submissions_checklistid` ON `checklist_submissions` (`checklistid`)")
+
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `checklist_answers_new` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `submissionid` INTEGER NOT NULL,
+                        `questionid` INTEGER NOT NULL,
+                        `value` TEXT NOT NULL,
+                        `timestamp` INTEGER NOT NULL,
+                        FOREIGN KEY(`submissionid`) REFERENCES `checklist_submissions`(`id`) ON DELETE CASCADE,
+                        FOREIGN KEY(`questionid`) REFERENCES `checklist_questions`(`id`) ON DELETE CASCADE
+                    )
+                """)
+                db.execSQL("""
+                    INSERT INTO `checklist_answers_new` (`id`, `submissionid`, `questionid`, `value`, `timestamp`)
+                    SELECT `id`, `submissionid`, `questionid`, `value`, `timestamp`
+                    FROM `checklist_answers`
+                """)
+                db.execSQL("DROP TABLE `checklist_answers`")
+                db.execSQL("ALTER TABLE `checklist_answers_new` RENAME TO `checklist_answers`")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_checklist_answers_submissionid` ON `checklist_answers` (`submissionid`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_checklist_answers_questionid` ON `checklist_answers` (`questionid`)")
+            }
+        }
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -87,7 +135,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "database.sqlite3",
                 )
-                    .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
+                    .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11)
                     .fallbackToDestructiveMigration(true)
                     .addCallback(
                         object : Callback() {

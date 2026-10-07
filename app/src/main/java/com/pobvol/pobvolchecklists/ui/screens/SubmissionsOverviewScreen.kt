@@ -70,6 +70,7 @@ fun SubmissionsOverviewScreen(
     uiState: ChecklistUiState,
     onSearchQueryChange: (String) -> Unit,
     onStatusFilterChange: (String?) -> Unit = {},
+    onClearChecklistFilter: () -> Unit = {},
     onBackClick: () -> Unit,
     onEditSubmissionClick: (ChecklistSubmissionEntity) -> Unit,
     onDeleteSubmissionClick: (ChecklistSubmissionEntity) -> Unit,
@@ -107,19 +108,21 @@ fun SubmissionsOverviewScreen(
             CenterAlignedTopAppBar(
 
                 title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Storage,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
+                            /*text = uiState.selectedChecklistForSubmissions?.title ?: "Submissions Overview",*/
                             text = "Submissions Overview",
                             fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                         )
+                        if (uiState.selectedChecklistForSubmissions != null) {
+                            Text(
+                                text = "Filtered by selected checklist",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.outline,
+                            )
+                        }
                     }
                 },
                 navigationIcon = {
@@ -190,6 +193,28 @@ fun SubmissionsOverviewScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                 )
+            }
+
+            if (uiState.selectedChecklistForSubmissions != null) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    AssistChip(
+                        onClick = onClearChecklistFilter,
+                        label = { Text("Filter: ${uiState.selectedChecklistForSubmissions.title}") },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Close,
+                                contentDescription = "Clear checklist filter",
+                                modifier = Modifier.size(16.dp),
+                            )
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                    )
+                }
             }
 
             val statuses = listOf("All", "COMPLETED", "IN_PROGRESS", "PENDING")
@@ -300,7 +325,8 @@ fun SubmissionItem(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
@@ -313,24 +339,23 @@ fun SubmissionItem(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-
-                ) {
+            ) {
                 Text(
                     text = checklistTitle,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
-                    )
+                )
 
                 AssistChip(
                     onClick = onEditClick,
                     label = { Text(submission.status) },
                     colors = AssistChipDefaults.assistChipColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        labelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        containerColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.15f),
+                        labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     ),
                     shape = RoundedCornerShape(12.dp),
                 )
@@ -342,7 +367,7 @@ fun SubmissionItem(
                 text = "Inspector: ${submission.inspector ?: "Anonymous"}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f),
             )
 
             if (!submission.notes.isNullOrBlank()) {
@@ -350,7 +375,7 @@ fun SubmissionItem(
                 Text(
                     text = "Notes: ${submission.notes}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.75f),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -361,7 +386,7 @@ fun SubmissionItem(
             Text(
                 text = "Check Date: ${submission.date}",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 fontWeight = FontWeight.Bold,
             )
 
@@ -379,13 +404,13 @@ fun SubmissionItem(
                     Icon(
                         imageVector = Icons.Rounded.Schedule,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.outline,
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
                         modifier = Modifier.size(16.dp),
                     )
                     Text(
                         text = formatSubmissionTimestamp(submission.timestamp),
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.outline,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
                     )
                 }
 
@@ -394,7 +419,7 @@ fun SubmissionItem(
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = "Edit submission",
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
                         )
                     }
 

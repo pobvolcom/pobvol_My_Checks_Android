@@ -79,6 +79,7 @@ fun ChecklistListScreen(
     onCategoryFilterChange: (String?) -> Unit,
     onAddClick: () -> Unit,
     onSelectChecklist: (ChecklistEntity) -> Unit = {},
+    onFillClick: (ChecklistEntity) -> Unit = {},
     onQuestionsClick: (ChecklistEntity) -> Unit,
     onEditClick: (ChecklistEntity) -> Unit,
     onDeleteClick: (ChecklistEntity) -> Unit,
@@ -358,6 +359,7 @@ fun ChecklistListScreen(
                         ChecklistItem(
                             checklist = checklist,
                             onSelectChecklist = onSelectChecklist,
+                            onFillClick = onFillClick,
                             onQuestionsClick = onQuestionsClick,
                             onEditClick = onEditClick,
                             onDeleteClick = onDeleteClick

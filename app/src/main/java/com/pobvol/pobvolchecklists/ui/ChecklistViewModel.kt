@@ -79,6 +79,9 @@ class ChecklistViewModel(
     private val _isSubmissionsOverviewVisible = MutableStateFlow(false)
     val isSubmissionsOverviewVisible: StateFlow<Boolean> = _isSubmissionsOverviewVisible.asStateFlow()
 
+    private val _selectedChecklistForSubmissions = MutableStateFlow<ChecklistEntity?>(null)
+    val selectedChecklistForSubmissions: StateFlow<ChecklistEntity?> = _selectedChecklistForSubmissions.asStateFlow()
+
     private val _selectedSubmissionToEdit = MutableStateFlow<ChecklistSubmissionEntity?>(null)
     val selectedSubmissionToEdit: StateFlow<ChecklistSubmissionEntity?> = _selectedSubmissionToEdit.asStateFlow()
 
@@ -219,8 +222,11 @@ class ChecklistViewModel(
             matchesQuery && matchesCategory
         }
 
+        val selectedChecklistSub = _selectedChecklistForSubmissions.value
         val checklistMap = checklists.associateBy { it.id }
         val filteredSubmissions = globalState.submissionState.submissions.filter { submission ->
+            val matchesChecklist = selectedChecklistSub == null || submission.checklistid == selectedChecklistSub.id
+
             val matchesSearch = query.isBlank() ||
                     submission.inspector?.contains(query, ignoreCase = true) == true ||
                     submission.notes?.contains(query, ignoreCase = true) == true ||
@@ -230,7 +236,7 @@ class ChecklistViewModel(
             val matchesStatus = selectedStatus == null || selectedStatus.equals("All", ignoreCase = true) ||
                     submission.status.equals(selectedStatus, ignoreCase = true)
 
-            matchesSearch && matchesStatus
+            matchesChecklist && matchesSearch && matchesStatus
         }
 
         ChecklistUiState(
@@ -259,6 +265,7 @@ class ChecklistViewModel(
             isChecklistListVisible = globalState.submissionState.isChecklistListVisible,
             selectedSubmissionStatus = selectedStatus,
             scannedNfcTag = _scannedNfcTag.value,
+            selectedChecklistForSubmissions = selectedChecklistSub,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -455,8 +462,18 @@ class ChecklistViewModel(
         _isSubmissionsOverviewVisible.value = true
     }
 
+    fun openSubmissionsForChecklist(checklist: ChecklistEntity) {
+        _selectedChecklistForSubmissions.value = checklist
+        _isSubmissionsOverviewVisible.value = true
+    }
+
+    fun clearChecklistSubmissionsFilter() {
+        _selectedChecklistForSubmissions.value = null
+    }
+
     fun closeSubmissionsOverview() {
         _isSubmissionsOverviewVisible.value = false
+        _selectedChecklistForSubmissions.value = null
     }
 
     fun openEditSubmission(submission: ChecklistSubmissionEntity) {
