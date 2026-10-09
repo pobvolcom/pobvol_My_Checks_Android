@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "pobvolchecklists"
+rootProject.name = "My Checks"
 include(":app")

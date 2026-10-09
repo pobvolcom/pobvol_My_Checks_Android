@@ -1,4 +1,4 @@
 <resources>
 
-    <style name="Theme.pobvolchecklists" parent="Theme.MaterialComponents.Light" />
+    <style name="Theme.mychecks" parent="Theme.MaterialComponents.Light" />
 </resources>

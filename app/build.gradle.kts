@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.pobvol.pobvolchecklists"
+    namespace = "com.pobvol.mychecks"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.pobvol.pobvolchecklists"
+        applicationId = "com.pobvol.mychecks"
         minSdk = 24
         targetSdk = 37
         versionCode = 1
@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
+    implementation(libs.mlkit.barcode.scanning)
     implementation(libs.androidx.compose.adaptive)
     implementation(libs.androidx.compose.adaptive.layout)
     implementation(libs.androidx.compose.adaptive.navigation3)
