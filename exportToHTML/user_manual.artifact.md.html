@@ -1,0 +1,168 @@
+<html>
+<head>
+<title>user_manual.artifact.md</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #ebebeb;}
+</style>
+</head>
+<body bgcolor="#131314">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+user_manual.artifact.md</font>
+</center></td></tr></table>
+<pre><span class="s0"># pobvol Open Checklists — User Manual 
+ 
+Welcome to **pobvol Open Checklists**, a modern, native Android application designed for managing safety, inspection, and operational checklists, recording check results, tracking submissions, and generating PDF reports. 
+ 
+--- 
+ 
+## Table of Contents 
+1. [Dashboard &amp; Navigation](#1-dashboard--navigation) 
+2. [Managing Checklists](#2-managing-checklists) 
+3. [Managing Questions &amp; Reordering](#3-managing-questions--reordering) 
+4. [Supported Answer Types (Text, Number, Checkbox, Combobox, NFC, QR Code)](#4-supported-answer-types) 
+5. [Filling Out a Checklist &amp; Submitting Answers](#5-filling-out-a-checklist--submitting-answers) 
+6. [Submissions Overview &amp; Filtering](#6-submissions-overview--filtering) 
+7. [Editing Submissions &amp; PDF Export](#7-editing-submissions--pdf-export) 
+8. [App Settings &amp; Category Management](#8-app-settings--category-management) 
+ 
+--- 
+ 
+## 1. Dashboard &amp; Navigation 
+ 
+When you open **pobvol Open Checklists**, you arrive at the **Dashboard (Start Screen)**. 
+ 
+&gt; [!NOTE] 
+&gt; The top app bar displays **pobvol Open Checklists** along with a **Settings** gear icon in the top right corner. 
+ 
+The Dashboard features two main card options: 
+- **Checklists**: View total stored checklists and tap to navigate to the **Checklists Overview**. 
+- **Submissions**: View recorded submissions count and tap to navigate to the **Submissions Overview**. 
+ 
+--- 
+ 
+## 2. Managing Checklists 
+ 
+Navigate to the **Checklists Overview** by tapping the **Checklists** card on the Dashboard or using the back navigation. 
+ 
+### Creating a Checklist 
+1. Tap the floating **`+`** button in the bottom-right corner. 
+2. Enter the **Title** (required), **Language**, **Description**, and **Category**. 
+3. Select an existing category or enter a custom category. 
+4. Tap **Add** to save the checklist to the database. 
+ 
+&gt; [!TIP] 
+&gt; Custom categories entered when creating or editing a checklist are automatically saved to the database categories table for future use. 
+ 
+### Searching &amp; Filtering Checklists 
+- **Search Bar**: Tap the search icon (🔍) in the top bar to search checklists by title, description, or category. 
+- **Category Filter Chips**: Filter the list by tapping any category chip at the top (`All`, `UVV`, `Health`, etc.). 
+- **Add Category Button**: Tap **`+ Category`** directly in the filter bar to add new categories dynamically. 
+ 
+### Checklist Card Actions 
+On each checklist card, you can tap: 
+- **Card Body / Card Title**: Opens the **Submissions Overview** listing only submissions assigned to that specific checklist. 
+- 📋 **Fill Icon**: Opens the form to fill out and record new checklist answers. 
+- 💬 **Questions Icon**: Opens the **Question Management Screen** to add, edit, or reorder questions. 
+- ✏️ **Edit Icon**: Edits the checklist title, category, description, and language. 
+- 🗑️ **Delete Icon**: Confirms deletion of the checklist. Deleting a checklist automatically deletes all associated questions and submissions via database cascade. 
+ 
+--- 
+ 
+## 3. Managing Questions &amp; Reordering 
+ 
+Tap the **Questions** (💬) icon on any checklist card to manage its questions. 
+ 
+### Adding &amp; Editing Questions 
+1. Tap the floating **`+`** button. 
+2. Enter the **Question Title** (required) and optional **Description**. 
+3. Choose an **Answer Type** from the dropdown (`text`, `number`, `checkbox`, `combobox`, `nfc`, `qr-code`). 
+4. For `combobox`, enter comma-separated options (e.g. `Morning, Evening, Night`). 
+5. Toggle whether the question is **Required** or **Optional**. 
+6. Optionally enter an explicit **Sort Order** number. 
+7. Tap **Save**. 
+ 
+### Changing Question Sort Order 
+- Use the **Up (↑)** and **Down (↓)** arrow buttons on each question card to reorder questions up or down. 
+- Each question card displays a sort badge (e.g., `#1`, `#2`) showing its exact position. 
+- Up/Down reordering automatically updates and saves the new `sortno` positions in the SQLite database. 
+ 
+--- 
+ 
+## 4. Supported Answer Types 
+ 
+| Answer Type | Description | Input / Interaction Method | 
+| :--- | :--- | :--- | 
+| **`text`** | Text Response | Multi-line text field for entering comments or descriptions. | 
+| **`number`** | Numeric Input | Single-line numeric input field. | 
+| **`checkbox`** | Yes / No Selection | Toggle checkbox (`Yes / Checked` or `No / Unchecked`). | 
+| **`combobox`** | Single Choice | Radio button selection from custom options. | 
+| **`nfc`** | NFC Scan | Tap physical NFC tags against the device to automatically read and populate NDEF text messages or Tag UIDs into a multi-line text field. | 
+| **`qr-code`** | QR Code Scan | Tap **Scan QR Code** to open the live camera scanner (CameraX + ML Kit) to scan QR codes or enter/simulate code content into a multi-line field. | 
+ 
+--- 
+ 
+## 5. Filling Out a Checklist &amp; Submitting Answers 
+ 
+To perform a check or inspection: 
+1. Tap the 📋 **Fill Icon** on a checklist card. 
+2. **Submission Details**: 
+   - **Inspector / User Name**: Auto-filled from settings or editable. 
+   - **Check Date**: Prefilled with today's date (`dd.MM.yyyy`) and fully editable. 
+   - **Notes**: Optional general notes or comments for the check. 
+3. **Answering Questions**: 
+   - Answer each question according to its type. 
+   - For **`nfc`** questions: Hold an NFC tag against the back of your device to scan, or tap **Scan NFC Tag**. 
+   - For **`qr-code`** questions: Tap **Scan QR Code** to open the camera scanner and capture the code. 
+4. Tap **Submit Checklist Answers**. Validation guarantees all required questions are answered before submitting. 
+ 
+--- 
+ 
+## 6. Submissions Overview &amp; Filtering 
+ 
+Access recorded checks from the Dashboard or by tapping a checklist card. 
+ 
+### Submissions Features 
+- **Checklist Filtering**: When opened from a specific checklist card, the Submissions Overview displays only submissions for that checklist (with a clearable `Filter: &lt;Title&gt;` chip). 
+- **Status Filter Chips**: Tap `All`, `COMPLETED`, `IN_PROGRESS`, or `PENDING` chips to filter by check status. 
+- **Search**: Search submissions by inspector, notes, date, or checklist title. 
+- **Submission Cards**: Displays Checklist Title, Status chip, Inspector, Notes, Check Date (`dd.MM.yyyy`), and recorded Timestamp. 
+ 
+--- 
+ 
+## 7. Editing Submissions &amp; PDF Export 
+ 
+Tap ✏️ **Edit** or 📄 **PDF Report** on any submission card. 
+ 
+### PDF Report Export 
+1. Tap **PDF Report** on a submission card or in the **Edit Submission** screen top bar / bottom action bar. 
+2. The app generates a formatted A4 PDF document containing: 
+   - Header with App Title and Document Title. 
+   - Inspection details (Checklist Title, Check Date, Inspector, Status, Notes). 
+   - Question &amp; Answer results table. 
+   - Generation date and timestamp footer. 
+3. Opens the PDF immediately in your Android device's PDF viewer or allows sharing. 
+ 
+--- 
+ 
+## 8. App Settings &amp; Category Management 
+ 
+Tap the ⚙️ **Settings** gear icon in the top app bar to access **General Settings**. 
+ 
+- **Preferred Screen Mode**: Choose between `System`, `Light`, or `Dark` theme modes. 
+- **Preferred Language**: Select default language. 
+- **User Name**: Set the default inspector name used when filling out checklists. 
+- **Manage Categories**: 
+  - View all stored database categories from the `categories` table. 
+  - Enter a name and tap **Add** to save a new category. 
+  - Tap the 🗑️ **Delete** icon next to any category to remove it from the database. 
+ 
+--- 
+ 
+&gt; [!IMPORTANT] 
+&gt; **Data Safety &amp; Backup**: All checklists, questions, submissions, and categories are securely stored in your local Android SQLite database with foreign key cascades and automatic schema migrations. 
+</span></pre>
+</body>
+</html>
