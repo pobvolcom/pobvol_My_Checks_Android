@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.pobvol.mychecks.R
@@ -38,6 +39,7 @@ import com.pobvol.mychecks.data.local.CategoryEntity
 import com.pobvol.mychecks.data.local.LanguageEntity
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.data.repository.UserSettings
+import com.pobvol.mychecks.ui.theme.mychecksTheme
 
 @Composable
 fun SettingsDialog(
@@ -57,8 +59,9 @@ fun SettingsDialog(
             modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface,
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         ) {
             Column(
                 modifier = Modifier
@@ -209,5 +212,31 @@ fun SettingsDialog(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsDialogPreview() {
+    mychecksTheme(darkTheme = true) {
+        SettingsDialog(
+            userSettings = UserSettings(
+                themeMode = ThemeMode.DARK,
+                preferredLanguage = "en",
+                userName = "John Doe",
+            ),
+            languages = listOf(
+                LanguageEntity("en", "English"),
+                LanguageEntity("de", "Deutsch"),
+            ),
+            categories = listOf(
+                CategoryEntity(1, "UVV", "UVV"),
+                CategoryEntity(2, "Health", "Health"),
+            ),
+            onThemeModeSelected = {},
+            onLanguageSelected = {},
+            onUserNameChanged = {},
+            onDismissRequest = {},
+        )
     }
 }

@@ -44,11 +44,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistEntity
 import com.pobvol.mychecks.data.local.ChecklistQuestionEntity
 import com.pobvol.mychecks.ui.ChecklistUiState
@@ -90,14 +92,13 @@ fun ChecklistQuestionsScreen(
                 title = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Checklist questions",
+                            text = stringResource(R.string.checklist_questions_title),
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
                             text = checklist.title,
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.labelLarge,
-                            /*color = MaterialTheme.colorScheme.outline,*/
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -107,7 +108,7 @@ fun ChecklistQuestionsScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back to checklists",
+                            contentDescription = stringResource(R.string.back_to_checklists),
                         )
                     }
                 },
@@ -125,7 +126,7 @@ fun ChecklistQuestionsScreen(
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Add,
-                    contentDescription = "Add question",
+                    contentDescription = stringResource(R.string.add_question),
                 )
             }
         },
@@ -155,13 +156,13 @@ fun ChecklistQuestionsScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "No questions added yet",
+                            text = stringResource(R.string.no_questions_added),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Tap the '+' button below to add questions to this checklist.",
+                            text = stringResource(R.string.no_questions_hint),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
@@ -258,7 +259,7 @@ fun QuestionItem(
                 )
                 AssistChip(
                     onClick = {},
-                    label = { Text(if (question.required) "Required" else "Optional") },
+                    label = { Text(if (question.required) stringResource(R.string.required) else stringResource(R.string.optional)) },
                     colors = AssistChipDefaults.assistChipColors(
                         containerColor = if (question.required) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.tertiaryContainer,
                         labelColor = if (question.required) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onTertiaryContainer,
@@ -279,7 +280,7 @@ fun QuestionItem(
             if (question.type == "combobox" && !question.options.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Options: ${question.options}",
+                    text = "${stringResource(R.string.options)}: ${question.options}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                 )
@@ -302,7 +303,7 @@ fun QuestionItem(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowUpward,
-                            contentDescription = "Move question up",
+                            contentDescription = stringResource(R.string.move_question_up),
                             tint = if (!isFirst) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.38f),
                         )
                     }
@@ -312,7 +313,7 @@ fun QuestionItem(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowDownward,
-                            contentDescription = "Move question down",
+                            contentDescription = stringResource(R.string.move_question_down),
                             tint = if (!isLast) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.38f),
                         )
                     }
@@ -335,14 +336,14 @@ fun QuestionItem(
                     IconButton(onClick = onEditClick) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
-                            contentDescription = "Edit question",
+                            contentDescription = stringResource(R.string.edit_question),
                             tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                     IconButton(onClick = onDeleteClick) {
                         Icon(
                             imageVector = Icons.Rounded.Delete,
-                            contentDescription = "Delete question",
+                            contentDescription = stringResource(R.string.delete),
                             tint = MaterialTheme.colorScheme.error,
                         )
                     }

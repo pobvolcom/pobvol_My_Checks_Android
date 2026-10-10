@@ -108,4 +108,6 @@
     <string name="use_code">Utiliser le code</string>
     <string name="enter_user_name">"Entrer le nom d'utilisateur"</string>
     <string name="delete_category_desc">Supprimer la catégorie</string>
+    <string name="move_question_up">Déplacer vers le haut</string>
+    <string name="move_question_down">Déplacer vers le bas</string>
 </resources>

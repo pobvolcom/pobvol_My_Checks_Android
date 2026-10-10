@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Help
@@ -29,11 +30,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistQuestionEntity
 import com.pobvol.mychecks.ui.theme.mychecksTheme
 
@@ -70,7 +72,7 @@ fun AddEditQuestionDialog(
         },
         title = {
             Text(
-                text = if (questionToEdit == null) "Add New Question" else "Edit Question",
+                text = if (questionToEdit == null) stringResource(R.string.add_new_question) else stringResource(R.string.edit_question),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
@@ -89,11 +91,11 @@ fun AddEditQuestionDialog(
                         title = it
                         if (it.isNotBlank()) titleError = false
                     },
-                    label = { Text("Question Title *") },
+                    label = { Text(stringResource(R.string.question_title_required)) },
                     isError = titleError,
                     supportingText = {
                         if (titleError) {
-                            Text("Title cannot be empty", color = MaterialTheme.colorScheme.error)
+                            Text(stringResource(R.string.title_cannot_be_empty), color = MaterialTheme.colorScheme.error)
                         }
                     },
                     singleLine = true,
@@ -104,7 +106,7 @@ fun AddEditQuestionDialog(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Description (Optional)") },
+                    label = { Text(stringResource(R.string.description_optional)) },
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3,
@@ -113,8 +115,8 @@ fun AddEditQuestionDialog(
                 OutlinedTextField(
                     value = sortnoText,
                     onValueChange = { sortnoText = it.filter { char -> char.isDigit() } },
-                    label = { Text("Sort Order (Optional)") },
-                    placeholder = { Text("e.g. 1, 2, 3...") },
+                    label = { Text(stringResource(R.string.sort_order_optional)) },
+                    placeholder = { Text(stringResource(R.string.sort_order_placeholder)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
@@ -130,7 +132,7 @@ fun AddEditQuestionDialog(
                         value = type,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Answer Type") },
+                        label = { Text(stringResource(R.string.answer_type)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
@@ -158,8 +160,8 @@ fun AddEditQuestionDialog(
                     OutlinedTextField(
                         value = options,
                         onValueChange = { options = it },
-                        label = { Text("Options (comma separated)") },
-                        placeholder = { Text("Option 1, Option 2, Option 3") },
+                        label = { Text(stringResource(R.string.options_comma_separated)) },
+                        placeholder = { Text(stringResource(R.string.options_placeholder)) },
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 3,
@@ -172,7 +174,7 @@ fun AddEditQuestionDialog(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Required Question",
+                        text = stringResource(R.string.required_question),
                         style = MaterialTheme.typography.bodyLarge,
                     )
                     Switch(
@@ -194,7 +196,7 @@ fun AddEditQuestionDialog(
                 },
                 shape = RoundedCornerShape(12.dp),
             ) {
-                Text("Save")
+                Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
@@ -202,7 +204,7 @@ fun AddEditQuestionDialog(
                 onClick = onDismiss,
                 shape = RoundedCornerShape(12.dp),
             ) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         },
     )

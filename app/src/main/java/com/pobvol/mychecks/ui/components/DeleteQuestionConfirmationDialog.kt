@@ -12,9 +12,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistQuestionEntity
 import com.pobvol.mychecks.ui.theme.mychecksTheme
 
@@ -37,14 +39,14 @@ fun DeleteQuestionConfirmationDialog(
         },
         title = {
             Text(
-                text = "Delete Question?",
+                text = stringResource(R.string.delete_question_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
         },
         text = {
             Text(
-                text = "Are you sure you want to delete \"${question.title}\"? This action cannot be undone.",
+                text = stringResource(R.string.delete_question_message, question.title),
                 style = MaterialTheme.typography.bodyLarge,
             )
         },
@@ -57,7 +59,7 @@ fun DeleteQuestionConfirmationDialog(
                 ),
                 shape = RoundedCornerShape(12.dp),
             ) {
-                Text("Delete")
+                Text(stringResource(R.string.delete))
             }
         },
         dismissButton = {
@@ -65,7 +67,7 @@ fun DeleteQuestionConfirmationDialog(
                 onClick = onDismiss,
                 shape = RoundedCornerShape(12.dp),
             ) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         },
         shape = RoundedCornerShape(20.dp),
