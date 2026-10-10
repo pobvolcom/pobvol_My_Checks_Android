@@ -110,4 +110,10 @@
     <string name="delete_category_desc">Supprimer la catégorie</string>
     <string name="move_question_up">Déplacer vers le haut</string>
     <string name="move_question_down">Déplacer vers le bas</string>
+    <string name="answer_type_text">Texte</string>
+    <string name="answer_type_number">Nombre</string>
+    <string name="answer_type_checkbox">Case à cocher</string>
+    <string name="answer_type_combobox">Boîte combinée</string>
+    <string name="answer_type_nfc">NFC</string>
+    <string name="answer_type_qr_code">Code QR</string>
 </resources>

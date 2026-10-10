@@ -108,4 +108,10 @@
     <string name="use_code">Usar código</string>
     <string name="move_question_up">Mover pregunta arriba</string>
     <string name="move_question_down">Mover pregunta abajo</string>
+    <string name="answer_type_text">Texto</string>
+    <string name="answer_type_number">Número</string>
+    <string name="answer_type_checkbox">Casilla de verificación</string>
+    <string name="answer_type_combobox">Cuadro combinado</string>
+    <string name="answer_type_nfc">NFC</string>
+    <string name="answer_type_qr_code">Código QR</string>
 </resources>

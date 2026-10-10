@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">My Checks</string>
     <string name="dashboard">Übersicht</string>
-    <string name="checklists">Prüfungen</string>
+    <string name="checklists">Checklisten</string>
     <string name="submissions">Einreichungen</string>
     <string name="settings">Einstellungen</string>
     <string name="preferred_language">Bevorzugte Sprache</string>
@@ -110,4 +110,10 @@
     <string name="delete_category_desc">Kategorie löschen</string>
     <string name="move_question_up">Frage nach oben</string>
     <string name="move_question_down">Frage nach unten</string>
+    <string name="answer_type_text">Text</string>
+    <string name="answer_type_number">Zahl</string>
+    <string name="answer_type_checkbox">Kontrollkästchen</string>
+    <string name="answer_type_combobox">Auswahlliste</string>
+    <string name="answer_type_nfc">NFC</string>
+    <string name="answer_type_qr_code">QR-Code</string>
 </resources>

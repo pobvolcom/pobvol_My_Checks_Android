@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistQuestionEntity
+import com.pobvol.mychecks.ui.screens.getAnswerTypeLabel
 import com.pobvol.mychecks.ui.theme.mychecksTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,7 +130,7 @@ fun AddEditQuestionDialog(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     OutlinedTextField(
-                        value = type,
+                        value = getAnswerTypeLabel(type),
                         onValueChange = {},
                         readOnly = true,
                         label = { Text(stringResource(R.string.answer_type)) },
@@ -146,7 +147,7 @@ fun AddEditQuestionDialog(
                     ) {
                         answerTypes.forEach { answerType ->
                             DropdownMenuItem(
-                                text = { Text(answerType) },
+                                text = { Text(getAnswerTypeLabel(answerType)) },
                                 onClick = {
                                     type = answerType
                                     typeExpanded = false

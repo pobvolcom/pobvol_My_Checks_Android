@@ -250,7 +250,7 @@ fun QuestionItem(
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 AssistChip(
                     onClick = {},
-                    label = { Text(question.type) },
+                    label = { Text(getAnswerTypeLabel(question.type)) },
                     colors = AssistChipDefaults.assistChipColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                         labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -395,5 +395,18 @@ fun ChecklistQuestionsScreenPreview() {
             onConfirmDeleteQuestion = {},
             onUserMessageShown = {},
         )
+    }
+}
+
+@Composable
+fun getAnswerTypeLabel(type: String): String {
+    return when (type.lowercase()) {
+        "text" -> stringResource(R.string.answer_type_text)
+        "number" -> stringResource(R.string.answer_type_number)
+        "checkbox" -> stringResource(R.string.answer_type_checkbox)
+        "combobox" -> stringResource(R.string.answer_type_combobox)
+        "nfc" -> stringResource(R.string.answer_type_nfc)
+        "qr-code", "qrcode" -> stringResource(R.string.answer_type_qr_code)
+        else -> type
     }
 }
