@@ -10,7 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Help
+import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
@@ -19,6 +19,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -45,7 +46,7 @@ import com.pobvol.mychecks.ui.theme.mychecksTheme
 fun AddEditQuestionDialog(
     questionToEdit: ChecklistQuestionEntity?,
     onDismiss: () -> Unit,
-    onSave: (title: String, description: String, type: String, options: String, required: Boolean, sortno: Int) -> Unit,
+    onSave: (title: String, description: String, type: String, options: String, required: Boolean, sortno: Int, minValue: Double?, maxValue: Double?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var title by remember { mutableStateOf(questionToEdit?.title ?: "") }
@@ -54,6 +55,8 @@ fun AddEditQuestionDialog(
     var options by remember { mutableStateOf(questionToEdit?.options ?: "") }
     var required by remember { mutableStateOf(questionToEdit?.required ?: true) }
     var sortnoText by remember { mutableStateOf(questionToEdit?.sortno?.let { if (it <= 0) "" else it.toString() } ?: "") }
+    var minValueText by remember { mutableStateOf(questionToEdit?.minValue?.toString() ?: "") }
+    var maxValueText by remember { mutableStateOf(questionToEdit?.maxValue?.toString() ?: "") }
 
     var titleError by remember { mutableStateOf(false) }
     var typeExpanded by remember { mutableStateOf(false) }
@@ -66,7 +69,7 @@ fun AddEditQuestionDialog(
         shape = RoundedCornerShape(20.dp),
         icon = {
             Icon(
-                imageVector = Icons.Rounded.Help,
+                imageVector = Icons.AutoMirrored.Rounded.Help,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )
@@ -137,7 +140,7 @@ fun AddEditQuestionDialog(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
-                            .menuAnchor()
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
                             .fillMaxWidth(),
                     )
 
@@ -154,6 +157,32 @@ fun AddEditQuestionDialog(
                                 },
                             )
                         }
+                    }
+                }
+
+                if (type == "number") {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        OutlinedTextField(
+                            value = minValueText,
+                            onValueChange = { minValueText = it.filter { c -> c.isDigit() || c == '-' || c == '.' } },
+                            label = { Text("Min Value (Optional)") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f),
+                            singleLine = true,
+                        )
+                        OutlinedTextField(
+                            value = maxValueText,
+                            onValueChange = { maxValueText = it.filter { c -> c.isDigit() || c == '-' || c == '.' } },
+                            label = { Text("Max Value (Optional)") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f),
+                            singleLine = true,
+                        )
                     }
                 }
 
@@ -192,7 +221,9 @@ fun AddEditQuestionDialog(
                         titleError = true
                     } else {
                         val sortnoVal = sortnoText.toIntOrNull() ?: 0
-                        onSave(title, description, type, options, required, sortnoVal)
+                        val minVal = minValueText.toDoubleOrNull()
+                        val maxVal = maxValueText.toDoubleOrNull()
+                        onSave(title, description, type, options, required, sortnoVal, minVal, maxVal)
                     }
                 },
                 shape = RoundedCornerShape(12.dp),
@@ -218,7 +249,7 @@ fun AddEditQuestionDialogPreview() {
         AddEditQuestionDialog(
             questionToEdit = null,
             onDismiss = {},
-            onSave = { _, _, _, _, _, _ -> },
+            onSave = { _, _, _, _, _, _, _, _ -> },
         )
     }
 }

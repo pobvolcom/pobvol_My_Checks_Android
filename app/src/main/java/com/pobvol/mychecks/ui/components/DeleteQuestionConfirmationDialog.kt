@@ -42,12 +42,14 @@ fun DeleteQuestionConfirmationDialog(
                 text = stringResource(R.string.delete_question_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
         },
         text = {
             Text(
                 text = stringResource(R.string.delete_question_message, question.title),
                 style = MaterialTheme.typography.bodyLarge,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
         },
         confirmButton = {

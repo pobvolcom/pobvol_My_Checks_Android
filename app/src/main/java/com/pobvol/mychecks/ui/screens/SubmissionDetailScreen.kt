@@ -1,5 +1,6 @@
 package com.pobvol.mychecks.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.material.icons.automirrored.rounded.HelpCenter
 import androidx.compose.material.icons.rounded.PictureAsPdf
 import androidx.compose.material.icons.rounded.Save
@@ -31,7 +33,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,10 +51,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistAnswerEntity
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -72,6 +75,7 @@ fun SubmissionDetailScreen(
     checklist: ChecklistEntity?,
     uiState: ChecklistUiState,
     onBackClick: () -> Unit,
+    onOpenHelpClick: () -> Unit = {},
     onSaveSubmission: (updatedSubmission: ChecklistSubmissionEntity, updatedAnswers: Map<Int, AnswerInput>) -> Unit,
     onUserMessageShown: () -> Unit,
     modifier: Modifier = Modifier,
@@ -90,13 +94,26 @@ fun SubmissionDetailScreen(
         uiState.answers.filter { it.submissionid == submission.id }.associate { it.questionid to AnswerInput(it.value, it.notes ?: "") }
     }
 
-    val answersMap = remember(submission.id) {
+    val answersMap = remember(submission.id, uiState.questionsForSelectedChecklist) {
         mutableStateMapOf<Int, AnswerInput>().apply {
             putAll(existingAnswersMap)
+            uiState.questionsForSelectedChecklist.forEach { q ->
+                if (q.type.lowercase() == "combobox") {
+                    val options = q.options?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() } ?: emptyList()
+                    if (options.isNotEmpty()) {
+                        val current = this[q.id] ?: AnswerInput()
+                        if (current.value.isBlank()) {
+                            this[q.id] = current.copy(value = options.first())
+                        }
+                    }
+                }
+            }
         }
     }
 
     val availableStatuses = listOf("COMPLETED", "IN_PROGRESS", "PENDING")
+
+    BackHandler(onBack = onBackClick)
 
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let { message ->
@@ -112,7 +129,7 @@ fun SubmissionDetailScreen(
                 title = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Edit Submission",
+                            text = stringResource(R.string.submission_detail_title),
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
@@ -128,12 +145,20 @@ fun SubmissionDetailScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back to submissions",
+                            contentDescription = stringResource(R.string.back_to_checklists),
                         )
                     }
                 },
                 actions = {
                     val context = LocalContext.current
+
+                    IconButton(onClick = onOpenHelpClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Help,
+                            contentDescription = stringResource(R.string.help),
+                        )
+                    }
+
                     IconButton(
                         onClick = {
                             PdfExporter.generateAndOpenSubmissionPdf(
@@ -147,7 +172,7 @@ fun SubmissionDetailScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.PictureAsPdf,
-                            contentDescription = "Export PDF Report",
+                            contentDescription = stringResource(R.string.export_pdf_report),
                         )
                     }
                 },
@@ -182,7 +207,7 @@ fun SubmissionDetailScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         Text(
-                            text = "Submission Details",
+                            text = stringResource(R.string.submission_details_header),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )
@@ -190,7 +215,7 @@ fun SubmissionDetailScreen(
                         OutlinedTextField(
                             value = checkDate,
                             onValueChange = { checkDate = it },
-                            label = { Text("Check Date (dd.MM.yyyy)") },
+                            label = { Text(stringResource(R.string.check_date)) },
                             singleLine = true,
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth(),
@@ -205,7 +230,7 @@ fun SubmissionDetailScreen(
                                 value = status,
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text("Status") },
+                                label = { Text(stringResource(R.string.status)) },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = statusExpanded) },
                                 shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier
@@ -232,7 +257,7 @@ fun SubmissionDetailScreen(
                         OutlinedTextField(
                             value = notes,
                             onValueChange = { notes = it },
-                            label = { Text("Notes") },
+                            label = { Text(stringResource(R.string.notes)) },
                             minLines = 2,
                             maxLines = 4,
                             shape = RoundedCornerShape(12.dp),
@@ -259,7 +284,7 @@ fun SubmissionDetailScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "No questions found for this submission",
+                                text = stringResource(R.string.no_questions_for_submission),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                             )
@@ -291,7 +316,7 @@ fun SubmissionDetailScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(32.dp),
+                        .padding(0.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Column(
@@ -304,6 +329,7 @@ fun SubmissionDetailScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             val context = LocalContext.current
+                            /*
                             OutlinedButton(
                                 onClick = {
                                     PdfExporter.generateAndOpenSubmissionPdf(
@@ -313,6 +339,7 @@ fun SubmissionDetailScreen(
                                         questions = uiState.questionsForSelectedChecklist,
                                         answers = uiState.answers,
                                     )
+
                                 },
                                 shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier.weight(1f),
@@ -322,9 +349,9 @@ fun SubmissionDetailScreen(
                                     contentDescription = null,
                                     modifier = Modifier.padding(end = 4.dp),
                                 )
-                                Text("PDF Report")
+                                Text(stringResource(R.string.pdf_report))
                             }
-
+                            */
                             Button(
                                 onClick = {
                                     val updatedSubmission = submission.copy(
@@ -343,7 +370,7 @@ fun SubmissionDetailScreen(
                                     contentDescription = null,
                                     modifier = Modifier.padding(end = 4.dp),
                                 )
-                                Text("Save Changes")
+                                Text(stringResource(R.string.save_changes))
                             }
                         }
                     }
@@ -383,6 +410,7 @@ fun SubmissionDetailScreenPreview() {
                 )
             ),
             onBackClick = {},
+            onOpenHelpClick = {},
             onSaveSubmission = { _, _ -> },
             onUserMessageShown = {},
         )

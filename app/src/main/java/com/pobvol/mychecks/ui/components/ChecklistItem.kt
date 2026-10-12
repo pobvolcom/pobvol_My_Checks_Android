@@ -27,10 +27,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistEntity
 import com.pobvol.mychecks.ui.theme.mychecksTheme
 import java.text.SimpleDateFormat
@@ -128,16 +130,12 @@ fun ChecklistItem(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                /*horizontalArrangement = Arrangement.spacedBy(4.dp),*/
                 horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
+            ) {
                 IconButton(onClick = { onFillClick(checklist) }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.Assignment,
-                        /* Original:
-                        contentDescription = "Fill out checklist",
-                        */
-                        contentDescription = "List submissions",
+                        contentDescription = stringResource(R.string.fill_checklist),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                 }
@@ -145,7 +143,7 @@ fun ChecklistItem(
                 IconButton(onClick = { onQuestionsClick(checklist) }) {
                     Icon(
                         imageVector = Icons.Rounded.QuestionAnswer,
-                        contentDescription = "Manage questions",
+                        contentDescription = stringResource(R.string.manage_questions),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                 }
@@ -153,7 +151,7 @@ fun ChecklistItem(
                 IconButton(onClick = { onEditClick(checklist) }) {
                     Icon(
                         imageVector = Icons.Rounded.Edit,
-                        contentDescription = "Edit checklist",
+                        contentDescription = stringResource(R.string.edit_checklist),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                     )
                 }
@@ -161,7 +159,7 @@ fun ChecklistItem(
                 IconButton(onClick = { onDeleteClick(checklist) }) {
                     Icon(
                         imageVector = Icons.Rounded.Delete,
-                        contentDescription = "Delete checklist",
+                        contentDescription = stringResource(R.string.delete_checklist),
                         tint = MaterialTheme.colorScheme.error,
                     )
                 }

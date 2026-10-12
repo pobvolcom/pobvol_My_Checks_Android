@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -49,6 +50,12 @@ fun SettingsDialog(
     onThemeModeSelected: (ThemeMode) -> Unit,
     onLanguageSelected: (String) -> Unit,
     onUserNameChanged: (String) -> Unit,
+    onPdfHeaderTitleChanged: (String) -> Unit,
+    onPdfIncludeTimestampChanged: (Boolean) -> Unit,
+    onPdfIncludeInspectorChanged: (Boolean) -> Unit,
+    onPdfIncludeUnansweredQuestionsChanged: (Boolean) -> Unit,
+    onPdfIncludeAnswerNotesChanged: (Boolean) -> Unit,
+    onPdfCompactAnswerLayoutChanged: (Boolean) -> Unit,
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
     onDismissRequest: () -> Unit,
@@ -137,7 +144,105 @@ fun SettingsDialog(
                     )
                 }
 
-                // 4. Manage Categories
+                // 4. PDF Report Customization
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = stringResource(R.string.pdf_report_customization),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    OutlinedTextField(
+                        value = userSettings.pdfHeaderTitle,
+                        onValueChange = onPdfHeaderTitleChanged,
+                        label = { Text(stringResource(R.string.pdf_header_title_label)) },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.include_timestamp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Switch(
+                            checked = userSettings.includeTimestamp,
+                            onCheckedChange = onPdfIncludeTimestampChanged,
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.include_inspector),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Switch(
+                            checked = userSettings.includeInspector,
+                            onCheckedChange = onPdfIncludeInspectorChanged,
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.include_unanswered_questions),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Switch(
+                            checked = userSettings.includeUnansweredQuestions,
+                            onCheckedChange = onPdfIncludeUnansweredQuestionsChanged,
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.include_answer_notes),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Switch(
+                            checked = userSettings.includeAnswerNotes,
+                            onCheckedChange = onPdfIncludeAnswerNotesChanged,
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.compact_answer_layout),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Switch(
+                            checked = userSettings.compactAnswerLayout,
+                            onCheckedChange = onPdfCompactAnswerLayoutChanged,
+                        )
+                    }
+                }
+
+                // 5. Manage Categories
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         text = stringResource(R.string.manage_categories),
@@ -224,6 +329,12 @@ fun SettingsDialogPreview() {
                 themeMode = ThemeMode.DARK,
                 preferredLanguage = "en",
                 userName = "John Doe",
+                pdfHeaderTitle = "Inspection Summary Report",
+                includeTimestamp = true,
+                includeInspector = true,
+                includeUnansweredQuestions = true,
+                includeAnswerNotes = true,
+                compactAnswerLayout = false,
             ),
             languages = listOf(
                 LanguageEntity("en", "English"),
@@ -236,6 +347,12 @@ fun SettingsDialogPreview() {
             onThemeModeSelected = {},
             onLanguageSelected = {},
             onUserNameChanged = {},
+            onPdfHeaderTitleChanged = {},
+            onPdfIncludeTimestampChanged = {},
+            onPdfIncludeInspectorChanged = {},
+            onPdfIncludeUnansweredQuestionsChanged = {},
+            onPdfIncludeAnswerNotesChanged = {},
+            onPdfCompactAnswerLayoutChanged = {},
             onDismissRequest = {},
         )
     }

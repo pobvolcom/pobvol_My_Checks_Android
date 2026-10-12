@@ -17,7 +17,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.automirrored.rounded.FactCheck
+import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.Help
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material3.Card
@@ -59,10 +61,17 @@ fun StartScreen(
     onOpenChecklistsClick: () -> Unit,
     onOpenSubmissionsClick: () -> Unit,
     onOpenSettingsClick: () -> Unit,
+    onOpenHelpClick: () -> Unit,
     onDismissSettingsDialog: () -> Unit,
     onThemeModeSelected: (ThemeMode) -> Unit,
     onLanguageSelected: (String) -> Unit,
     onUserNameChanged: (String) -> Unit,
+    onPdfHeaderTitleChanged: (String) -> Unit = {},
+    onPdfIncludeTimestampChanged: (Boolean) -> Unit = {},
+    onPdfIncludeInspectorChanged: (Boolean) -> Unit = {},
+    onPdfIncludeUnansweredQuestionsChanged: (Boolean) -> Unit = {},
+    onPdfIncludeAnswerNotesChanged: (Boolean) -> Unit = {},
+    onPdfCompactAnswerLayoutChanged: (Boolean) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
     onUserMessageShown: () -> Unit,
@@ -92,12 +101,21 @@ fun StartScreen(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                         Text(
-                            text = stringResource(R.string.app_name),
+                            text = "${stringResource(R.string.app_name)} v${com.pobvol.mychecks.BuildConfig.VERSION_NAME}",
                             fontWeight = FontWeight.Bold,
                         )
                     }
                 },
+
                 actions = {
+
+                    IconButton(onClick = onOpenHelpClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Help,
+                            contentDescription = stringResource(R.string.help),
+                        )
+                    }
+
                     IconButton(onClick = onOpenSettingsClick) {
                         Icon(
                             imageVector = Icons.Rounded.Settings,
@@ -105,6 +123,7 @@ fun StartScreen(
                         )
                     }
                 },
+
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                 ),
@@ -125,8 +144,9 @@ fun StartScreen(
             Text(
                 text = stringResource(R.string.start_description),
                 fontWeight = FontWeight.Normal,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
 
             // Box 1: Checklists
@@ -135,7 +155,7 @@ fun StartScreen(
                 subtitle = stringResource(R.string.checklists_subtitle),
                 icon = Icons.Rounded.Checklist,
                 badgeCount = uiState.checklists.size,
-                badgeLabel = stringResource(R.string.checklists),
+                badgeLabel = stringResource(R.string.records),
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 onClick = onOpenChecklistsClick,
@@ -147,7 +167,7 @@ fun StartScreen(
                 subtitle = stringResource(R.string.submissions_subtitle),
                 icon = Icons.AutoMirrored.Rounded.FactCheck,
                 badgeCount = uiState.submissions.size,
-                badgeLabel = stringResource(R.string.submissions),
+                badgeLabel = stringResource(R.string.records),
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 onClick = onOpenSubmissionsClick,
@@ -158,6 +178,7 @@ fun StartScreen(
                 fontWeight = FontWeight.Normal,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -172,6 +193,12 @@ fun StartScreen(
                 onThemeModeSelected = onThemeModeSelected,
                 onLanguageSelected = onLanguageSelected,
                 onUserNameChanged = onUserNameChanged,
+                onPdfHeaderTitleChanged = onPdfHeaderTitleChanged,
+                onPdfIncludeTimestampChanged = onPdfIncludeTimestampChanged,
+                onPdfIncludeInspectorChanged = onPdfIncludeInspectorChanged,
+                onPdfIncludeUnansweredQuestionsChanged = onPdfIncludeUnansweredQuestionsChanged,
+                onPdfIncludeAnswerNotesChanged = onPdfIncludeAnswerNotesChanged,
+                onPdfCompactAnswerLayoutChanged = onPdfCompactAnswerLayoutChanged,
                 onAddCategory = onAddCategory,
                 onDeleteCategory = onDeleteCategory,
                 onDismissRequest = onDismissSettingsDialog,
@@ -233,7 +260,7 @@ fun StartOptionBox(
                     color = contentColor.copy(alpha = 0.2f),
                 ) {
                     Text(
-                        text = "$badgeCount $badgeLabel",
+                        text = "$badgeLabel: $badgeCount ",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = contentColor,
@@ -281,6 +308,7 @@ fun StartScreenPreview() {
             onOpenChecklistsClick = {},
             onOpenSubmissionsClick = {},
             onOpenSettingsClick = {},
+            onOpenHelpClick = {},
             onDismissSettingsDialog = {},
             onThemeModeSelected = {},
             onLanguageSelected = {},

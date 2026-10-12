@@ -1,5 +1,6 @@
 package com.pobvol.mychecks.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,15 +20,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.FactCheck
+import androidx.compose.material.icons.automirrored.rounded.Help
+import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.PictureAsPdf
-import androidx.compose.ui.platform.LocalContext
-import com.pobvol.mychecks.util.PdfExporter
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -55,11 +55,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistSubmissionEntity
 import com.pobvol.mychecks.ui.ChecklistUiState
 import com.pobvol.mychecks.ui.theme.mychecksTheme
@@ -75,6 +77,9 @@ fun SubmissionsOverviewScreen(
     onStatusFilterChange: (String?) -> Unit = {},
     onClearChecklistFilter: () -> Unit = {},
     onBackClick: () -> Unit,
+    onOpenHelpClick: () -> Unit = {},
+    onExportPdfClick: (ChecklistSubmissionEntity) -> Unit = {},
+    onExportSqlClick: (ChecklistSubmissionEntity) -> Unit = {},
     onEditSubmissionClick: (ChecklistSubmissionEntity) -> Unit,
     onDeleteSubmissionClick: (ChecklistSubmissionEntity) -> Unit,
     onDismissDeleteSubmissionDialog: () -> Unit,
@@ -89,14 +94,7 @@ fun SubmissionsOverviewScreen(
 
     var isSearchActive by remember { mutableStateOf(false) }
 
-    /*val categories = remember(uiState.categories) {
-        val dbCategoryTitles = uiState.categories.map { it.title.ifBlank { it.category } }
-        if (dbCategoryTitles.isEmpty()) {
-            listOf("All", "UVV", "Health")
-        } else {
-            listOf("All") + dbCategoryTitles
-        }
-    }*/
+    BackHandler(onBack = onBackClick)
 
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let { message ->
@@ -109,34 +107,29 @@ fun SubmissionsOverviewScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             CenterAlignedTopAppBar(
-
                 title = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            /*text = uiState.selectedChecklistForSubmissions?.title ?: "Submissions Overview",*/
-                            text = "Submissions",
+                            text = stringResource(R.string.submissions),
                             fontWeight = FontWeight.Bold,
                         )
-                        /*
-                        if (uiState.selectedChecklistForSubmissions != null) {
-                            Text(
-                                text = "Filtered by selected checklist",
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.outline,
-                            )
-                        }
-                         */
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back to dashboard",
+                            contentDescription = stringResource(R.string.back_to_dashboard),
                         )
                     }
                 },
                 actions = {
+                    IconButton(onClick = onOpenHelpClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Help,
+                            contentDescription = stringResource(R.string.help),
+                        )
+                    }
                     IconButton(
                         onClick = {
                             isSearchActive = !isSearchActive
@@ -147,30 +140,16 @@ fun SubmissionsOverviewScreen(
                     ) {
                         Icon(
                             imageVector = if (isSearchActive) Icons.Rounded.Close else Icons.Rounded.Search,
-                            contentDescription = if (isSearchActive) "Close search" else "Search checklists"
+                            contentDescription = if (isSearchActive) stringResource(R.string.clear_search) else stringResource(R.string.search)
                         )
                     }
-                    /*IconButton(onClick = onOpenSubmissionsOverviewClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.FactCheck,
-                            contentDescription = "Submissions Overview"
-                        )
-                    }*/
-                    /*IconButton(onClick = onOpenSettingsClick) {
-                        Icon(
-                            imageVector = Icons.Rounded.Settings,
-                            contentDescription = "Settings"
-                        )
-                    }*/
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                 ),
-
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -181,12 +160,12 @@ fun SubmissionsOverviewScreen(
                 OutlinedTextField(
                     value = uiState.searchQuery,
                     onValueChange = onSearchQueryChange,
-                    placeholder = { Text("Search submissions...") },
+                    placeholder = { Text(stringResource(R.string.search_submissions)) },
                     leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
                     trailingIcon = {
                         if (uiState.searchQuery.isNotEmpty()) {
                             IconButton(onClick = { onSearchQueryChange("") }) {
-                                Icon(Icons.Rounded.Close, contentDescription = "Clear search")
+                                Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.clear_search))
                             }
                         }
                     },
@@ -207,11 +186,11 @@ fun SubmissionsOverviewScreen(
                 ) {
                     AssistChip(
                         onClick = onClearChecklistFilter,
-                        label = { Text("Filter: ${uiState.selectedChecklistForSubmissions.title}") },
+                        label = { Text(stringResource(R.string.filter_prefix, uiState.selectedChecklistForSubmissions.title)) },
                         trailingIcon = {
                             Icon(
                                 imageVector = Icons.Rounded.Close,
-                                contentDescription = "Clear checklist filter",
+                                contentDescription = stringResource(R.string.clear_checklist_filter),
                                 modifier = Modifier.size(16.dp),
                             )
                         },
@@ -235,12 +214,20 @@ fun SubmissionsOverviewScreen(
                         uiState.selectedSubmissionStatus.equals(status, ignoreCase = true)
                     }
 
+                    val labelText = when (status) {
+                        "All" -> stringResource(R.string.status_all)
+                        "COMPLETED" -> stringResource(R.string.status_completed)
+                        "IN_PROGRESS" -> stringResource(R.string.status_in_progress)
+                        "PENDING" -> stringResource(R.string.status_pending)
+                        else -> status
+                    }
+
                     FilterChip(
                         selected = isSelected,
                         onClick = {
                             onStatusFilterChange(if (status == "All") null else status)
                         },
-                        label = { Text(status) },
+                        label = { Text(labelText) },
                         shape = RoundedCornerShape(12.dp),
                     )
                 }
@@ -270,13 +257,13 @@ fun SubmissionsOverviewScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "No submissions recorded yet",
+                                text = stringResource(R.string.no_submissions_recorded),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Select a checklist from the list to answer questions and create submissions.",
+                                text = stringResource(R.string.no_submissions_hint),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center,
@@ -294,20 +281,11 @@ fun SubmissionsOverviewScreen(
                             key = { it.id },
                         ) { submission ->
                             val checklistTitle = checklistMap[submission.checklistid]?.title ?: "Checklist #${submission.checklistid}"
-                            val context = LocalContext.current
                             SubmissionItem(
                                 submission = submission,
                                 checklistTitle = checklistTitle,
-                                onExportPdfClick = {
-                                    val checklist = checklistMap[submission.checklistid]
-                                    PdfExporter.generateAndOpenSubmissionPdf(
-                                        context = context,
-                                        submission = submission,
-                                        checklist = checklist,
-                                        questions = uiState.questionsForSelectedChecklist,
-                                        answers = uiState.answers,
-                                    )
-                                },
+                                onExportPdfClick = { onExportPdfClick(submission) },
+                                onExportSqlClick = { onExportSqlClick(submission) },
                                 onEditClick = { onEditSubmissionClick(submission) },
                                 onDeleteClick = { onDeleteSubmissionClick(submission) },
                             )
@@ -332,6 +310,7 @@ fun SubmissionItem(
     submission: ChecklistSubmissionEntity,
     checklistTitle: String,
     onExportPdfClick: () -> Unit = {},
+    onExportSqlClick: () -> Unit = {},
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -376,10 +355,8 @@ fun SubmissionItem(
                 )
             }
 
-            /* Spacer(modifier = Modifier.height(4.dp)) */
-
             Text(
-                text = "Check Date: ${submission.date}",
+                text = stringResource(R.string.check_date_label, submission.date),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                 fontWeight = FontWeight.Bold,
@@ -387,8 +364,9 @@ fun SubmissionItem(
 
             Spacer(modifier = Modifier.height(4.dp))
 
+            val inspectorStr = submission.inspector?.ifBlank { null } ?: stringResource(R.string.anonymous)
             Text(
-                text = "Inspector: ${submission.inspector ?: "Anonymous"}",
+                text = stringResource(R.string.inspector_label, inspectorStr),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                 fontWeight = FontWeight.Bold,
@@ -397,7 +375,7 @@ fun SubmissionItem(
             if (!submission.notes.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Notes: ${submission.notes}",
+                    text = stringResource(R.string.notes_label, submission.notes),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.75f),
                     maxLines = 2,
@@ -433,7 +411,15 @@ fun SubmissionItem(
                     IconButton(onClick = onExportPdfClick) {
                         Icon(
                             imageVector = Icons.Rounded.PictureAsPdf,
-                            contentDescription = "PDF Report",
+                            contentDescription = stringResource(R.string.pdf_report),
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                        )
+                    }
+
+                    IconButton(onClick = onExportSqlClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Send,
+                            contentDescription = stringResource(R.string.send_sql),
                             tint = MaterialTheme.colorScheme.onSecondaryContainer,
                         )
                     }
@@ -441,7 +427,7 @@ fun SubmissionItem(
                     IconButton(onClick = onEditClick) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
-                            contentDescription = "Edit submission",
+                            contentDescription = stringResource(R.string.edit_submission),
                             tint = MaterialTheme.colorScheme.onSecondaryContainer,
                         )
                     }
@@ -449,7 +435,7 @@ fun SubmissionItem(
                     IconButton(onClick = onDeleteClick) {
                         Icon(
                             imageVector = Icons.Rounded.Delete,
-                            contentDescription = "Delete submission",
+                            contentDescription = stringResource(R.string.delete),
                             tint = MaterialTheme.colorScheme.error,
                         )
                     }
@@ -470,14 +456,14 @@ fun DeleteSubmissionConfirmationDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Delete Submission?",
+                text = stringResource(R.string.delete_submission_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
         },
         text = {
             Text(
-                text = "Are you sure you want to delete this submission? All associated answers will also be removed.",
+                text = stringResource(R.string.delete_submission_message),
                 style = MaterialTheme.typography.bodyLarge,
             )
         },
@@ -488,12 +474,12 @@ fun DeleteSubmissionConfirmationDialog(
                     contentColor = MaterialTheme.colorScheme.error,
                 ),
             ) {
-                Text("Delete")
+                Text(stringResource(R.string.delete))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         },
         shape = RoundedCornerShape(20.dp),
@@ -524,7 +510,6 @@ fun SubmissionsOverviewScreenPreview() {
                 ),
             ),
             onSearchQueryChange = {},
-            /*onCategoryFilterChange = {},*/
             onUserMessageShown = {},
             onBackClick = {},
             onEditSubmissionClick = {},

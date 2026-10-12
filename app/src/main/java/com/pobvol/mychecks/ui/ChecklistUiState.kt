@@ -24,6 +24,8 @@ data class ChecklistUiState(
     val userSettings: UserSettings = UserSettings(),
     val availableLanguages: List<LanguageEntity> = emptyList(),
     val isSettingsDialogVisible: Boolean = false,
+    val isHelpVisible: Boolean = false,
+    val isChecklistHelpVisible: Boolean = false,
     val categories: List<CategoryEntity> = emptyList(),
     val selectedChecklistToAnswer: ChecklistEntity? = null,
     val submissions: List<ChecklistSubmissionEntity> = emptyList(),

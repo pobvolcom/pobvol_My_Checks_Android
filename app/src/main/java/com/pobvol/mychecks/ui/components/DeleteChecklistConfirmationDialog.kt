@@ -44,7 +44,8 @@ fun DeleteChecklistConfirmationDialog(
         text = {
             Text(
                 text = stringResource(R.string.delete_checklist_message, checklist.title),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
         },
         confirmButton = {

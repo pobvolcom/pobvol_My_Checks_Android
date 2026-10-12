@@ -1,5 +1,6 @@
 package com.pobvol.mychecks.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -22,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.material.icons.automirrored.rounded.NoteAdd
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Clear
@@ -87,10 +89,17 @@ fun ChecklistListScreen(
     onConfirmDelete: () -> Unit,
     onUserMessageShown: () -> Unit,
     onBackClick: () -> Unit = {},
+    onOpenHelpClick: () -> Unit = {},
     onDismissSettingsDialog: () -> Unit = {},
     onThemeModeSelected: (ThemeMode) -> Unit = {},
     onLanguageSelected: (String) -> Unit = {},
     onUserNameChanged: (String) -> Unit = {},
+    onPdfHeaderTitleChanged: (String) -> Unit = {},
+    onPdfIncludeTimestampChanged: (Boolean) -> Unit = {},
+    onPdfIncludeInspectorChanged: (Boolean) -> Unit = {},
+    onPdfIncludeUnansweredQuestionsChanged: (Boolean) -> Unit = {},
+    onPdfIncludeAnswerNotesChanged: (Boolean) -> Unit = {},
+    onPdfCompactAnswerLayoutChanged: (Boolean) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
     modifier: Modifier = Modifier
@@ -107,6 +116,8 @@ fun ChecklistListScreen(
             listOf("All") + dbCategoryTitles
         }
     }
+
+    BackHandler(onBack = onBackClick)
 
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let { message ->
@@ -139,6 +150,14 @@ fun ChecklistListScreen(
                     }
                 },
                 actions = {
+
+                    IconButton(onClick = onOpenHelpClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Help,
+                            contentDescription = stringResource(R.string.help),
+                        )
+                    }
+
                     IconButton(
                         onClick = {
                             isSearchActive = !isSearchActive
@@ -371,6 +390,12 @@ fun ChecklistListScreen(
                 onThemeModeSelected = onThemeModeSelected,
                 onLanguageSelected = onLanguageSelected,
                 onUserNameChanged = onUserNameChanged,
+                onPdfHeaderTitleChanged = onPdfHeaderTitleChanged,
+                onPdfIncludeTimestampChanged = onPdfIncludeTimestampChanged,
+                onPdfIncludeInspectorChanged = onPdfIncludeInspectorChanged,
+                onPdfIncludeUnansweredQuestionsChanged = onPdfIncludeUnansweredQuestionsChanged,
+                onPdfIncludeAnswerNotesChanged = onPdfIncludeAnswerNotesChanged,
+                onPdfCompactAnswerLayoutChanged = onPdfCompactAnswerLayoutChanged,
                 onAddCategory = onAddCategory,
                 onDeleteCategory = onDeleteCategory,
                 onDismissRequest = onDismissSettingsDialog,
@@ -489,6 +514,7 @@ fun ChecklistListScreenPreview() {
             onDismissDeleteDialog = {},
             onConfirmDelete = {},
             onUserMessageShown = {},
+            onOpenHelpClick = {},
         )
     }
 }

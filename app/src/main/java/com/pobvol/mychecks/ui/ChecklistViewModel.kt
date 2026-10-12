@@ -1,8 +1,10 @@
 package com.pobvol.mychecks.ui
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.CategoryEntity
 import com.pobvol.mychecks.data.local.ChecklistAnswerEntity
 import com.pobvol.mychecks.data.local.ChecklistEntity
@@ -18,6 +20,8 @@ import com.pobvol.mychecks.data.repository.LanguageRepository
 import com.pobvol.mychecks.data.repository.SettingsRepository
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.data.repository.UserSettings
+import com.pobvol.mychecks.util.PdfExporter
+import com.pobvol.mychecks.util.SqlExporter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,6 +43,7 @@ class ChecklistViewModel(
     private val categoryRepository: CategoryRepository,
     private val submissionRepository: ChecklistSubmissionRepository,
     private val answerRepository: ChecklistAnswerRepository,
+    private val context: Context,
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -75,6 +80,12 @@ class ChecklistViewModel(
 
     private val _isChecklistListVisible = MutableStateFlow(false)
     val isChecklistListVisible: StateFlow<Boolean> = _isChecklistListVisible.asStateFlow()
+
+    private val _isHelpVisible = MutableStateFlow(false)
+    val isHelpVisible: StateFlow<Boolean> = _isHelpVisible.asStateFlow()
+
+    private val _isChecklistHelpVisible = MutableStateFlow(false)
+    val isChecklistHelpVisible: StateFlow<Boolean> = _isChecklistHelpVisible.asStateFlow()
 
     private val _isSubmissionsOverviewVisible = MutableStateFlow(false)
     val isSubmissionsOverviewVisible: StateFlow<Boolean> = _isSubmissionsOverviewVisible.asStateFlow()
@@ -192,10 +203,19 @@ class ChecklistViewModel(
     private data class GlobalState(
         val settingsState: SettingsState,
         val submissionState: SubmissionState,
+        val isHelpVisible: Boolean,
+        val isChecklistHelpVisible: Boolean,
+        val selectedSubmissionStatus: String?,
     )
 
-    private val _globalState = combine(_settingsState, _submissionState) { settings, submissions ->
-        GlobalState(settings, submissions)
+    private val _globalState = combine(
+        _settingsState,
+        _submissionState,
+        _isHelpVisible,
+        _isChecklistHelpVisible,
+        _selectedSubmissionStatus,
+    ) { settings, submissions, isHelpVisible, isChecklistHelpVisible, selectedStatus ->
+        GlobalState(settings, submissions, isHelpVisible, isChecklistHelpVisible, selectedStatus)
     }
 
     val uiState: StateFlow<ChecklistUiState> = combine(
@@ -205,7 +225,7 @@ class ChecklistViewModel(
         _dialogState,
         _globalState,
     ) { checklists, query, category, dialogState, globalState ->
-        val selectedStatus = _selectedSubmissionStatus.value
+        val selectedStatus = globalState.selectedSubmissionStatus
         val preferredLang = globalState.settingsState.settings.preferredLanguage
         val checklistsInLang = checklists.filter { it.language.equals(preferredLang, ignoreCase = true) }
         val effectiveChecklists = if (checklistsInLang.isNotEmpty()) checklistsInLang else checklists
@@ -270,6 +290,8 @@ class ChecklistViewModel(
             selectedSubmissionStatus = selectedStatus,
             scannedNfcTag = _scannedNfcTag.value,
             selectedChecklistForSubmissions = selectedChecklistSub,
+            isHelpVisible = globalState.isHelpVisible,
+            isChecklistHelpVisible = globalState.isChecklistHelpVisible,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -293,8 +315,24 @@ class ChecklistViewModel(
         _isChecklistListVisible.value = true
     }
 
+    fun openHelpScreen() {
+        _isHelpVisible.value = true
+    }
+
     fun closeChecklistsScreen() {
         _isChecklistListVisible.value = false
+    }
+
+    fun closeHelpScreen() {
+        _isHelpVisible.value = false
+    }
+
+    fun openChecklistHelpScreen() {
+        _isChecklistHelpVisible.value = true
+    }
+
+    fun closeChecklistHelpScreen() {
+        _isChecklistHelpVisible.value = false
     }
 
     fun openAddDialog() {
@@ -427,6 +465,7 @@ class ChecklistViewModel(
         inspector: String?,
         notes: String?,
         date: String = "",
+        status: String = "IN_PROGRESS",
         answers: Map<Int, AnswerInput>
     ) {
         viewModelScope.launch {
@@ -434,9 +473,15 @@ class ChecklistViewModel(
                 SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
             }
 
+            val questions = questionRepository.getChecklistQuestionsByChecklistId(checklistId).first()
+            val allRequiredAnswered = questions.all { q ->
+                !q.required || answers[q.id]?.value?.isNotBlank() == true
+            }
+            val finalStatus = if (status.equals("COMPLETED", ignoreCase = true) || allRequiredAnswered) "COMPLETED" else status
+
             val submission = ChecklistSubmissionEntity(
                 checklistid = checklistId,
-                status = "COMPLETED",
+                status = finalStatus,
                 inspector = inspector?.ifBlank { null },
                 notes = notes?.ifBlank { null },
                 date = formattedDate,
@@ -458,7 +503,17 @@ class ChecklistViewModel(
                 }
             }
 
-            _userMessage.value = "Checklist submitted successfully"
+            if (finalStatus == "COMPLETED") {
+                val checklist = repository.getAllChecklists().first().find { it.id == checklistId }
+                val allAnswers = answerRepository.getAllChecklistAnswers().first()
+                val settings = settingsRepository.userSettings.first()
+                val createdSubmission = submission.copy(id = submissionId.toInt())
+                PdfExporter.savePdfToMyChecks(context, createdSubmission, checklist, questions, allAnswers, settings)
+                SqlExporter.saveSqlToMyChecks(context, createdSubmission, checklist, questions, allAnswers)
+                _userMessage.value = "Submission completed! PDF & SQL saved to 'MyChecks'"
+            } else {
+                _userMessage.value = "Submission saved as In Progress"
+            }
             closeFillChecklist()
         }
     }
@@ -479,6 +534,39 @@ class ChecklistViewModel(
     fun closeSubmissionsOverview() {
         _isSubmissionsOverviewVisible.value = false
         _selectedChecklistForSubmissions.value = null
+    }
+
+    fun exportSubmissionPdf(context: Context, submission: ChecklistSubmissionEntity) {
+        viewModelScope.launch {
+            val checklist = repository.getAllChecklists().first().find { it.id == submission.checklistid }
+            val questions = questionRepository.getChecklistQuestionsByChecklistId(submission.checklistid).first()
+            val answers = answerRepository.getAllChecklistAnswers().first()
+            val settings = settingsRepository.userSettings.first()
+            PdfExporter.generateAndOpenSubmissionPdf(
+                context = context,
+                submission = submission,
+                checklist = checklist,
+                questions = questions,
+                answers = answers,
+                settings = settings,
+            )
+        }
+    }
+
+    fun exportSubmissionSql(context: Context, submission: ChecklistSubmissionEntity) {
+        viewModelScope.launch {
+            val checklist = repository.getAllChecklists().first().find { it.id == submission.checklistid }
+            val questions = questionRepository.getChecklistQuestionsByChecklistId(submission.checklistid).first()
+            val answers = answerRepository.getAllChecklistAnswers().first()
+            SqlExporter.exportSubmissionAsSql(
+                context = context,
+                submission = submission,
+                checklist = checklist,
+                questions = questions,
+                answers = answers,
+            )
+            _userMessage.value = "SQL export saved to Downloads"
+        }
     }
 
     fun openEditSubmission(submission: ChecklistSubmissionEntity) {
@@ -502,9 +590,16 @@ class ChecklistViewModel(
         updatedAnswersMap: Map<Int, AnswerInput>,
     ) {
         viewModelScope.launch {
-            submissionRepository.updateChecklistSubmission(updatedSubmission)
+            val questions = questionRepository.getChecklistQuestionsByChecklistId(updatedSubmission.checklistid).first()
+            val allRequiredAnswered = questions.all { q ->
+                !q.required || updatedAnswersMap[q.id]?.value?.isNotBlank() == true
+            }
+            val status = if (allRequiredAnswered) "COMPLETED" else "IN_PROGRESS"
 
-            val existingAnswers = answerRepository.getChecklistAnswersListBySubmissionId(updatedSubmission.id)
+            val finalSubmission = updatedSubmission.copy(status = status)
+            submissionRepository.updateChecklistSubmission(finalSubmission)
+
+            val existingAnswers = answerRepository.getChecklistAnswersListBySubmissionId(finalSubmission.id)
             val existingAnswerByQuestionMap = existingAnswers.associateBy { it.questionid }
 
             updatedAnswersMap.forEach { (questionId, newAnswerInput) ->
@@ -520,7 +615,7 @@ class ChecklistViewModel(
                     }
                 } else if (newAnswerInput.value.isNotBlank() || !newAnswerInput.notes.isNullOrBlank()) {
                     val newAnswer = ChecklistAnswerEntity(
-                        submissionid = updatedSubmission.id,
+                        submissionid = finalSubmission.id,
                         questionid = questionId,
                         value = newAnswerInput.value,
                         notes = newAnswerInput.notes?.ifBlank { null },
@@ -530,7 +625,16 @@ class ChecklistViewModel(
                 }
             }
 
-            _userMessage.value = "Submission updated successfully"
+            if (status == "COMPLETED") {
+                val checklist = repository.getAllChecklists().first().find { it.id == finalSubmission.checklistid }
+                val allAnswers = answerRepository.getAllChecklistAnswers().first()
+                val settings = settingsRepository.userSettings.first()
+                PdfExporter.savePdfToMyChecks(context, finalSubmission, checklist, questions, allAnswers, settings)
+                SqlExporter.saveSqlToMyChecks(context, finalSubmission, checklist, questions, allAnswers)
+                _userMessage.value = "Submission completed! PDF & SQL saved to 'MyChecks'"
+            } else {
+                _userMessage.value = "Submission updated (In Progress)"
+            }
             closeEditSubmission()
         }
     }
@@ -574,6 +678,8 @@ class ChecklistViewModel(
         options: String,
         required: Boolean,
         sortno: Int = 0,
+        minValue: Double? = null,
+        maxValue: Double? = null,
     ) {
         val checklistId = _selectedChecklistForQuestions.value?.id ?: return
         val trimmedTitle = title.trim()
@@ -592,6 +698,8 @@ class ChecklistViewModel(
                     type = type,
                     options = if (type == "combobox") options.trim() else null,
                     required = required,
+                    minValue = if (type == "number") minValue else null,
+                    maxValue = if (type == "number") maxValue else null,
                     timestamp = System.currentTimeMillis(),
                 )
                 questionRepository.insertChecklistQuestion(newQuestion)
@@ -605,6 +713,8 @@ class ChecklistViewModel(
                     type = type,
                     options = if (type == "combobox") options.trim() else null,
                     required = required,
+                    minValue = if (type == "number") minValue else null,
+                    maxValue = if (type == "number") maxValue else null,
                     timestamp = System.currentTimeMillis(),
                 )
                 questionRepository.updateChecklistQuestion(updatedQuestion)
@@ -613,6 +723,7 @@ class ChecklistViewModel(
             dismissAddEditQuestionDialog()
         }
     }
+
 
     fun moveQuestionUp(question: ChecklistQuestionEntity) {
         val currentQuestions = _questions.value
@@ -703,6 +814,30 @@ class ChecklistViewModel(
         }
     }
 
+    fun updatePdfHeaderTitle(title: String) {
+        viewModelScope.launch { settingsRepository.updatePdfHeaderTitle(title) }
+    }
+
+    fun updatePdfIncludeTimestamp(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeTimestamp(include) }
+    }
+
+    fun updatePdfIncludeInspector(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeInspector(include) }
+    }
+
+    fun updatePdfIncludeUnansweredQuestions(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeUnansweredQuestions(include) }
+    }
+
+    fun updatePdfIncludeAnswerNotes(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeAnswerNotes(include) }
+    }
+
+    fun updatePdfCompactAnswerLayout(compact: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfCompactAnswerLayout(compact) }
+    }
+
     fun userMessageShown() {
         _userMessage.value = null
     }
@@ -716,6 +851,7 @@ class ChecklistViewModel(
             categoryRepository: CategoryRepository,
             submissionRepository: ChecklistSubmissionRepository,
             answerRepository: ChecklistAnswerRepository,
+            context: Context,
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
@@ -728,6 +864,7 @@ class ChecklistViewModel(
                         categoryRepository,
                         submissionRepository,
                         answerRepository,
+                        context,
                     ) as T
                 }
             }

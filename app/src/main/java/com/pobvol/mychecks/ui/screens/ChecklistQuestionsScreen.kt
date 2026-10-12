@@ -1,5 +1,6 @@
 package com.pobvol.mychecks.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +18,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.material.icons.automirrored.rounded.HelpCenter
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
@@ -64,19 +68,22 @@ fun ChecklistQuestionsScreen(
     checklist: ChecklistEntity,
     uiState: ChecklistUiState,
     onBackClick: () -> Unit,
+    onOpenHelpClick: () -> Unit = {},
     onAddQuestionClick: () -> Unit,
     onEditQuestionClick: (ChecklistQuestionEntity) -> Unit,
     onDeleteQuestionClick: (ChecklistQuestionEntity) -> Unit,
     onMoveQuestionUp: (ChecklistQuestionEntity) -> Unit = {},
     onMoveQuestionDown: (ChecklistQuestionEntity) -> Unit = {},
     onDismissAddEditQuestionDialog: () -> Unit,
-    onSaveQuestion: (title: String, description: String, type: String, options: String, required: Boolean, sortno: Int) -> Unit,
+    onSaveQuestion: (title: String, description: String, type: String, options: String, required: Boolean, sortno: Int, minValue: Double?, maxValue: Double?) -> Unit,
     onDismissDeleteQuestionDialog: () -> Unit,
     onConfirmDeleteQuestion: () -> Unit,
     onUserMessageShown: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+
+    BackHandler(onBack = onBackClick)
 
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let { message ->
@@ -109,6 +116,14 @@ fun ChecklistQuestionsScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.back_to_checklists),
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onOpenHelpClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Help,
+                            contentDescription = stringResource(R.string.help),
                         )
                     }
                 },
@@ -390,10 +405,11 @@ fun ChecklistQuestionsScreenPreview() {
             onMoveQuestionUp = {},
             onMoveQuestionDown = {},
             onDismissAddEditQuestionDialog = {},
-            onSaveQuestion = { _, _, _, _, _, _ -> },
+            onSaveQuestion = { _, _, _, _, _, _, _, _ -> },
             onDismissDeleteQuestionDialog = {},
             onConfirmDeleteQuestion = {},
             onUserMessageShown = {},
+            onOpenHelpClick = {},
         )
     }
 }

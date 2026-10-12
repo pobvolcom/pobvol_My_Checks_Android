@@ -18,7 +18,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         ChecklistSubmissionEntity::class,
         ChecklistAnswerEntity::class,
     ],
-    version = 13,
+    version = 14,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -140,6 +140,13 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_13_14 = object : Migration(13, 14) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `checklist_questions` ADD COLUMN `minValue` REAL DEFAULT NULL")
+                db.execSQL("ALTER TABLE `checklist_questions` ADD COLUMN `maxValue` REAL DEFAULT NULL")
+            }
+        }
+
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -148,7 +155,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "mychecksdb.sqlite3",
                 )
-                    .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
+                    .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14)
                     .fallbackToDestructiveMigration(true)
                     .addCallback(
                         object : Callback() {
@@ -168,6 +175,23 @@ abstract class AppDatabase : RoomDatabase() {
 
                                 db.execSQL("INSERT OR IGNORE INTO categories (category, title) VALUES ('HEALTH', 'Health')")
                                 db.execSQL("INSERT OR IGNORE INTO categories (category, title) VALUES ('UVV', 'UVV')")
+
+                                db.execSQL("INSERT OR IGNORE INTO checklists (id, title, language, description, category, icon, timestamp) VALUES (1,'UVV Prüfung Flurförderzeuge','English','Beispiel für eine UVV Checkliste','UVV','',1791566533405)")
+
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (1,1,2,'Abgas','','combobox','ohne erkennbare Mängel, Reparatur erforderlich, Mängel beseitigt',1,1791565513627,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (2,1,3,'Bereifung','','combobox','ohne erkennbare Mängel, Reparatur erforderlich, Mängel beseitigt',1,1791565540674,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (3,1,4,'DGUV V3 Ladegerät','','combobox','ohne erkennbare Mängel, Reparatur erforderlich, Mängel beseitigt',1,1791565566843,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (4,1,5,'Elektrische Ausrüstung','','combobox','ohne erkennbare Mängel, Reparatur erforderlich, Mängel beseitigt',1,1791565590303,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (5,1,6,'Fahrersitz und Bedienelemente','','combobox','ohne erkennbare Mängel, Reparatur erforderlich, Mängel beseitigt',1,1791565648815,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (6,1,7,'Gasanlage','','combobox','ohne erkennbare Mängel, Reparatur erforderlich, Mängel beseitigt',1,1791565668282,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (7,1,8,'Hubwerk','','combobox','ohne erkennbare Mängel, Reparatur erforderlich, Mängel beseitigt',1,1791565686399,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (8,1,9,'Hydrauliksystem','','combobox','ohne erkennbare Mängel, Reparatur erforderlich, Mängel beseitigt',1,1791565707843,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (9,1,10,'Ketten','','combobox','ohne erkennbare Mängel, Reparatur erforderlich, Mängel beseitigt',1,1791565730095,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (10,1,11,'Rahmen','','combobox','ohne erkennbare Mängel, Reparatur erforderlich, Mängel beseitigt',1,1791565750737,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (11,1,13,'Plakette erteilt?','','checkbox',NULL,1,1791565490961,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (12,1,12,'Sicherheitsausrüstung','','combobox','ohne erkennbare Mängel, Reparatur erforderlich, Mängel beseitigt',1,1791565796128,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES (13,1,1,'Kunde und Flurförderzeug','Daten zu Kunde und Flurförderzeug erfassn. Diese können auch von einem NFC Tag gelesen werden, wenn das benutzte Smartphen/Tablet NFC unterstützt.','nfc',NULL,1,1791719679758,NULL,NULL)")
+
                             }
                         },
                     )

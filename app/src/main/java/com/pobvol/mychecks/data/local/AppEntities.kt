@@ -109,6 +109,8 @@ data class ChecklistQuestionEntity(
     val type: String,
     val options: String?,
     val required: Boolean = true,
+    val minValue: Double? = null,
+    val maxValue: Double? = null,
     val timestamp: Long = System.currentTimeMillis()
 )
 

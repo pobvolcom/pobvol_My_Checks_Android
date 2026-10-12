@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -44,6 +45,7 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import com.pobvol.mychecks.R
 import kotlin.OptIn
 
 @OptIn(ExperimentalGetImage::class, ExperimentalPermissionsApi::class)
@@ -72,7 +74,7 @@ fun QrCodeScannerDialog(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                 )
-                Text("Scan QR Code", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.scan_qr_button), fontWeight = FontWeight.Bold)
             }
         },
         text = {
@@ -166,7 +168,7 @@ fun QrCodeScannerDialog(
                         modifier = Modifier.padding(16.dp),
                     ) {
                         Text(
-                            text = "Camera permission is required to scan QR codes with your device.",
+                            text = stringResource(R.string.camera_permission_required),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -174,7 +176,7 @@ fun QrCodeScannerDialog(
                             onClick = { cameraPermissionState.launchPermissionRequest() },
                             shape = RoundedCornerShape(12.dp),
                         ) {
-                            Text("Grant Camera Permission")
+                            Text(stringResource(R.string.grant_camera_permission))
                         }
                     }
                 }
@@ -182,8 +184,8 @@ fun QrCodeScannerDialog(
                 OutlinedTextField(
                     value = manualQrText,
                     onValueChange = { manualQrText = it },
-                    label = { Text("Manual QR Code / Test Input") },
-                    placeholder = { Text("Enter or simulate QR content") },
+                    label = { Text(stringResource(R.string.manual_qr_input)) },
+                    placeholder = { Text(stringResource(R.string.enter_simulate_qr)) },
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -196,7 +198,7 @@ fun QrCodeScannerDialog(
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text("Simulate QR Scan (Test)")
+                    Text(stringResource(R.string.simulate_qr_scan))
                 }
             }
         },
@@ -210,7 +212,7 @@ fun QrCodeScannerDialog(
                 enabled = manualQrText.isNotBlank(),
                 shape = RoundedCornerShape(12.dp),
             ) {
-                Text("Use Code")
+                Text(stringResource(R.string.use_code))
             }
         },
         dismissButton = {
@@ -218,7 +220,7 @@ fun QrCodeScannerDialog(
                 onClick = onDismiss,
                 shape = RoundedCornerShape(12.dp),
             ) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         },
     )
