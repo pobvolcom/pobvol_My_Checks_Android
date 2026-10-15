@@ -29,11 +29,12 @@ import com.pobvol.mychecks.data.repository.LanguageRepositoryImpl
 import com.pobvol.mychecks.data.repository.SettingsRepositoryImpl
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.ui.ChecklistViewModel
+import com.pobvol.mychecks.ui.screens.ChecklistChartScreen
 import com.pobvol.mychecks.ui.screens.ChecklistListScreen
 import com.pobvol.mychecks.ui.screens.ChecklistQuestionsScreen
 import com.pobvol.mychecks.ui.screens.FillChecklistScreen
-import com.pobvol.mychecks.ui.screens.StartScreen
 import com.pobvol.mychecks.ui.screens.HelpScreen
+import com.pobvol.mychecks.ui.screens.StartScreen
 import com.pobvol.mychecks.ui.screens.SubmissionDetailScreen
 import com.pobvol.mychecks.ui.screens.SubmissionsOverviewScreen
 import com.pobvol.mychecks.ui.theme.mychecksTheme
@@ -103,7 +104,15 @@ class MainActivity : AppCompatActivity() {
                 val selectedChecklistToAnswer = uiState.selectedChecklistToAnswer
                 val selectedChecklistForQuestions = uiState.selectedChecklistForQuestions
 
-                if (uiState.isHelpVisible) {
+                val chartChecklist = uiState.selectedChecklistForChart
+                if (chartChecklist != null) {
+                    ChecklistChartScreen(
+                        checklist = chartChecklist,
+                        uiState = uiState,
+                        onBackClick = viewModel::closeChartScreen,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                } else if (uiState.isHelpVisible) {
                     HelpScreen(
                         uiState = uiState,
                         onBackClick = viewModel::closeHelpScreen,
@@ -119,6 +128,7 @@ class MainActivity : AppCompatActivity() {
                         onOpenHelpClick = viewModel::openHelpScreen,
                         onSaveSubmission = viewModel::updateSubmissionAndAnswers,
                         onUserMessageShown = viewModel::userMessageShown,
+                        onNfcTagConsumed = viewModel::clearNfcTag,
                         modifier = Modifier.fillMaxSize(),
                     )
                 } else if (uiState.isSubmissionsOverviewVisible) {
@@ -159,6 +169,7 @@ class MainActivity : AppCompatActivity() {
                             )
                         },
                         onUserMessageShown = viewModel::userMessageShown,
+                        onNfcTagConsumed = viewModel::clearNfcTag,
                         modifier = Modifier.fillMaxSize(),
                     )
                 } else if (selectedChecklistForQuestions != null) {
@@ -190,6 +201,7 @@ class MainActivity : AppCompatActivity() {
                         onQuestionsClick = viewModel::openQuestionsForChecklist,
                         onEditClick = viewModel::openEditDialog,
                         onDeleteClick = viewModel::requestDeleteConfirmation,
+                        onChartClick = viewModel::openChartForChecklist,
                         onDismissAddEditDialog = viewModel::dismissAddEditDialog,
                         onSaveChecklist = viewModel::saveChecklist,
                         onDismissDeleteDialog = viewModel::dismissDeleteConfirmation,
@@ -200,15 +212,26 @@ class MainActivity : AppCompatActivity() {
                         /*onOpenSubmissionsOverviewClick = viewModel::openSubmissionsOverview,*/
                         /*onOpenSettingsClick = viewModel::openSettingsDialog,*/
                         onDismissSettingsDialog = viewModel::dismissSettingsDialog,
+                        onOpenPdfSettingsClick = viewModel::openPdfSettings,
+                        onDismissPdfSettingsDialog = viewModel::closePdfSettings,
                         onThemeModeSelected = viewModel::updateThemeMode,
                         onLanguageSelected = viewModel::updatePreferredLanguage,
                         onUserNameChanged = viewModel::updateUserName,
                         onPdfHeaderTitleChanged = viewModel::updatePdfHeaderTitle,
-                        onPdfIncludeTimestampChanged = viewModel::updatePdfIncludeTimestamp,
+                        onPdfIncludeChecklistTitleChanged = viewModel::updatePdfIncludeChecklistTitle,
+                        onPdfIncludeDateChanged = viewModel::updatePdfIncludeDate,
                         onPdfIncludeInspectorChanged = viewModel::updatePdfIncludeInspector,
+                        onPdfIncludeStatusChanged = viewModel::updatePdfIncludeStatus,
+                        onPdfIncludeNotesChanged = viewModel::updatePdfIncludeNotes,
+                        onPdfIncludeTimestampChanged = viewModel::updatePdfIncludeTimestamp,
+                        onPdfIncludePageNumberChanged = viewModel::updatePdfIncludePageNumber,
                         onPdfIncludeUnansweredQuestionsChanged = viewModel::updatePdfIncludeUnansweredQuestions,
+                        onPdfIncludeQuestionTitleChanged = viewModel::updatePdfIncludeQuestionTitle,
+                        onPdfIncludeAnswerValueChanged = viewModel::updatePdfIncludeAnswerValue,
                         onPdfIncludeAnswerNotesChanged = viewModel::updatePdfIncludeAnswerNotes,
+                        onPdfIncludeAnswerPictureChanged = viewModel::updatePdfIncludeAnswerPicture,
                         onPdfCompactAnswerLayoutChanged = viewModel::updatePdfCompactAnswerLayout,
+                        onPdfFooterTextChanged = viewModel::updatePdfFooterText,
                         onAddCategory = viewModel::addCategory,
                         modifier = Modifier.fillMaxSize(),
                     )
@@ -220,15 +243,26 @@ class MainActivity : AppCompatActivity() {
                         onOpenSettingsClick = viewModel::openSettingsDialog,
                         onOpenHelpClick = viewModel::openHelpScreen,
                         onDismissSettingsDialog = viewModel::dismissSettingsDialog,
+                        onOpenPdfSettingsClick = viewModel::openPdfSettings,
+                        onDismissPdfSettingsDialog = viewModel::closePdfSettings,
                         onThemeModeSelected = viewModel::updateThemeMode,
                         onLanguageSelected = viewModel::updatePreferredLanguage,
                         onUserNameChanged = viewModel::updateUserName,
                         onPdfHeaderTitleChanged = viewModel::updatePdfHeaderTitle,
-                        onPdfIncludeTimestampChanged = viewModel::updatePdfIncludeTimestamp,
+                        onPdfIncludeChecklistTitleChanged = viewModel::updatePdfIncludeChecklistTitle,
+                        onPdfIncludeDateChanged = viewModel::updatePdfIncludeDate,
                         onPdfIncludeInspectorChanged = viewModel::updatePdfIncludeInspector,
+                        onPdfIncludeStatusChanged = viewModel::updatePdfIncludeStatus,
+                        onPdfIncludeNotesChanged = viewModel::updatePdfIncludeNotes,
+                        onPdfIncludeTimestampChanged = viewModel::updatePdfIncludeTimestamp,
+                        onPdfIncludePageNumberChanged = viewModel::updatePdfIncludePageNumber,
                         onPdfIncludeUnansweredQuestionsChanged = viewModel::updatePdfIncludeUnansweredQuestions,
+                        onPdfIncludeQuestionTitleChanged = viewModel::updatePdfIncludeQuestionTitle,
+                        onPdfIncludeAnswerValueChanged = viewModel::updatePdfIncludeAnswerValue,
                         onPdfIncludeAnswerNotesChanged = viewModel::updatePdfIncludeAnswerNotes,
+                        onPdfIncludeAnswerPictureChanged = viewModel::updatePdfIncludeAnswerPicture,
                         onPdfCompactAnswerLayoutChanged = viewModel::updatePdfCompactAnswerLayout,
+                        onPdfFooterTextChanged = viewModel::updatePdfFooterText,
                         onAddCategory = viewModel::addCategory,
                         onDeleteCategory = viewModel::deleteCategory,
                         onUserMessageShown = viewModel::userMessageShown,

@@ -5,7 +5,7 @@
     <string name="submissions">Meine Protokolle</string>
     <string name="settings">Einstellungen</string>
     <string name="preferred_language">Meine Sprache</string>
-    <string name="user_name">Mein Name</string>
+    <string name="user_name">Prüfer</string>
     <string name="theme_mode">Design-Modus</string>
     <string name="save">Speichern</string>
     <string name="cancel">Abbrechen</string>
@@ -68,7 +68,7 @@
     <string name="search_submissions">Protokolle suchen...</string>
     <string name="filter_prefix">Filter: %1$s</string>
     <string name="clear_checklist_filter">Filter löschen</string>
-    <string name="no_submissions_recorded">Noch keine Ergebnisse erfasst</string>
+    <string name="no_submissions_recorded">Keine Protokolle gefunden</string>
     <string name="no_submissions_hint">Eine Checkliste auswählen und die Ergebnisse erfassen.</string>
     <string name="delete_submission_title">Protokoll löschen?</string>
     <string name="delete_submission_message">Möchten Sie dieses Protokoll wirklich löschen? Alle zugehörigen Daten werden ebenfalls entfernt.</string>
@@ -78,7 +78,7 @@
     <string name="check_date">Datum (dd.MM.yyyy)</string>
     <string name="no_questions_for_submission">Keine Checkpunkte/Fragen für dieses Protokoll gefunden</string>
     <string name="fill_out_checklist">Checkliste ausfüllen</string>
-    <string name="inspector_user_name">Name für das Protokoll</string>
+    <string name="inspector_user_name">Prüfer</string>
     <string name="notes_optional">Notizen (Optional)</string>
     <string name="no_questions_in_checklist">Keine Checkpunkte/Fragen in dieser Checkliste</string>
     <string name="questions_need_to_be_added">Es müssen Checkpunkte/Fragen zu dieser Checkliste hinzugefügt werden, bevor Ergebnisse erfasst werden können.</string>
@@ -106,7 +106,7 @@
     <string name="enter_simulate_qr">Eingabe des QR-Codes simulieren</string>
     <string name="simulate_qr_scan">QR-Scan simulieren</string>
     <string name="use_code">Code verwenden</string>
-    <string name="enter_user_name">Name für das Protokoll eingeben</string>
+    <string name="enter_user_name">Prüfer</string>
     <string name="delete_category_desc">Kategorie löschen</string>
     <string name="move_question_up">Frage nach oben</string>
     <string name="move_question_down">Frage nach unten</string>
@@ -131,20 +131,80 @@
     <string name="msg_question_deleted">Checkpunkt/Frage erfolgreich gelöscht</string>
     <string name="help">Benutzerhilfe</string>
     <string name="help_welcome_title">Willkommen bei My Checks</string>
-    <string name="help_welcome_desc">Ihr moderner nativer Android-Begleiter für Sicherheitsinspektionen, operative Checklisten, Einreichungen und PDF-Berichte.</string>
-    <string name="help_sec1_title">1. Dashboard &amp; Navigation</string>
-    <string name="help_sec1_desc">Das Dashboard ist Ihr Startpunkt. Nutzen Sie die oberen Karten zur Navigation zu Checklisten oder Einreichungen und greifen Sie über die obere Leiste auf Einstellungen oder Hilfe zu.</string>
-    <string name="help_sec2_title">2. Checklisten verwalten</string>
-    <string name="help_sec2_desc">Erstellen, suchen und filtern Sie Checklisten nach Kategorie. Jede Checklistenkarte ermöglicht das Ausfüllen, Verwalten von Fragen, Bearbeiten oder Löschen mit automatischer Kaskadierung.</string>
-    <string name="help_sec3_title">3. Fragen &amp; Sortierung</string>
-    <string name="help_sec3_desc">Fügen Sie Fragen mit benutzerdefinierten Antworttypen hinzu (Text, Nummer, Kontrollkästchen, Kombinationsfeld, NFC, QR). Verwenden Sie Aufwärts-/Abwärts-Pfeile, um Fragen einfach neu zu sortieren.</string>
-    <string name="help_sec4_title">4. Unterstützte Antworttypen</string>
-    <string name="help_sec4_desc">Text &amp; Nummer: Flexible Textkommentare und validierte numerische Eingaben. Kontrollkästchen &amp; Kombinationsfeld: Ja/Nein-Umschalter und Einzelauswahloptionen. NFC &amp; QR-Code: Physische NFC-Tags antippen oder QR-Codes mit der Kamera scannen.</string>
-    <string name="help_sec5_title">5. Ausfüllen &amp; Einreichen</string>
-    <string name="help_sec5_desc">Geben Sie Prüferdetails, Prüfdatum und optionale Notizen ein. Beantworten Sie alle erforderlichen Checklistenfragen und senden Sie die Ergebnisse sicher ab.</string>
-    <string name="help_sec6_title">6. Einreichungen &amp; PDF-Export</string>
-    <string name="help_sec6_desc">Sehen Sie aufgezeichnete Einreichungen an, filtern Sie nach Checkliste oder Status, bearbeiten Sie Antworten und exportieren Sie sofort professionelle A4-PDF-Inspektionsberichte.</string>
-    <string name="help_sec7_title">7. App-Einstellungen &amp; Kategorien</string>
+    <string name="help_welcome_desc">Checklisten schnell und einfach erstellen | Ergebnisse protokollieren | Freie Software | Open Source | Android Smartphones und Tablets</string>
+    <string name="help_sec1_title">Dashboard &amp; Navigation</string>
+    <string name="help_sec1_desc">Das Dashboard ist Ihr Startpunkt. Nutzen Sie die oberen Karten zur Navigation zu Checklisten oder Protokollen und greifen Sie über die obere Leiste auf Einstellungen oder Hilfe zu.</string>
+    <string name="help_sec2_title">Meine Checklisten</string>
+    <string name="help_sec2_desc">Auf diesem Bildschirm verwalten Sie Ihre Checklisten und starten die Erfassung einer Prüfung.\n
+        \n
+        ** Checkliste hinzufügen **: Neue Checklisten erstellen Sie recht schnell. Klicken Sie einfach auf den **`+`** Button in der unteren rechten Ecke. Es öffnet sich der Dialog "Checkliste hinzufügen". Tragen Sie im Feld Titel einen Namen für Ihre neue Checkliste ein, ordnen Sie eine Kategorie zu und wenn Sie mögen, geben Sie eine kurze Beschreibung ein. Mit dem Button "Hinzufügen" werden Ihre Eingaben gespeichert, Ihre neue Checkliste wird erstellt und in der Übersicht angezeigt.\n
+        \n
+        ** Checkliste suchen **: Tippen Sie auf das Suchsymbol (🔍) in der oberen Leiste, um Checklisten nach Titel, Beschreibung oder Kategorie zu finden.\n
+        \n
+        ** Checklisten nach Kategorie filtern **: Filtern Sie die Liste, indem Sie auf eine Kategorie tippen (Health, UVV, usw.). Ein Klick auf All hebt den Filter wieder auf.\n
+        \n
+        ** Checkliste bearbeiten **: Tippen Sie in einer Checklistenkarte auf das Ändern-Symbol (✏️), öffnet sich das Fenster "Checliste bearbeiten". Hier können Sie den Titel, die Kategorie und die Beschreibung anpassen.\n
+        \n
+        ** Checkpunkte/Fragen **: Tippen Sie in einer Checklistenkarte auf das Frage-Symbol (💬), öffnet sich der Bildschirm "Checkpunkte/Fragen". Hier verwalten Sie die Checkpunkte und Fragen für die gewählte Checkliste.\n
+        \n
+        ** Checkliste löschen **: Tippen Sie in einer Checklistenkarte auf das Lösch-Symbol (🗑️), öffnet sich ein Fenster, in welchem Sie die Löschung bestätigen müssen. Das Löschen einer Checkliste löscht automatisch die zugehörigen Fragen. Bitte beachten Sie: Checklisten, zu denen bereits ein Protokoll erfasst wurde, können nicht gelöscht werden.\n
+        \n
+        ** Prüfung hinzufügen **: Mit einem Klick auf eine Checklistenkarte starten Sie die Erfassung einer Prüfung. Es öffnet sich das Formular "Checkliste ausfüllen".\n
+        \n
+        ** Prüfungsprotokolle anzeigen **: Tippen Sie in einer Checklistenkarte auf das Protokoll-Symbol (📋), öffnet sich der Bildschirm "Meine Protokolle". Dieser listet die Protokolle für die gewählte Checkliste.\n
+        \n
+        ** Chart anzeigen **: Tippen Sie in einer Checklistenkarte auf das Chart-Symbol (📋), öffnet sich der Chart-Bildschirm. Dieser zeigt in einem Chart, wieviele Prüfberichte pro Tag erfasst wurden. Sind Nummernfragen vorhanden, zeigt ein zusätzliches Chart die Kurve für die ersten beiden Werte.</string>
+    <string name="help_sec3_title">Checkpunkte/Fragen</string>
+    <string name="help_sec3_desc">Auf diesem Bildschirm verwalten Sie die Checkpunkte/Fragen einer Checkliste. Dazu werden folgende Antworttypen unterstützt: Text, Zahl, Kontrollkästchen, Auswahlliste, NFC und QR-Code. \n
+        \n
+        ** Text **: Flexible Texteingaben\n
+        \n
+        ** Zahl **: Eingabe von numerischen Werten. Sie können einen Minimum- und einen Maximumwert zuordnen. Diese dürfen dann bei der Eingabe nicht unter- bzw. überschritten werden.\n
+        \n
+        ** Kontrollkästchen **: Ja/Nein-Umschalter\n
+        \n
+        ** Auswahlliste **: Mögliche Optionen müssen kommagetrennt erfasst werden. Eine Option wird dann beim Ausfüllen der Checkliste ausgewählt.\n
+        \n
+        ** NFC **: Physische NFC-Tags auslesen und die Daten übernehmen\n
+        \n
+        ** QR-Code **: QR-Codes mit der Kamera scannen und den enthaltenen Wert in das Antwortfeld übernehmen.\n
+        \n
+        ** Checkpunkt/Frage hinzufügen **: Klicken Sie einfach auf den **`+`** Button in der unteren rechten Ecke.
+        Es öffnet sich der Dialog "Checkpunkt/Frage hinzufügen".
+        Tragen Sie im Feld Titel einen Namen für Ihren neuen Checkpunkt/Frage ein und ordnen Sie einen Antworttyp zu.
+        Abhängig vom Antworttyp sind weitere Angaben erforderlich oder möglich.
+        Wenn Sie mögen, geben Sie eine kurze Beschreibung ein.
+        Sie können auch die Sortiernummer eintragen, das macht die App aber für Sie automatisch.
+        Neue Checkpunkte/Fragen werden automatisch als erforderlich markiert. Ändern Sie diese Einstellung, wenn die Frage nicht unbedingt beantwortet werden muss.
+        Mit dem Button "Speichern" werden Ihre Eingaben gespeichert und in der Übersicht angezeigt.\n
+        \n
+        ** Reihenfolge anpassen **: Zu jedem Eintrag wird die Sortiernummer angezeigt (e.g., #1, #2). Damit wird die Position in der Liste gesteuert. Verwenden Sie die Aufwärts-(↑)/Abwärts-Pfeile(↓), um die Reihenfolge der Fragen anzupassen. Eine Änderung bewirkt, dass die Sortiernummern anderer Einträge automatisch angepasst werden.\n
+        \n
+        ** Checkpunkt/Frage bearbeiten **: Tippen Sie bei einem Eintrag auf das Ändern-Symbol (✏️), öffnet sich der Dialog "Checkpunkt/Frage bearbeiten". Hier können Sie den Titel, die Beschreibung, die Sortiernummer, den Antworttyp anpassen. Natürlich können Sie auch anpassen, ob der Eintrag erforderlich oder optional ist.\n
+        \n
+        ** Checkpunkt/Frage löschen **: Tippen Sie bei einem Eintrag auf das Lösch-Symbol (🗑️), öffnet sich ein Fenster, in welchem Sie die Löschung bestätigen müssen.\n</string>
+    <string name="help_sec4_title">Datensicherheit</string>
+    <string name="help_sec4_desc">Alle Daten (Checklisten, Checkpunkte/Fragen und Prüfergebnisse/Protokolle) werden sicher in Ihrer lokalen Android SQLite-Datenbank mit Fremdschlüsselkaskaden und automatischen Schema-Migrationen gespeichert.\n
+        \nZusätzlich werden die Daten der abgeschlossenen Prüfberichte in dem Geräte-Download-Ordner, Unterordner MyChecks in SQL-Textdateien gespeichert.\n</string>
+    <string name="help_sec5_title">Checkliste ausfüllen</string>
+    <string name="help_sec5_desc">Mit einem Klick auf eine Checklistenkarte starten Sie die Erfassung einer Prüfung. Es öffnet sich das Formular "Checkliste ausfüllen".\n
+        \n
+        ** Prüfer**: Der Prüfername wurde automatisch aus den Einstellungen ausgefüllt. Sie können diesen ändern.\n
+        \n
+        ** Prüfdatum **: Das Datum wurde mit dem aktuellen Datum vorbelegt (dd.MM.yyyyy). Sie können dieses ändern.\n
+        \n
+        ** Status **: Der Status wurde mit "IN_PROGRESS" vorbelegt. Zur Zeit können Sie den Status noch ändern. Das wird aber abgestellt.\n
+        \n
+        ** Notizen **: Wenn Sie mögen, können Sie zusätzliche Angaben zur Prüfung in den Notizen eintragen. Nutzen Sie diese Möglichkeit, da die Notizen in der Protokollübersicht angezeigt werden. Das erleichtert Ihnen das Auffinden einer Prüfung.\n
+        \n
+        ** Checkpunkte/Fragen **: Beantworten Sie nun alle erforderlichen Checklistenfragen. Sie können die Bearbeitung jederzeit speichern und später weitermachen. Nutzen Sie dazu den Speichern-Button im Kopfbereich des Formulars. Zusätzlich finden Sie einen Speicherbutton auch am Ende der Liste. Sollten noch nicht alle erforderlichen Fragen beantwortet sein, wird der Status mit "IN_PROGRESS" vorbelegt. Wenn alle erfordferlichen Checkpunkte/Fragen beantwortet wurden, wird der Status beim Speichern automatisch auf "COMPLETED" geändert.\n
+        \n
+        ** NFC Tags **: Für NFC-Fragen halten Sie einen NFC-Tag an die Rückseite Ihres Geräts, damit dieser gescannt werden kann. Wenn alles geklappt hat, wurden die Daten in das Antwortfeld übernommen. Bitte beachten Sie, dass dazu auf Ihrem Gerät NFC eingeschaltet sein muss.\n
+        \n
+        ** QR-Codes **: Für QR-Code-Fragen tippen Sie auf den Button "QR-Code scannen". Damit öffnet sich der Kamerascanner und Sie können den Code aufnehmen. Wenn alles geklappt hat, wurden die Daten in das Antwortfeld übernommen. Bitte beachten Sie, dass die App dazu Kamera-Berechtigungen benötigt.</string>
+    <string name="help_sec6_title">Protokolle</string>
+    <string name="help_sec6_desc">Sehen Sie aufgezeichnete Protokolle an, filtern Sie nach Checkliste oder Status, bearbeiten Sie Antworten und exportieren Sie sofort A4-PDF-Inspektionsberichte.</string>
+    <string name="help_sec7_title">App-Einstellungen &amp; Kategorien</string>
     <string name="help_sec7_desc">Passen Sie das Erscheinungsbild (System, Hell, Dunkel), die bevorzugte Sprache, den Standard-Prüferbenutzernamen an und verwalten Sie benutzerdefinierte Datenbankkategorien.</string>
     <string name="check_date_label">Prüfdatum: %1$s</string>
     <string name="inspector_label">Prüfer: %1$s</string>
@@ -171,4 +231,90 @@
     <string name="status_completed">Abgeschlossen</string>
     <string name="status_in_progress">in Bearbeitung</string>
     <string name="status_pending">Ausstehend</string>
+    <string name="edit">Ändern</string>
+    <string name="back">Zurück</string>
+    <string name="cannot_delete_checklist_with_submissions">Checkliste kann nicht gelöscht werden, da sie in Protokollen verwendet wird</string>
+    <string name="copyright">Copyright</string>
+    <string name="copyrightText">Die Softwarelösung pobvol My Checks ist Freie Software und wird quelloffen ausgeliefert. Sie können die Lösung unter den Bedingungen der GNU General Public License, wie von der Free Software Foundation, Version 3 der Lizenz oder jeder neueren veröffentlichten Version, herunterladen, installieren, betreiben, modifizieren und weiter verteilen. Beiträge zur Verbesserung der Lösung sind willkommen.\n
+        \n
+        Die Lösung wird in der Hoffnung, dass sie nützlich sein wird, aber OHNE JEDE GEWÄHRLEISTUNG, bereitgestellt; sogar ohne die implizite Gewährleistung der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.\n
+        \n
+        Copyright @ 2026 Volker Pobloth. Entwickelt mit Google Android Studio und Gemini 3.6 Flash.\n
+        \n
+    </string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
+        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
+        dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad
+        litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend
+        diam, vel rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a,
+        ornare ex. Sed rhoncus est ut libero porta lobortis. Fusce in dictum tellus.\n\n
+        Suspendisse interdum ornare ante. Aliquam nec cursus lorem. Morbi id magna felis. Vivamus
+        egestas, est a condimentum egestas, turpis nisl iaculis ipsum, in dictum tellus dolor sed
+        neque. Morbi tellus erat, dapibus ut sem a, iaculis tincidunt dui. Interdum et malesuada
+        fames ac ante ipsum primis in faucibus. Curabitur et eros porttitor, ultricies urna vitae,
+        molestie nibh. Phasellus at commodo eros, non aliquet metus. Sed maximus nisl nec dolor
+        bibendum, vel congue leo egestas.\n\n
+        Sed interdum tortor nibh, in sagittis risus mollis quis. Curabitur mi odio, condimentum sit
+        amet auctor at, mollis non turpis. Nullam pretium libero vestibulum, finibus orci vel,
+        molestie quam. Fusce blandit tincidunt nulla, quis sollicitudin libero facilisis et. Integer
+        interdum nunc ligula, et fermentum metus hendrerit id. Vestibulum lectus felis, dictum at
+        lacinia sit amet, tristique id quam. Cras eu consequat dui. Suspendisse sodales nunc ligula,
+        in lobortis sem porta sed. Integer id ultrices magna, in luctus elit. Sed a pellentesque
+        est.\n\n
+        Aenean nunc velit, lacinia sed dolor sed, ultrices viverra nulla. Etiam a venenatis nibh.
+        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nulla, id elementum leo dui
+        non lorem. Nam mollis ipsum quis auctor varius. Quisque elementum eu libero sed commodo. In
+        eros nisl, imperdiet vel imperdiet et, scelerisque a mauris. Pellentesque varius ex nunc,
+        quis imperdiet eros placerat ac. Duis finibus orci et est auctor tincidunt. Sed non viverra
+        ipsum. Nunc quis augue egestas, cursus lorem at, molestie sem. Morbi a consectetur ipsum, a
+        placerat diam. Etiam vulputate dignissim convallis. Integer faucibus mauris sit amet finibus
+        convallis.\n\n
+        Phasellus in aliquet mi. Pellentesque habitant morbi tristique senectus et netus et
+        malesuada fames ac turpis egestas. In volutpat arcu ut felis sagittis, in finibus massa
+        gravida. Pellentesque id tellus orci. Integer dictum, lorem sed efficitur ullamcorper,
+        libero justo consectetur ipsum, in mollis nisl ex sed nisl. Donec maximus ullamcorper
+        sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus
+        libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
+        vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
+    </string>
+    <string name="picture_optional">Bild (Optional)</string>
+    <string name="take_photo">Foto aufnehmen</string>
+    <string name="upload_image">Bild hochladen</string>
+    <string name="camera">Kamera</string>
+    <string name="upload">Hochladen</string>
+    <string name="remove">Entfernen</string>
+    <string name="pdf_report_designer">PDF-Berichts-Designer</string>
+    <string name="pdf_header_section">Kopfzeilen-Design</string>
+    <string name="pdf_answer_section">Antworten-Design</string>
+    <string name="pdf_footer_section">Fußzeilen-Design</string>
+    <string name="pdf_include_checklist_title">Checklisten-Titel einschließen</string>
+    <string name="pdf_include_date">Prüfdatum einschließen</string>
+    <string name="pdf_include_status">Status einschließen</string>
+    <string name="pdf_include_notes">Notizen einschließen</string>
+    <string name="pdf_include_page_number">Seitenzahl einschließen</string>
+    <string name="pdf_include_question_title">Fragentitel einschließen</string>
+    <string name="pdf_include_answer_value">Antwortwert einschließen</string>
+    <string name="pdf_include_answer_picture">Antwortbild einschließen</string>
+    <string name="pdf_footer_text_label">Fußzeilentext / Haftungsausschluss</string>
+    <string name="configure_pdf_settings">PDF-Bericht Layout anpassen...</string>
+    <string name="checklist_analytics">Checklisten-Analyse</string>
+    <string name="submissions_per_day">Protokolle pro Tag</string>
+    <string name="pdf_date_label">Prüfdatum: %1$s</string>
+    <string name="pdf_inspector_label">Prüfer: %1$s</string>
+    <string name="pdf_status_label">Status: %1$s</string>
+    <string name="pdf_notes_label">Notizen: %1$s</string>
+    <string name="pdf_answer_label">Antwort: %1$s</string>
+    <string name="pdf_generated_on">Erstellt am %1$s</string>
+    <string name="pdf_page_number">Seite %1$d</string>
+    <string name="pdf_no_answer">(Keine Antwort)</string>
+    <string name="pdf_yes">Ja</string>
+    <string name="pdf_no">Nein</string>
 </resources>

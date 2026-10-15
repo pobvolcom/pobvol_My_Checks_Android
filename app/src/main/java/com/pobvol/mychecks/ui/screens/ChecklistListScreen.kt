@@ -31,7 +31,6 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -68,6 +67,7 @@ import com.pobvol.mychecks.ui.ChecklistUiState
 import com.pobvol.mychecks.ui.components.AddEditChecklistDialog
 import com.pobvol.mychecks.ui.components.ChecklistItem
 import com.pobvol.mychecks.ui.components.DeleteChecklistConfirmationDialog
+import com.pobvol.mychecks.ui.components.PdfSettingsDialog
 import com.pobvol.mychecks.ui.components.SettingsDialog
 import com.pobvol.mychecks.ui.theme.mychecksTheme
 
@@ -83,6 +83,7 @@ fun ChecklistListScreen(
     onQuestionsClick: (ChecklistEntity) -> Unit,
     onEditClick: (ChecklistEntity) -> Unit,
     onDeleteClick: (ChecklistEntity) -> Unit,
+    onChartClick: (ChecklistEntity) -> Unit = {},
     onDismissAddEditDialog: () -> Unit,
     onSaveChecklist: (title: String, language: String, description: String, category: String, icon: String) -> Unit,
     onDismissDeleteDialog: () -> Unit,
@@ -91,15 +92,26 @@ fun ChecklistListScreen(
     onBackClick: () -> Unit = {},
     onOpenHelpClick: () -> Unit = {},
     onDismissSettingsDialog: () -> Unit = {},
+    onOpenPdfSettingsClick: () -> Unit = {},
+    onDismissPdfSettingsDialog: () -> Unit = {},
     onThemeModeSelected: (ThemeMode) -> Unit = {},
     onLanguageSelected: (String) -> Unit = {},
     onUserNameChanged: (String) -> Unit = {},
     onPdfHeaderTitleChanged: (String) -> Unit = {},
-    onPdfIncludeTimestampChanged: (Boolean) -> Unit = {},
+    onPdfIncludeChecklistTitleChanged: (Boolean) -> Unit = {},
+    onPdfIncludeDateChanged: (Boolean) -> Unit = {},
     onPdfIncludeInspectorChanged: (Boolean) -> Unit = {},
+    onPdfIncludeStatusChanged: (Boolean) -> Unit = {},
+    onPdfIncludeNotesChanged: (Boolean) -> Unit = {},
+    onPdfIncludeTimestampChanged: (Boolean) -> Unit = {},
+    onPdfIncludePageNumberChanged: (Boolean) -> Unit = {},
     onPdfIncludeUnansweredQuestionsChanged: (Boolean) -> Unit = {},
+    onPdfIncludeQuestionTitleChanged: (Boolean) -> Unit = {},
+    onPdfIncludeAnswerValueChanged: (Boolean) -> Unit = {},
     onPdfIncludeAnswerNotesChanged: (Boolean) -> Unit = {},
+    onPdfIncludeAnswerPictureChanged: (Boolean) -> Unit = {},
     onPdfCompactAnswerLayoutChanged: (Boolean) -> Unit = {},
+    onPdfFooterTextChanged: (String) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
     modifier: Modifier = Modifier
@@ -358,7 +370,8 @@ fun ChecklistListScreen(
                             onFillClick = onSelectChecklist,
                             onQuestionsClick = onQuestionsClick,
                             onEditClick = onEditClick,
-                            onDeleteClick = onDeleteClick
+                            onDeleteClick = onDeleteClick,
+                            onChartClick = onChartClick,
                         )
                     }
                 }
@@ -390,15 +403,32 @@ fun ChecklistListScreen(
                 onThemeModeSelected = onThemeModeSelected,
                 onLanguageSelected = onLanguageSelected,
                 onUserNameChanged = onUserNameChanged,
-                onPdfHeaderTitleChanged = onPdfHeaderTitleChanged,
-                onPdfIncludeTimestampChanged = onPdfIncludeTimestampChanged,
-                onPdfIncludeInspectorChanged = onPdfIncludeInspectorChanged,
-                onPdfIncludeUnansweredQuestionsChanged = onPdfIncludeUnansweredQuestionsChanged,
-                onPdfIncludeAnswerNotesChanged = onPdfIncludeAnswerNotesChanged,
-                onPdfCompactAnswerLayoutChanged = onPdfCompactAnswerLayoutChanged,
+                onOpenPdfSettingsClick = onOpenPdfSettingsClick,
                 onAddCategory = onAddCategory,
                 onDeleteCategory = onDeleteCategory,
                 onDismissRequest = onDismissSettingsDialog,
+            )
+        }
+
+        if (uiState.isPdfSettingsVisible) {
+            PdfSettingsDialog(
+                userSettings = uiState.userSettings,
+                onPdfHeaderTitleChanged = onPdfHeaderTitleChanged,
+                onPdfIncludeChecklistTitleChanged = onPdfIncludeChecklistTitleChanged,
+                onPdfIncludeDateChanged = onPdfIncludeDateChanged,
+                onPdfIncludeInspectorChanged = onPdfIncludeInspectorChanged,
+                onPdfIncludeStatusChanged = onPdfIncludeStatusChanged,
+                onPdfIncludeNotesChanged = onPdfIncludeNotesChanged,
+                onPdfIncludeTimestampChanged = onPdfIncludeTimestampChanged,
+                onPdfIncludePageNumberChanged = onPdfIncludePageNumberChanged,
+                onPdfIncludeUnansweredQuestionsChanged = onPdfIncludeUnansweredQuestionsChanged,
+                onPdfIncludeQuestionTitleChanged = onPdfIncludeQuestionTitleChanged,
+                onPdfIncludeAnswerValueChanged = onPdfIncludeAnswerValueChanged,
+                onPdfIncludeAnswerNotesChanged = onPdfIncludeAnswerNotesChanged,
+                onPdfIncludeAnswerPictureChanged = onPdfIncludeAnswerPictureChanged,
+                onPdfCompactAnswerLayoutChanged = onPdfCompactAnswerLayoutChanged,
+                onPdfFooterTextChanged = onPdfFooterTextChanged,
+                onDismissRequest = onDismissPdfSettingsDialog,
             )
         }
     }

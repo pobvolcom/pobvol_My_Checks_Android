@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.FactCheck
 import androidx.compose.material.icons.automirrored.rounded.Help
-import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
@@ -30,7 +29,6 @@ import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -199,7 +197,9 @@ fun SubmissionsOverviewScreen(
                 }
             }
 
-            val statuses = listOf("All", "COMPLETED", "IN_PROGRESS", "PENDING")
+            //val statuses = listOf("All", "COMPLETED", "IN_PROGRESS", "PENDING")
+            val statuses = listOf("All", "COMPLETED", "IN_PROGRESS")
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -334,8 +334,21 @@ fun SubmissionItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+
+                Icon(
+                    imageVector = Icons.Rounded.Schedule,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
+                    modifier = Modifier.size(16.dp),
+                )
+
+                /*
+                val inspectorStr =
+                    submission.inspector?.ifBlank { null } ?: stringResource(R.string.anonymous)
+                */
+
                 Text(
-                    text = checklistTitle,
+                    text = " " + submission.date + " / " + checklistTitle,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -344,102 +357,93 @@ fun SubmissionItem(
                     modifier = Modifier.weight(1f),
                 )
 
+            }
+
+            if (!submission.notes.isNullOrBlank()) {
+                // Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    //text = stringResource(R.string.notes_label, submission.notes),
+                    text = submission.notes,
+                    style = MaterialTheme.typography.bodyMedium,
+                    /* color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.75f), */
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+            // Spacer(modifier = Modifier.height(12.dp))
+            val submissionStatusText = when (submission.status) {
+                "All" -> stringResource(R.string.status_all)
+                "COMPLETED" -> stringResource(R.string.status_completed)
+                "IN_PROGRESS" -> stringResource(R.string.status_in_progress)
+                "PENDING" -> stringResource(R.string.status_pending)
+                else -> submission.status
+            }
+            Text(
+                //text = stringResource(R.string.notes_label, submission.notes),
+                text = submissionStatusText,
+                style = MaterialTheme.typography.bodyMedium,
+                /* color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.75f), */
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                fontWeight = FontWeight.Bold,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            // Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+                    .padding(0.dp, 10.dp, 0.dp, 0.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+
+                IconButton(onClick = onEditClick) {
+                    Icon(
+                        imageVector = Icons.Rounded.Edit,
+                        contentDescription = stringResource(R.string.edit_submission),
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                }
+
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = stringResource(R.string.delete),
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                }
+
+                IconButton(onClick = onExportPdfClick) {
+                    Icon(
+                        imageVector = Icons.Rounded.PictureAsPdf,
+                        contentDescription = stringResource(R.string.pdf_report),
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                }
+
+                /*
                 AssistChip(
                     onClick = onEditClick,
-                    label = { Text(submission.status) },
+                    label = { Text(submissionStatusText) },
                     colors = AssistChipDefaults.assistChipColors(
                         containerColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.15f),
                         labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     ),
                     shape = RoundedCornerShape(12.dp),
                 )
-            }
-
-            Text(
-                text = stringResource(R.string.check_date_label, submission.date),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                fontWeight = FontWeight.Bold,
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            val inspectorStr = submission.inspector?.ifBlank { null } ?: stringResource(R.string.anonymous)
-            Text(
-                text = stringResource(R.string.inspector_label, inspectorStr),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                fontWeight = FontWeight.Bold,
-            )
-
-            if (!submission.notes.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = stringResource(R.string.notes_label, submission.notes),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.75f),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Schedule,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
-                        modifier = Modifier.size(16.dp),
-                    )
-                    Text(
-                        text = formatSubmissionTimestamp(submission.timestamp),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
-                    )
-                }
-
-                Row {
-                    IconButton(onClick = onExportPdfClick) {
-                        Icon(
-                            imageVector = Icons.Rounded.PictureAsPdf,
-                            contentDescription = stringResource(R.string.pdf_report),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        )
-                    }
-
-                    IconButton(onClick = onExportSqlClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.Send,
-                            contentDescription = stringResource(R.string.send_sql),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        )
-                    }
-
-                    IconButton(onClick = onEditClick) {
-                        Icon(
-                            imageVector = Icons.Rounded.Edit,
-                            contentDescription = stringResource(R.string.edit_submission),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        )
-                    }
-
-                    IconButton(onClick = onDeleteClick) {
-                        Icon(
-                            imageVector = Icons.Rounded.Delete,
-                            contentDescription = stringResource(R.string.delete),
-                            tint = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                }
+                */
             }
 
         }

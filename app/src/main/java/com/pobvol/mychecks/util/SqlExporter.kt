@@ -82,12 +82,12 @@ object SqlExporter {
                 val intent = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
                     putExtra(Intent.EXTRA_STREAM, fileUri)
-                    setClipData(ClipData.newUri(context.contentResolver, "SQL Export", fileUri))
+                    clipData = ClipData.newUri(context.contentResolver, "SQL Export", fileUri)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
                 val chooser = Intent.createChooser(intent, "Send SQL Export File")
-                chooser.setClipData(ClipData.newUri(context.contentResolver, "SQL Export", fileUri))
+                chooser.clipData = ClipData.newUri(context.contentResolver, "SQL Export", fileUri)
                 chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(chooser)
@@ -187,10 +187,81 @@ object SqlExporter {
             if (submissionAnswers.isNotEmpty()) {
                 append("-- Answers\n")
                 submissionAnswers.forEach { a ->
-                    append("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `timestamp`) VALUES (\n")
-                    append("  ${a.id}, ${a.submissionid}, ${a.questionid}, '${escapeSql(a.value)}', '${escapeSql(a.notes ?: "")}', ${a.timestamp}\n);\n")
+                    append("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES (\n")
+                    append(
+                        "  ${a.id}, ${a.submissionid}, ${a.questionid}, '${escapeSql(a.value)}', '${
+                            escapeSql(
+                                a.notes ?: ""
+                            )
+                        }', '${escapeSql(a.imagePath ?: "")}', ${a.timestamp}\n);\n"
+                    )
                 }
             }
+        }
+    }
+
+    fun savePictureToMyChecks(
+        context: Context,
+        submissionId: Int,
+        answerId: Int,
+        sourceUri: Uri
+    ): String? {
+        val fileName = "Submission_${submissionId}_Answer_${answerId}_Picture.jpg"
+        try {
+            val inputStream = context.contentResolver.openInputStream(sourceUri) ?: return null
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val resolver = context.contentResolver
+                val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/MyChecks"
+                val projection = arrayOf(MediaStore.MediaColumns._ID)
+                val selection =
+                    "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND ${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
+                val selectionArgs = arrayOf(fileName, "$relativePath/")
+
+                resolver.query(
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    null
+                )?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
+                        val id = cursor.getLong(idColumn)
+                        val existingUri = ContentUris.withAppendedId(
+                            MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                            id
+                        )
+                        resolver.delete(existingUri, null, null)
+                    }
+                }
+
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
+                }
+                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                if (uri != null) {
+                    resolver.openOutputStream(uri)?.use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                }
+            } else {
+                val dir = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                    "MyChecks"
+                )
+                if (!dir.exists()) dir.mkdirs()
+                val file = File(dir, fileName)
+                FileOutputStream(file).use { fos ->
+                    inputStream.copyTo(fos)
+                }
+            }
+            inputStream.close()
+            return fileName
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
         }
     }
 

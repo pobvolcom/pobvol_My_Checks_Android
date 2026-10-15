@@ -1,6 +1,11 @@
 package com.pobvol.mychecks.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,11 +22,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.material.icons.automirrored.rounded.HelpCenter
+import androidx.compose.material.icons.rounded.CameraAlt
+import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
@@ -33,10 +39,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -53,6 +60,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -60,6 +70,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import coil.compose.AsyncImage
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistEntity
 import com.pobvol.mychecks.data.local.ChecklistQuestionEntity
@@ -67,6 +80,8 @@ import com.pobvol.mychecks.ui.AnswerInput
 import com.pobvol.mychecks.ui.ChecklistUiState
 import com.pobvol.mychecks.ui.components.QrCodeScannerDialog
 import com.pobvol.mychecks.ui.theme.mychecksTheme
+import com.pobvol.mychecks.util.PdfExporter
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -80,6 +95,7 @@ fun FillChecklistScreen(
     onOpenHelpClick: () -> Unit = {},
     onSubmit: (checklistId: Int, inspector: String?, notes: String?, date: String, status: String, answers: Map<Int, AnswerInput>) -> Unit,
     onUserMessageShown: () -> Unit,
+    onNfcTagConsumed: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -122,11 +138,13 @@ fun FillChecklistScreen(
                 val targetId = activeNfcQuestionId ?: uiState.questionsForSelectedChecklist
                     .find { it.type.lowercase() == "nfc" && (answersMap[it.id]?.value.isNullOrBlank()) }?.id
                 ?: uiState.questionsForSelectedChecklist.find { it.type.lowercase() == "nfc" }?.id
+                ?: uiState.questionsForSelectedChecklist.firstOrNull()?.id
 
                 if (targetId != null) {
                     val current = answersMap[targetId] ?: AnswerInput()
                     answersMap[targetId] = current.copy(value = tag)
                 }
+                onNfcTagConsumed()
             }
         }
     }
@@ -135,35 +153,64 @@ fun FillChecklistScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             CenterAlignedTopAppBar(
-                title = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = stringResource(R.string.fill_out_checklist),
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            text = checklist.title,
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.labelLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.back_to_checklists),
+                            imageVector = Icons.Rounded.Cancel,
+                            contentDescription = stringResource(R.string.back),
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = onOpenHelpClick) {
+                    Button(
+                        onClick = {
+                            var rangeError: String? = null
+                            for (question in uiState.questionsForSelectedChecklist) {
+                                val ans = answersMap[question.id]?.value ?: ""
+                                if (question.type.lowercase() == "number" && ans.isNotBlank()) {
+                                    val num = ans.toDoubleOrNull()
+                                    if (num == null) {
+                                        rangeError =
+                                            "Question \"${question.title}\" requires a valid number"
+                                        break
+                                    }
+                                    if (question.minValue != null && num < question.minValue) {
+                                        rangeError =
+                                            "Question \"${question.title}\" must be >= ${question.minValue}"
+                                        break
+                                    }
+                                    if (question.maxValue != null && num > question.maxValue) {
+                                        rangeError =
+                                            "Question \"${question.title}\" must be <= ${question.maxValue}"
+                                        break
+                                    }
+                                }
+                            }
+
+                            if (rangeError != null) {
+                                validationError = rangeError
+                            } else {
+                                validationError = null
+                                onSubmit(
+                                    checklist.id,
+                                    inspectorName,
+                                    notes,
+                                    checkDate,
+                                    status,
+                                    answersMap.toMap(),
+                                )
+                            }
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.padding(end = 8.dp),
+                    ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.Help,
-                            contentDescription = stringResource(R.string.help),
+                            imageVector = Icons.Rounded.Check,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 4.dp),
                         )
+                        Text(stringResource(R.string.save))
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -180,7 +227,39 @@ fun FillChecklistScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // Header item: Inspector & Notes
+            // Header item: Title and subtitle in scroll area
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.fill_out_checklist),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(
+                        text = checklist.title,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    if (validationError != null) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = validationError!!,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
+            }
+
+            // Header item: Inspector & Notes Card
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -196,6 +275,7 @@ fun FillChecklistScreen(
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
+
                         Text(
                             text = stringResource(R.string.submission_details_header),
                             style = MaterialTheme.typography.titleMedium,
@@ -316,6 +396,15 @@ fun FillChecklistScreen(
                             val current = answersMap[question.id] ?: AnswerInput()
                             answersMap[question.id] = current.copy(notes = notesVal)
                         },
+                        currentImageUri = answersMap[question.id]?.imageUri
+                            ?: answersMap[question.id]?.imagePath,
+                        onImageChanged = { uri ->
+                            val current = answersMap[question.id] ?: AnswerInput()
+                            answersMap[question.id] = current.copy(
+                                imageUri = uri,
+                                imagePath = if (uri == null) null else current.imagePath
+                            )
+                        },
                         isActiveNfcTarget = (activeNfcQuestionId == question.id),
                         onActivateNfcScan = { activeNfcQuestionId = question.id },
                     )
@@ -384,7 +473,7 @@ fun FillChecklistScreen(
                                     contentDescription = null,
                                     modifier = Modifier.padding(end = 8.dp),
                                 )
-                                Text(stringResource(R.string.submit_checklist_answers))
+                                Text(stringResource(R.string.save))
                             }
                         }
                     }
@@ -403,6 +492,8 @@ fun AnswerQuestionItem(
     onAnswerChanged: (String) -> Unit,
     currentNotes: String,
     onNotesChanged: (String) -> Unit,
+    currentImageUri: String? = null,
+    onImageChanged: (String?) -> Unit = {},
     isActiveNfcTarget: Boolean = false,
     onActivateNfcScan: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -601,6 +692,170 @@ fun AnswerQuestionItem(
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth(),
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            val context = LocalContext.current
+            var tempCameraUri by remember { mutableStateOf<Uri?>(null) }
+
+            val cameraLauncher =
+                rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+                    if (success && tempCameraUri != null) {
+                        onImageChanged(tempCameraUri.toString())
+                    }
+                }
+
+            val galleryLauncher =
+                rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+                    if (uri != null) {
+                        onImageChanged(uri.toString())
+                    }
+                }
+
+            val permissionLauncher =
+                rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                    if (isGranted) {
+                        val photoFile =
+                            File(context.cacheDir, "camera_pic_${System.currentTimeMillis()}.jpg")
+                        val uri = FileProvider.getUriForFile(
+                            context,
+                            "${context.packageName}.fileprovider",
+                            photoFile
+                        )
+                        tempCameraUri = uri
+                        cameraLauncher.launch(uri)
+                    }
+                }
+
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = stringResource(R.string.picture_optional),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+
+                if (!currentImageUri.isNullOrBlank()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        val imageModel: Any =
+                            if (currentImageUri.startsWith("content://") || currentImageUri.startsWith(
+                                    "file://"
+                                )
+                            ) {
+                                currentImageUri
+                            } else {
+                                PdfExporter.getPictureFile(context, currentImageUri)
+                                    ?: currentImageUri
+                            }
+
+                        AsyncImage(
+                            model = imageModel,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop,
+                        )
+
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Button(
+                                onClick = {
+                                    if (ContextCompat.checkSelfPermission(
+                                            context,
+                                            Manifest.permission.CAMERA
+                                        ) == PackageManager.PERMISSION_GRANTED
+                                    ) {
+                                        val photoFile = File(
+                                            context.cacheDir,
+                                            "camera_pic_${System.currentTimeMillis()}.jpg"
+                                        )
+                                        val uri = FileProvider.getUriForFile(
+                                            context,
+                                            "${context.packageName}.fileprovider",
+                                            photoFile
+                                        )
+                                        tempCameraUri = uri
+                                        cameraLauncher.launch(uri)
+                                    } else {
+                                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                                    }
+                                },
+                                shape = RoundedCornerShape(8.dp),
+                            ) {
+                                Text(stringResource(R.string.take_photo))
+                            }
+                            Button(
+                                onClick = { galleryLauncher.launch("image/*") },
+                                shape = RoundedCornerShape(8.dp),
+                            ) {
+                                Text(stringResource(R.string.upload_image))
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        OutlinedButton(
+                            onClick = { onImageChanged(null) },
+                            shape = RoundedCornerShape(8.dp),
+                        ) {
+                            Text(stringResource(R.string.remove))
+                        }
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Button(
+                            onClick = {
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.CAMERA
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    val photoFile = File(
+                                        context.cacheDir,
+                                        "camera_pic_${System.currentTimeMillis()}.jpg"
+                                    )
+                                    val uri = FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.fileprovider",
+                                        photoFile
+                                    )
+                                    tempCameraUri = uri
+                                    cameraLauncher.launch(uri)
+                                } else {
+                                    permissionLauncher.launch(Manifest.permission.CAMERA)
+                                }
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.CameraAlt,
+                                contentDescription = null,
+                                modifier = Modifier.padding(end = 4.dp),
+                            )
+                            Text(stringResource(R.string.camera))
+                        }
+                        Button(
+                            onClick = { galleryLauncher.launch("image/*") },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Upload,
+                                contentDescription = null,
+                                modifier = Modifier.padding(end = 4.dp),
+                            )
+                            Text(stringResource(R.string.upload))
+                        }
+                    }
+                }
+            }
         }
     }
 }

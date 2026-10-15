@@ -18,9 +18,9 @@
     <string name="add_checklist">Ajouter une liste de contrôle</string>
     <string name="manage_categories">Gérer les catégories</string>
     <string name="no_checklists_found">Aucune liste de contrôle enregistrée</string>
-    <string name="start_description">Créez des listes de contrôle rapidement et facilement | Collectez des données de manière structurée | Logiciel libre | Open Source | Smartphones et tablettes Android</string>
-    <string name="checklists_subtitle">Définissez vos propres listes de contrôle et enregistrez les résultats de vos contrôles</string>
-    <string name="submissions_subtitle">Examinez, modifiez ou partagez les résultats de vos contrôles</string>
+    <string name="start_description">Créez des listes de contrôle rapidement et facilement | Consignez les résultats | Logiciel Libre | Open Source | Smartphones et Tablettes Android</string>
+    <string name="checklists_subtitle">Créez vos propres listes de contrôle et enregistrez les résultats dans des journaux</string>
+    <string name="submissions_subtitle">Consultez vos journaux. Vous pouvez aussi les imprimer ou les partager</string>
     <string name="copyright_text">(c) Copyright Volker Pobloth. Développé avec Google Android Studio et Gemini 3.6 Flash</string>
     <string name="settings_content_description">Paramètres</string>
     <string name="required">Requis</string>
@@ -129,23 +129,74 @@
     <string name="msg_question_added">Question ajoutée avec succès</string>
     <string name="msg_question_updated">Question mise à jour avec succès</string>
     <string name="msg_question_deleted">Question supprimée avec succès</string>
-    <string name="help">"Aide à l'utilisateur"</string>
+    <string name="help">Aide Utilisateur</string>
     <string name="help_welcome_title">Bienvenue dans My Checks</string>
-    <string name="help_welcome_desc">Votre compagnon Android natif moderne pour les inspections de sécurité, les listes de contrôle opérationnelles, les soumissions et les rapports PDF.</string>
-    <string name="help_sec1_title">1. Tableau de bord et Navigation</string>
-    <string name="help_sec1_desc">"Le tableau de bord est votre point de départ. Utilisez les cartes supérieures pour accéder aux listes de contrôle ou soumissions, et accédez aux paramètres ou à l'aide depuis la barre supérieure."</string>
-    <string name="help_sec2_title">2. Gestion des listes de contrôle</string>
-    <string name="help_sec2_desc">Créez, recherchez et filtrez les listes de contrôle par catégorie. Chaque carte permet de remplir, gérer les questions, modifier ou supprimer avec cascade automatique.</string>
-    <string name="help_sec3_title">3. Questions et Réorganisation</string>
-    <string name="help_sec3_desc">Ajoutez des questions avec des types de réponse personnalisés (texte, nombre, case à cocher, liste déroulante, NFC, QR). Utilisez les flèches Haut/Bas pour réorganiser facilement.</string>
-    <string name="help_sec4_title">4. Types de réponse pris en charge</string>
-    <string name="help_sec4_desc">"Texte et Nombre : Commentaires textuels flexibles et saisie numérique validée. Case à cocher et Liste déroulante : Bascules Oui/Non et options de choix unique. NFC et Code QR : Touchez des tags NFC physiques ou scannez des codes QR avec l'appareil photo."</string>
-    <string name="help_sec5_title">5. Remplissage et Soumission</string>
-    <string name="help_sec5_desc">"Entrez les détails de l'inspecteur, la date de contrôle et des notes optionnelles. Répondez à toutes les questions requises et soumettez les résultats en toute sécurité."</string>
-    <string name="help_sec6_title">6. Aperçu des soumissions et Export PDF</string>
-    <string name="help_sec6_desc">"Affichez les soumissions enregistrées, filtrez par liste ou statut, modifiez les réponses et exportez instantanément des rapports d'inspection PDF A4 professionnels."</string>
-    <string name="help_sec7_title">7. Paramètres et Catégories</string>
-    <string name="help_sec7_desc">"Personnalisez le thème d'affichage (Système, Clair, Sombre), la langue préférée, le nom d'inspecteur par défaut et gérez les catégories de la base de données."</string>
+    <string name="help_welcome_desc">Créez des listes de contrôle rapidement et facilement | Consignez les résultats | Logiciel Libre | Open Source | Smartphones et Tablettes Android</string>
+    <string name="help_sec1_title">Tableau de bord &amp; Navigation</string>
+    <string name="help_sec1_desc">Le tableau de bord est votre point de départ. Utilisez les cartes supérieures pour naviguer vers les listes ou les journaux, et accédez aux paramètres ou à l\'aide depuis la barre supérieure.</string>
+    <string name="help_sec2_title">Mes Listes de Contrôle</string>
+    <string name="help_sec2_desc">Sur cet écran, gérez vos listes de contrôle et lancez une inspection.\n
+        \n
+        ** Ajouter une Liste **: Créez de nouvelles listes rapidement en appuyant sur le bouton **`+`** en bas à droite. Saisissez le titre, la catégorie et une courte description.\n
+        \n
+        ** Rechercher une Liste **: Appuyez sur l\'icône de recherche (🔍) pour rechercher par titre, description ou catégorie.\n
+        \n
+        ** Filtrer par Catégorie **: Filtrez la liste en appuyant sur une catégorie. Appuyez sur Tout pour effacer le filtre.\n
+        \n
+        ** Modifier la Liste **: Appuyez sur l\'icône de modification (✏️) pour changer le titre, la catégorie ou la description.\n
+        \n
+        ** Points de contrôle / Questions **: Appuyez sur l\'icône de question (💬) pour gérer les points de contrôle et les questions.\n
+        \n
+        ** Supprimer la Liste **: Appuyez sur l\'icône de suppression (🗑️) pour confirmer. La suppression efface automatiquement les questions associées.\n
+        \n
+        ** Ajouter une Inspection **: Appuyez sur une carte de liste pour démarrer une inspection.\n
+        \n
+        ** Afficher les Journaux **: Appuyez sur l\'icône de journal (📋) pour afficher les inspections réalisées.\n
+        \n
+        ** Afficher le Graphique **: Appuyez sur l\'icône de graphique (📊) pour afficher le nombre d\'inspections par jour et les courbes des deux premières valeurs numériques.</string>
+    <string name="help_sec3_title">Points de contrôle / Questions</string>
+    <string name="help_sec3_desc">Sur cet écran, gérez les points de contrôle et questions. Les types de réponse suivants sont pris en charge : Texte, Nombre, Case à cocher, Liste déroulante, NFC et Code QR.\n
+        \n
+        ** Texte **: Saisie de texte libre\n
+        \n
+        ** Nombre **: Saisie de valeurs numériques avec limites minimale et maximale facultatives.\n
+        \n
+        ** Case à cocher **: Commutateur Oui/Non\n
+        \n
+        ** Liste déroulante **: Options séparées par des virgules à sélectionner lors de l\'inspection.\n
+        \n
+        ** NFC **: Lire des tags NFC physiques et importer les données\n
+        \n
+        ** Code QR **: Scanner des codes QR avec l\'appareil photo et importer la valeur.\n
+        \n
+        ** Ajouter une Question **: Appuyez sur le bouton **`+`** pour créer une nouvelle question.\n
+        \n
+        ** Ajuster l\'Ordre **: Utilisez les flèches haut (↑) et bas (↓) pour réorganiser les questions.\n
+        \n
+        ** Modifier la Question **: Appuyez sur l\'icône de modification (✏️) pour changer le titre ou le type de réponse.\n
+        \n
+        ** Supprimer la Question **: Appuyez sur l\'icône de suppression (🗑️) pour confirmer.\n</string>
+    <string name="help_sec4_title">Sécurité des Données</string>
+    <string name="help_sec4_desc">Toutes les données sont stockées en toute sécurité dans votre base de données locale Android SQLite.\n
+        \nDe plus, les rapports d\'inspection finalisés sont enregistrés dans le dossier Téléchargements sous MyChecks dans des fichiers texte SQL.\n</string>
+    <string name="help_sec5_title">Remplir la Liste de Contrôle</string>
+    <string name="help_sec5_desc">Remplissez l\'inspection en répondant à toutes les questions requises.\n
+        \n
+        ** Inspecteur **: Prérempli depuis les paramètres. Vous pouvez modifier ce nom.\n
+        \n
+        ** Date **: Préremplie avec la date du jour.\n
+        \n
+        ** Statut **: Initialement prérempli comme IN_PROGRESS.\n
+        \n
+        ** Notes **: Saisissez des notes d\'inspection facultatives.\n
+        \n
+        ** Tags NFC **: Approchez un tag NFC de l\'arrière de votre appareil pour le scanner.\n
+        \n
+        ** Codes QR **: Appuyez sur "Scanner le Code QR" pour ouvrir l\'appareil photo et importer les données.</string>
+    <string name="help_sec6_title">Journaux</string>
+    <string name="help_sec6_desc">Consultez les journaux d\'inspection enregistrés, filtrez par liste ou statut, modifiez les réponses et exportez des rapports PDF A4.</string>
+    <string name="help_sec7_title">Paramètres &amp; Catégories</string>
+    <string name="help_sec7_desc">Personnalisez l\'apparence (Système, Clair, Sombre), la langue préférée, le nom d\'utilisateur inspecteur, la mise en page du rapport PDF et gérez les catégories personnalisées.</string>
     <string name="check_date_label">Date de contrôle : %1$s</string>
     <string name="inspector_label">Inspecteur : %1$s</string>
     <string name="anonymous">Anonyme</string>
@@ -171,4 +222,84 @@
     <string name="status_completed">TERMINÉ</string>
     <string name="status_in_progress">EN COURS</string>
     <string name="status_pending">EN ATTENTE</string>
+    <string name="edit">Modifier</string>
+    <string name="back">Retour </string>
+    <string name="cannot_delete_checklist_with_submissions">Impossible de supprimer la liste de contrôle car elle est utilisée dans les soumissions</string>
+    <string name="copyright">Copyright</string>
+    <string name="copyrightText">The software solution pobvol My Checks is Free Software and delivered as Open Source\n\nSee wikipedia.org for more details:\nhttps://en.wikipedia.org/wiki/Free_software\n\nYou can download, install, operate, modify and redistribute it under the terms of the GNU General Public License, as published by the Free Software Foundation, version 3 of the license or any later version. Contributions to improve it are welcome.\n\nSee the GNU General Public License for more details:\nhttps://www.gnu.org/licenses/gpl-3.0\n\nThe solution is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\nCopyright @ 2026 Volker Pobloth</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
+        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
+        dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad
+        litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend
+        diam, vel rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a,
+        ornare ex. Sed rhoncus est ut libero porta lobortis. Fusce in dictum tellus.\n\n
+        Suspendisse interdum ornare ante. Aliquam nec cursus lorem. Morbi id magna felis. Vivamus
+        egestas, est a condimentum egestas, turpis nisl iaculis ipsum, in dictum tellus dolor sed
+        neque. Morbi tellus erat, dapibus ut sem a, iaculis tincidunt dui. Interdum et malesuada
+        fames ac ante ipsum primis in faucibus. Curabitur et eros porttitor, ultricies urna vitae,
+        molestie nibh. Phasellus at commodo eros, non aliquet metus. Sed maximus nisl nec dolor
+        bibendum, vel congue leo egestas.\n\n
+        Sed interdum tortor nibh, in sagittis risus mollis quis. Curabitur mi odio, condimentum sit
+        amet auctor at, mollis non turpis. Nullam pretium libero vestibulum, finibus orci vel,
+        molestie quam. Fusce blandit tincidunt nulla, quis sollicitudin libero facilisis et. Integer
+        interdum nunc ligula, et fermentum metus hendrerit id. Vestibulum lectus felis, dictum at
+        lacinia sit amet, tristique id quam. Cras eu consequat dui. Suspendisse sodales nunc ligula,
+        in lobortis sem porta sed. Integer id ultrices magna, in luctus elit. Sed a pellentesque
+        est.\n\n
+        Aenean nunc velit, lacinia sed dolor sed, ultrices viverra nulla. Etiam a venenatis nibh.
+        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nulla, id elementum leo dui
+        non lorem. Nam mollis ipsum quis auctor varius. Quisque elementum eu libero sed commodo. In
+        eros nisl, imperdiet vel imperdiet et, scelerisque a mauris. Pellentesque varius ex nunc,
+        quis imperdiet eros placerat ac. Duis finibus orci et est auctor tincidunt. Sed non viverra
+        ipsum. Nunc quis augue egestas, cursus lorem at, molestie sem. Morbi a consectetur ipsum, a
+        placerat diam. Etiam vulputate dignissim convallis. Integer faucibus mauris sit amet finibus
+        convallis.\n\n
+        Phasellus in aliquet mi. Pellentesque habitant morbi tristique senectus et netus et
+        malesuada fames ac turpis egestas. In volutpat arcu ut felis sagittis, in finibus massa
+        gravida. Pellentesque id tellus orci. Integer dictum, lorem sed efficitur ullamcorper,
+        libero justo consectetur ipsum, in mollis nisl ex sed nisl. Donec maximus ullamcorper
+        sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus
+        libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
+        vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
+    </string>
+    <string name="picture_optional">Image (Optionnel)</string>
+    <string name="take_photo">Prendre une photo</string>
+    <string name="upload_image">Télécharger une image</string>
+    <string name="camera">Caméra</string>
+    <string name="upload">Télécharger</string>
+    <string name="remove">Supprimer</string>
+    <string name="pdf_report_designer">Concepteur de Rapport PDF</string>
+    <string name="pdf_header_section">Design d\'En-tête</string>
+    <string name="pdf_answer_section">Design des Réponses</string>
+    <string name="pdf_footer_section">Design de Pied de Page</string>
+    <string name="pdf_include_checklist_title">Inclure le Titre de la Liste</string>
+    <string name="pdf_include_date">Inclure la Date d\'Inspection</string>
+    <string name="pdf_include_status">Inclure le Statut</string>
+    <string name="pdf_include_notes">Inclure les Notes de Soumission</string>
+    <string name="pdf_include_page_number">Inclure le Numéro de Page</string>
+    <string name="pdf_include_question_title">Inclure le Titre de la Question</string>
+    <string name="pdf_include_answer_value">Inclure la Valeur de la Réponse</string>
+    <string name="pdf_include_answer_picture">Inclure l\'Image de la Réponse</string>
+    <string name="pdf_footer_text_label">Texte de Pied de Page / Avertissement</string>
+    <string name="configure_pdf_settings">Configurer la mise en page PDF...</string>
+    <string name="checklist_analytics">Analyse</string>
+    <string name="submissions_per_day">Soumissions par jour</string>
+    <string name="pdf_date_label">Date de contrôle : %1$s</string>
+    <string name="pdf_inspector_label">Inspecteur : %1$s</string>
+    <string name="pdf_status_label">Statut : %1$s</string>
+    <string name="pdf_notes_label">Remarques : %1$s</string>
+    <string name="pdf_answer_label">Réponse : %1$s</string>
+    <string name="pdf_generated_on">Généré le %1$s</string>
+    <string name="pdf_page_number">Page %1$d</string>
+    <string name="pdf_no_answer">(Pas de réponse)</string>
+    <string name="pdf_yes">Oui</string>
+    <string name="pdf_no">Non</string>
 </resources>

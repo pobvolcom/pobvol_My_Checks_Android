@@ -1,11 +1,13 @@
 package com.pobvol.mychecks.ui.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.Copyright
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.PictureAsPdf
 import androidx.compose.material.icons.rounded.QuestionAnswer
@@ -33,7 +36,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -101,6 +107,12 @@ fun HelpScreen(
             )
 
             HelpSectionCard(
+                title = stringResource(R.string.help_sec7_title),
+                icon = Icons.Rounded.Settings,
+                content = stringResource(R.string.help_sec7_desc),
+            )
+
+            HelpSectionCard(
                 title = stringResource(R.string.help_sec2_title),
                 icon = Icons.Rounded.Checklist,
                 content = stringResource(R.string.help_sec2_desc),
@@ -110,12 +122,6 @@ fun HelpScreen(
                 title = stringResource(R.string.help_sec3_title),
                 icon = Icons.Rounded.QuestionAnswer,
                 content = stringResource(R.string.help_sec3_desc),
-            )
-
-            HelpSectionCard(
-                title = stringResource(R.string.help_sec4_title),
-                icon = Icons.Rounded.Info,
-                content = stringResource(R.string.help_sec4_desc),
             )
 
             HelpSectionCard(
@@ -131,9 +137,15 @@ fun HelpScreen(
             )
 
             HelpSectionCard(
-                title = stringResource(R.string.help_sec7_title),
-                icon = Icons.Rounded.Settings,
-                content = stringResource(R.string.help_sec7_desc),
+                title = stringResource(R.string.help_sec4_title),
+                icon = Icons.Rounded.Info,
+                content = stringResource(R.string.help_sec4_desc),
+            )
+
+            HelpSectionCard(
+                title = stringResource(R.string.copyright),
+                icon = Icons.Rounded.Copyright,
+                content = stringResource(R.string.copyrightText),
             )
         }
     }
@@ -152,8 +164,18 @@ fun HelpHeaderCard() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            Image(
+                //painter = painterResource(id = R.drawable.placeholder),
+                painter = painterResource(id = R.drawable.pobvol),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                contentScale = ContentScale.Crop,
+            )
             Text(
                 text = stringResource(R.string.help_welcome_title),
                 style = MaterialTheme.typography.titleLarge,

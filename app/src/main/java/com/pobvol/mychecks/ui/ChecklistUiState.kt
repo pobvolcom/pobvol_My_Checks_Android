@@ -24,6 +24,7 @@ data class ChecklistUiState(
     val userSettings: UserSettings = UserSettings(),
     val availableLanguages: List<LanguageEntity> = emptyList(),
     val isSettingsDialogVisible: Boolean = false,
+    val isPdfSettingsVisible: Boolean = false,
     val isHelpVisible: Boolean = false,
     val isChecklistHelpVisible: Boolean = false,
     val categories: List<CategoryEntity> = emptyList(),
@@ -37,10 +38,13 @@ data class ChecklistUiState(
     val selectedSubmissionStatus: String? = null,
     val scannedNfcTag: String? = null,
     val selectedChecklistForSubmissions: ChecklistEntity? = null,
+    val selectedChecklistForChart: ChecklistEntity? = null,
 )
 
 data class AnswerInput(
     val value: String = "",
-    val notes: String? = null
+    val notes: String? = null,
+    val imageUri: String? = null,
+    val imagePath: String? = null
 )
 

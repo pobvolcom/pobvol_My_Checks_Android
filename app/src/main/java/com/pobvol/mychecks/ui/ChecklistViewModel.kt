@@ -1,6 +1,7 @@
 package com.pobvol.mychecks.ui
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -63,6 +64,10 @@ class ChecklistViewModel(
         _userMessage.value = "NFC Tag scanned: $tagId"
     }
 
+    fun clearNfcTag() {
+        _scannedNfcTag.value = null
+    }
+
     private val _checklistToEdit = MutableStateFlow<ChecklistEntity?>(null)
     val checklistToEdit: StateFlow<ChecklistEntity?> = _checklistToEdit.asStateFlow()
 
@@ -93,6 +98,10 @@ class ChecklistViewModel(
     private val _selectedChecklistForSubmissions = MutableStateFlow<ChecklistEntity?>(null)
     val selectedChecklistForSubmissions: StateFlow<ChecklistEntity?> = _selectedChecklistForSubmissions.asStateFlow()
 
+    private val _selectedChecklistForChart = MutableStateFlow<ChecklistEntity?>(null)
+    val selectedChecklistForChart: StateFlow<ChecklistEntity?> =
+        _selectedChecklistForChart.asStateFlow()
+
     private val _selectedSubmissionToEdit = MutableStateFlow<ChecklistSubmissionEntity?>(null)
     val selectedSubmissionToEdit: StateFlow<ChecklistSubmissionEntity?> = _selectedSubmissionToEdit.asStateFlow()
 
@@ -115,6 +124,9 @@ class ChecklistViewModel(
 
     private val _isSettingsDialogVisible = MutableStateFlow(false)
     val isSettingsDialogVisible: StateFlow<Boolean> = _isSettingsDialogVisible.asStateFlow()
+
+    private val _isPdfSettingsVisible = MutableStateFlow(false)
+    val isPdfSettingsVisible: StateFlow<Boolean> = _isPdfSettingsVisible.asStateFlow()
 
     private var questionsJob: Job? = null
 
@@ -165,6 +177,7 @@ class ChecklistViewModel(
         val languages: List<LanguageEntity>,
         val categories: List<CategoryEntity>,
         val isVisible: Boolean,
+        val isPdfVisible: Boolean,
     )
 
     private val _settingsState = combine(
@@ -172,8 +185,9 @@ class ChecklistViewModel(
         languageRepository.getAllLanguages(),
         categoryRepository.getAllCategories(),
         _isSettingsDialogVisible,
-    ) { settings, languages, categories, isVisible ->
-        SettingsState(settings, languages, categories, isVisible)
+        _isPdfSettingsVisible,
+    ) { settings, languages, categories, isVisible, isPdfVisible ->
+        SettingsState(settings, languages, categories, isVisible, isPdfVisible)
     }
 
     private data class SubmissionState(
@@ -279,6 +293,7 @@ class ChecklistViewModel(
             userSettings = globalState.settingsState.settings,
             availableLanguages = globalState.settingsState.languages,
             isSettingsDialogVisible = globalState.settingsState.isVisible,
+            isPdfSettingsVisible = globalState.settingsState.isPdfVisible,
             categories = globalState.settingsState.categories,
             selectedChecklistToAnswer = dialogState.selectedChecklistToAnswer,
             submissions = filteredSubmissions,
@@ -290,6 +305,7 @@ class ChecklistViewModel(
             selectedSubmissionStatus = selectedStatus,
             scannedNfcTag = _scannedNfcTag.value,
             selectedChecklistForSubmissions = selectedChecklistSub,
+            selectedChecklistForChart = _selectedChecklistForChart.value,
             isHelpVisible = globalState.isHelpVisible,
             isChecklistHelpVisible = globalState.isChecklistHelpVisible,
         )
@@ -408,7 +424,16 @@ class ChecklistViewModel(
     }
 
     fun requestDeleteConfirmation(checklist: ChecklistEntity) {
-        _checklistToDelete.value = checklist
+        viewModelScope.launch {
+            val allSubmissions = submissionRepository.getAllChecklistSubmissions().first()
+            val hasSubmissions = allSubmissions.any { it.checklistid == checklist.id }
+            if (hasSubmissions) {
+                _userMessage.value =
+                    context.getString(R.string.cannot_delete_checklist_with_submissions)
+            } else {
+                _checklistToDelete.value = checklist
+            }
+        }
     }
 
     fun dismissDeleteConfirmation() {
@@ -418,6 +443,14 @@ class ChecklistViewModel(
     fun confirmDelete() {
         val checklist = _checklistToDelete.value ?: return
         viewModelScope.launch {
+            val allSubmissions = submissionRepository.getAllChecklistSubmissions().first()
+            val hasSubmissions = allSubmissions.any { it.checklistid == checklist.id }
+            if (hasSubmissions) {
+                _checklistToDelete.value = null
+                _userMessage.value =
+                    context.getString(R.string.cannot_delete_checklist_with_submissions)
+                return@launch
+            }
             val questions = questionRepository.getChecklistQuestionsByChecklistId(checklist.id).first()
             questions.forEach { question ->
                 questionRepository.deleteChecklistQuestion(question)
@@ -491,15 +524,29 @@ class ChecklistViewModel(
             val submissionId = submissionRepository.insertChecklistSubmission(submission)
 
             answers.forEach { (questionId, answerInput) ->
-                if (answerInput.value.isNotBlank() || !answerInput.notes.isNullOrBlank()) {
+                if (answerInput.value.isNotBlank() || !answerInput.notes.isNullOrBlank() || !answerInput.imageUri.isNullOrBlank()) {
                     val answer = ChecklistAnswerEntity(
                         submissionid = submissionId.toInt(),
                         questionid = questionId,
                         value = answerInput.value,
                         notes = answerInput.notes?.ifBlank { null },
+                        imagePath = answerInput.imagePath,
                         timestamp = System.currentTimeMillis(),
                     )
-                    answerRepository.insertChecklistAnswer(answer)
+                    val answerId = answerRepository.insertChecklistAnswer(answer)
+                    if (!answerInput.imageUri.isNullOrBlank()) {
+                        val savedFileName = SqlExporter.savePictureToMyChecks(
+                            context,
+                            submissionId.toInt(),
+                            answerId.toInt(),
+                            Uri.parse(answerInput.imageUri)
+                        )
+                        if (savedFileName != null) {
+                            val updatedAnswer =
+                                answer.copy(id = answerId.toInt(), imagePath = savedFileName)
+                            answerRepository.updateChecklistAnswer(updatedAnswer)
+                        }
+                    }
                 }
             }
 
@@ -529,6 +576,22 @@ class ChecklistViewModel(
 
     fun clearChecklistSubmissionsFilter() {
         _selectedChecklistForSubmissions.value = null
+    }
+
+    fun openChartForChecklist(checklist: ChecklistEntity) {
+        _selectedChecklistForChart.value = checklist
+        questionsJob?.cancel()
+        questionsJob = viewModelScope.launch {
+            questionRepository.getChecklistQuestionsByChecklistId(checklist.id)
+                .collect { questionsList ->
+                    _questions.value = questionsList
+                }
+        }
+    }
+
+    fun closeChartScreen() {
+        _selectedChecklistForChart.value = null
+        _questions.value = emptyList()
     }
 
     fun closeSubmissionsOverview() {
@@ -605,15 +668,30 @@ class ChecklistViewModel(
             updatedAnswersMap.forEach { (questionId, newAnswerInput) ->
                 val existingAnswer = existingAnswerByQuestionMap[questionId]
                 if (existingAnswer != null) {
-                    if (newAnswerInput.value != existingAnswer.value || newAnswerInput.notes != existingAnswer.notes) {
+                    var imagePathToUse = existingAnswer.imagePath
+                    if (!newAnswerInput.imageUri.isNullOrBlank() && newAnswerInput.imageUri != existingAnswer.imagePath) {
+                        val savedFileName = SqlExporter.savePictureToMyChecks(
+                            context,
+                            finalSubmission.id,
+                            existingAnswer.id,
+                            Uri.parse(newAnswerInput.imageUri)
+                        )
+                        if (savedFileName != null) {
+                            imagePathToUse = savedFileName
+                        }
+                    } else if (newAnswerInput.imageUri == null && existingAnswer.imagePath != null && newAnswerInput.imagePath == null) {
+                        imagePathToUse = null
+                    }
+                    if (newAnswerInput.value != existingAnswer.value || newAnswerInput.notes != existingAnswer.notes || imagePathToUse != existingAnswer.imagePath) {
                         val modifiedAnswer = existingAnswer.copy(
                             value = newAnswerInput.value,
                             notes = newAnswerInput.notes?.ifBlank { null },
+                            imagePath = imagePathToUse,
                             timestamp = System.currentTimeMillis(),
                         )
                         answerRepository.updateChecklistAnswer(modifiedAnswer)
                     }
-                } else if (newAnswerInput.value.isNotBlank() || !newAnswerInput.notes.isNullOrBlank()) {
+                } else if (newAnswerInput.value.isNotBlank() || !newAnswerInput.notes.isNullOrBlank() || !newAnswerInput.imageUri.isNullOrBlank()) {
                     val newAnswer = ChecklistAnswerEntity(
                         submissionid = finalSubmission.id,
                         questionid = questionId,
@@ -621,7 +699,20 @@ class ChecklistViewModel(
                         notes = newAnswerInput.notes?.ifBlank { null },
                         timestamp = System.currentTimeMillis(),
                     )
-                    answerRepository.insertChecklistAnswer(newAnswer)
+                    val answerId = answerRepository.insertChecklistAnswer(newAnswer)
+                    if (!newAnswerInput.imageUri.isNullOrBlank()) {
+                        val savedFileName = SqlExporter.savePictureToMyChecks(
+                            context,
+                            finalSubmission.id,
+                            answerId.toInt(),
+                            Uri.parse(newAnswerInput.imageUri)
+                        )
+                        if (savedFileName != null) {
+                            val updatedNewAnswer =
+                                newAnswer.copy(id = answerId.toInt(), imagePath = savedFileName)
+                            answerRepository.updateChecklistAnswer(updatedNewAnswer)
+                        }
+                    }
                 }
             }
 
@@ -796,6 +887,14 @@ class ChecklistViewModel(
         _isSettingsDialogVisible.value = false
     }
 
+    fun openPdfSettings() {
+        _isPdfSettingsVisible.value = true
+    }
+
+    fun closePdfSettings() {
+        _isPdfSettingsVisible.value = false
+    }
+
     fun updateThemeMode(themeMode: ThemeMode) {
         viewModelScope.launch {
             settingsRepository.updateThemeMode(themeMode)
@@ -818,24 +917,60 @@ class ChecklistViewModel(
         viewModelScope.launch { settingsRepository.updatePdfHeaderTitle(title) }
     }
 
-    fun updatePdfIncludeTimestamp(include: Boolean) {
-        viewModelScope.launch { settingsRepository.updatePdfIncludeTimestamp(include) }
+    fun updatePdfIncludeChecklistTitle(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeChecklistTitle(include) }
+    }
+
+    fun updatePdfIncludeDate(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeDate(include) }
     }
 
     fun updatePdfIncludeInspector(include: Boolean) {
         viewModelScope.launch { settingsRepository.updatePdfIncludeInspector(include) }
     }
 
+    fun updatePdfIncludeStatus(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeStatus(include) }
+    }
+
+    fun updatePdfIncludeNotes(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeNotes(include) }
+    }
+
+    fun updatePdfIncludeTimestamp(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeTimestamp(include) }
+    }
+
+    fun updatePdfIncludePageNumber(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludePageNumber(include) }
+    }
+
     fun updatePdfIncludeUnansweredQuestions(include: Boolean) {
         viewModelScope.launch { settingsRepository.updatePdfIncludeUnansweredQuestions(include) }
+    }
+
+    fun updatePdfIncludeQuestionTitle(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeQuestionTitle(include) }
+    }
+
+    fun updatePdfIncludeAnswerValue(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeAnswerValue(include) }
     }
 
     fun updatePdfIncludeAnswerNotes(include: Boolean) {
         viewModelScope.launch { settingsRepository.updatePdfIncludeAnswerNotes(include) }
     }
 
+    fun updatePdfIncludeAnswerPicture(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeAnswerPicture(include) }
+    }
+
     fun updatePdfCompactAnswerLayout(compact: Boolean) {
         viewModelScope.launch { settingsRepository.updatePdfCompactAnswerLayout(compact) }
+    }
+
+    fun updatePdfFooterText(text: String) {
+        viewModelScope.launch { settingsRepository.updatePdfFooterText(text) }
     }
 
     fun userMessageShown() {

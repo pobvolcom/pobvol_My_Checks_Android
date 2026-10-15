@@ -1,5 +1,6 @@
 package com.pobvol.mychecks.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +20,6 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.automirrored.rounded.FactCheck
 import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.material.icons.rounded.Checklist
-import androidx.compose.material.icons.rounded.Help
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material3.Card
@@ -51,6 +51,7 @@ import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.CategoryEntity
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.ui.ChecklistUiState
+import com.pobvol.mychecks.ui.components.PdfSettingsDialog
 import com.pobvol.mychecks.ui.components.SettingsDialog
 import com.pobvol.mychecks.ui.theme.mychecksTheme
 
@@ -63,21 +64,36 @@ fun StartScreen(
     onOpenSettingsClick: () -> Unit,
     onOpenHelpClick: () -> Unit,
     onDismissSettingsDialog: () -> Unit,
+    onOpenPdfSettingsClick: () -> Unit = {},
+    onDismissPdfSettingsDialog: () -> Unit = {},
     onThemeModeSelected: (ThemeMode) -> Unit,
     onLanguageSelected: (String) -> Unit,
     onUserNameChanged: (String) -> Unit,
     onPdfHeaderTitleChanged: (String) -> Unit = {},
-    onPdfIncludeTimestampChanged: (Boolean) -> Unit = {},
+    onPdfIncludeChecklistTitleChanged: (Boolean) -> Unit = {},
+    onPdfIncludeDateChanged: (Boolean) -> Unit = {},
     onPdfIncludeInspectorChanged: (Boolean) -> Unit = {},
+    onPdfIncludeStatusChanged: (Boolean) -> Unit = {},
+    onPdfIncludeNotesChanged: (Boolean) -> Unit = {},
+    onPdfIncludeTimestampChanged: (Boolean) -> Unit = {},
+    onPdfIncludePageNumberChanged: (Boolean) -> Unit = {},
     onPdfIncludeUnansweredQuestionsChanged: (Boolean) -> Unit = {},
+    onPdfIncludeQuestionTitleChanged: (Boolean) -> Unit = {},
+    onPdfIncludeAnswerValueChanged: (Boolean) -> Unit = {},
     onPdfIncludeAnswerNotesChanged: (Boolean) -> Unit = {},
+    onPdfIncludeAnswerPictureChanged: (Boolean) -> Unit = {},
     onPdfCompactAnswerLayoutChanged: (Boolean) -> Unit = {},
+    onPdfFooterTextChanged: (String) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
     onUserMessageShown: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+
+    BackHandler(enabled = true) {
+        // Do nothing to prevent back key on start screen
+    }
 
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let { message ->
@@ -193,15 +209,32 @@ fun StartScreen(
                 onThemeModeSelected = onThemeModeSelected,
                 onLanguageSelected = onLanguageSelected,
                 onUserNameChanged = onUserNameChanged,
-                onPdfHeaderTitleChanged = onPdfHeaderTitleChanged,
-                onPdfIncludeTimestampChanged = onPdfIncludeTimestampChanged,
-                onPdfIncludeInspectorChanged = onPdfIncludeInspectorChanged,
-                onPdfIncludeUnansweredQuestionsChanged = onPdfIncludeUnansweredQuestionsChanged,
-                onPdfIncludeAnswerNotesChanged = onPdfIncludeAnswerNotesChanged,
-                onPdfCompactAnswerLayoutChanged = onPdfCompactAnswerLayoutChanged,
+                onOpenPdfSettingsClick = onOpenPdfSettingsClick,
                 onAddCategory = onAddCategory,
                 onDeleteCategory = onDeleteCategory,
                 onDismissRequest = onDismissSettingsDialog,
+            )
+        }
+
+        if (uiState.isPdfSettingsVisible) {
+            PdfSettingsDialog(
+                userSettings = uiState.userSettings,
+                onPdfHeaderTitleChanged = onPdfHeaderTitleChanged,
+                onPdfIncludeChecklistTitleChanged = onPdfIncludeChecklistTitleChanged,
+                onPdfIncludeDateChanged = onPdfIncludeDateChanged,
+                onPdfIncludeInspectorChanged = onPdfIncludeInspectorChanged,
+                onPdfIncludeStatusChanged = onPdfIncludeStatusChanged,
+                onPdfIncludeNotesChanged = onPdfIncludeNotesChanged,
+                onPdfIncludeTimestampChanged = onPdfIncludeTimestampChanged,
+                onPdfIncludePageNumberChanged = onPdfIncludePageNumberChanged,
+                onPdfIncludeUnansweredQuestionsChanged = onPdfIncludeUnansweredQuestionsChanged,
+                onPdfIncludeQuestionTitleChanged = onPdfIncludeQuestionTitleChanged,
+                onPdfIncludeAnswerValueChanged = onPdfIncludeAnswerValueChanged,
+                onPdfIncludeAnswerNotesChanged = onPdfIncludeAnswerNotesChanged,
+                onPdfIncludeAnswerPictureChanged = onPdfIncludeAnswerPictureChanged,
+                onPdfCompactAnswerLayoutChanged = onPdfCompactAnswerLayoutChanged,
+                onPdfFooterTextChanged = onPdfFooterTextChanged,
+                onDismissRequest = onDismissPdfSettingsDialog,
             )
         }
     }

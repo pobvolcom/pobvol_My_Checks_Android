@@ -17,14 +17,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.material.icons.automirrored.rounded.HelpCenter
-import androidx.compose.material.icons.rounded.PictureAsPdf
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.ui.platform.LocalContext
-import com.pobvol.mychecks.util.PdfExporter
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -32,10 +27,10 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -51,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -58,15 +54,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistAnswerEntity
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import com.pobvol.mychecks.data.local.ChecklistEntity
 import com.pobvol.mychecks.data.local.ChecklistQuestionEntity
 import com.pobvol.mychecks.data.local.ChecklistSubmissionEntity
 import com.pobvol.mychecks.ui.AnswerInput
 import com.pobvol.mychecks.ui.ChecklistUiState
 import com.pobvol.mychecks.ui.theme.mychecksTheme
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,6 +74,7 @@ fun SubmissionDetailScreen(
     onOpenHelpClick: () -> Unit = {},
     onSaveSubmission: (updatedSubmission: ChecklistSubmissionEntity, updatedAnswers: Map<Int, AnswerInput>) -> Unit,
     onUserMessageShown: () -> Unit,
+    onNfcTagConsumed: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -91,7 +88,13 @@ fun SubmissionDetailScreen(
     }
 
     val existingAnswersMap = remember(submission.id, uiState.answers) {
-        uiState.answers.filter { it.submissionid == submission.id }.associate { it.questionid to AnswerInput(it.value, it.notes ?: "") }
+        uiState.answers.filter { it.submissionid == submission.id }.associate {
+            it.questionid to AnswerInput(
+                it.value,
+                it.notes ?: "",
+                imagePath = it.imagePath
+            )
+        }
     }
 
     val answersMap = remember(submission.id, uiState.questionsForSelectedChecklist) {
@@ -112,6 +115,7 @@ fun SubmissionDetailScreen(
     }
 
     val availableStatuses = listOf("COMPLETED", "IN_PROGRESS", "PENDING")
+    var activeNfcQuestionId by remember { mutableStateOf<Int?>(null) }
 
     BackHandler(onBack = onBackClick)
 
@@ -122,43 +126,75 @@ fun SubmissionDetailScreen(
         }
     }
 
+    LaunchedEffect(uiState.scannedNfcTag) {
+        uiState.scannedNfcTag?.let { tag ->
+            if (tag.isNotBlank()) {
+                val targetId = activeNfcQuestionId ?: uiState.questionsForSelectedChecklist
+                    .find { it.type.lowercase() == "nfc" && (answersMap[it.id]?.value.isNullOrBlank()) }?.id
+                ?: uiState.questionsForSelectedChecklist.find { it.type.lowercase() == "nfc" }?.id
+                ?: uiState.questionsForSelectedChecklist.firstOrNull()?.id
+
+                if (targetId != null) {
+                    val current = answersMap[targetId] ?: AnswerInput()
+                    answersMap[targetId] = current.copy(value = tag)
+                }
+                onNfcTagConsumed()
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             CenterAlignedTopAppBar(
-                title = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = stringResource(R.string.submission_detail_title),
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            text = checklist?.title ?: "Submission #${submission.id}",
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.labelLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.back_to_checklists),
+                            contentDescription = stringResource(R.string.back),
                         )
                     }
                 },
                 actions = {
                     val context = LocalContext.current
 
+                    /*
                     IconButton(onClick = onOpenHelpClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.Help,
                             contentDescription = stringResource(R.string.help),
                         )
                     }
+                    */
 
+                    Button(
+                        onClick = {
+                            val updatedSubmission = submission.copy(
+                                inspector = inspectorName.ifBlank { null },
+                                date = checkDate.ifBlank {
+                                    SimpleDateFormat(
+                                        "dd.MM.yyyy",
+                                        Locale.getDefault()
+                                    ).format(Date())
+                                },
+                                status = status,
+                                notes = notes.ifBlank { null },
+                            )
+                            onSaveSubmission(updatedSubmission, answersMap.toMap())
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.padding(end = 8.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Save,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 4.dp),
+                        )
+                        Text(stringResource(R.string.save_changes))
+                    }
+
+                    /*
                     IconButton(
                         onClick = {
                             PdfExporter.generateAndOpenSubmissionPdf(
@@ -175,6 +211,8 @@ fun SubmissionDetailScreen(
                             contentDescription = stringResource(R.string.export_pdf_report),
                         )
                     }
+                     */
+
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
@@ -190,7 +228,43 @@ fun SubmissionDetailScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // Header card
+            // Header item: Title and subtitle in scroll area
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.submission_detail_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(
+                        text = checklist?.title ?: "Submission #${submission.id}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    /*
+                    if (validationError != null) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = validationError!!,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                     */
+
+                }
+            }
+
+            // Header item: Inspector & Notes Card
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -308,6 +382,17 @@ fun SubmissionDetailScreen(
                             val current = answersMap[question.id] ?: AnswerInput()
                             answersMap[question.id] = current.copy(notes = notesVal)
                         },
+                        currentImageUri = answersMap[question.id]?.imageUri
+                            ?: answersMap[question.id]?.imagePath,
+                        onImageChanged = { uri ->
+                            val current = answersMap[question.id] ?: AnswerInput()
+                            answersMap[question.id] = current.copy(
+                                imageUri = uri,
+                                imagePath = if (uri == null) null else current.imagePath
+                            )
+                        },
+                        isActiveNfcTarget = (activeNfcQuestionId == question.id),
+                        onActivateNfcScan = { activeNfcQuestionId = question.id },
                     )
                 }
             }
@@ -352,6 +437,8 @@ fun SubmissionDetailScreen(
                                 Text(stringResource(R.string.pdf_report))
                             }
                             */
+
+
                             Button(
                                 onClick = {
                                     val updatedSubmission = submission.copy(
@@ -372,6 +459,7 @@ fun SubmissionDetailScreen(
                                 )
                                 Text(stringResource(R.string.save_changes))
                             }
+
                         }
                     }
                 }

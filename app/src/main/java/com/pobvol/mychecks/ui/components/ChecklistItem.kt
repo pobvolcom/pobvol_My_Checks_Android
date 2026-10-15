@@ -4,7 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Assignment
+import androidx.compose.material.icons.rounded.Analytics
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.QuestionAnswer
@@ -47,6 +48,7 @@ fun ChecklistItem(
     onQuestionsClick: (ChecklistEntity) -> Unit,
     onEditClick: (ChecklistEntity) -> Unit,
     onDeleteClick: (ChecklistEntity) -> Unit,
+    onChartClick: (ChecklistEntity) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -97,17 +99,14 @@ fun ChecklistItem(
             }
 
             if (checklist.description!!.isNotBlank()) {
-                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = checklist.description,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                    fontWeight = FontWeight.Bold,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-
-            Spacer(modifier = Modifier.height(12.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -122,46 +121,83 @@ fun ChecklistItem(
                 )
                 Text(
                     text = formatTimestamp(checklist.timestamp),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
                 )
             }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
+                //horizontalArrangement = Arrangement.SpaceBetween,
+
             ) {
-                IconButton(onClick = { onFillClick(checklist) }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.Assignment,
-                        contentDescription = stringResource(R.string.fill_checklist),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    )
-                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .padding(0.dp, 10.dp, 0.dp, 0.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
 
-                IconButton(onClick = { onQuestionsClick(checklist) }) {
-                    Icon(
-                        imageVector = Icons.Rounded.QuestionAnswer,
-                        contentDescription = stringResource(R.string.manage_questions),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    )
-                }
+                    // EDIT CHECKLIST
+                    IconButton(onClick = { onEditClick(checklist) }) {
+                        Icon(
+                            imageVector = Icons.Rounded.Edit,
+                            contentDescription = stringResource(R.string.edit_checklist),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                            modifier = Modifier
+                                .fillMaxSize()
+                        )
+                    }
 
-                IconButton(onClick = { onEditClick(checklist) }) {
-                    Icon(
-                        imageVector = Icons.Rounded.Edit,
-                        contentDescription = stringResource(R.string.edit_checklist),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
-                    )
-                }
+                    // CHECKPOINTS/QUESTIONS
+                    IconButton(onClick = { onQuestionsClick(checklist) }) {
+                        Icon(
+                            imageVector = Icons.Rounded.QuestionAnswer,
+                            contentDescription = stringResource(R.string.manage_questions),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        )
+                    }
 
-                IconButton(onClick = { onDeleteClick(checklist) }) {
-                    Icon(
-                        imageVector = Icons.Rounded.Delete,
-                        contentDescription = stringResource(R.string.delete_checklist),
-                        tint = MaterialTheme.colorScheme.error,
-                    )
+                    // DELETE CHECKLIST
+                    IconButton(onClick = { onDeleteClick(checklist) }) {
+                        Icon(
+                            imageVector = Icons.Rounded.Delete,
+                            contentDescription = stringResource(R.string.delete_checklist),
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        )
+                    }
+
+                    // LOGS
+                    IconButton(onClick = { onFillClick(checklist) }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Assignment,
+                            contentDescription = stringResource(R.string.fill_checklist),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        )
+                    }
+
+                    // CHART
+                    IconButton(onClick = { onChartClick(checklist) }) {
+                        Icon(
+                            imageVector = Icons.Rounded.Analytics,
+                            contentDescription = stringResource(R.string.checklist_analytics),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier
+                                .fillMaxSize()
+                            //.widthIn(16.dp)
+                            //.height(16.dp)
+                        )
+                    }
+
                 }
             }
         }
@@ -191,6 +227,7 @@ fun ChecklistItemPreview() {
             onQuestionsClick = {},
             onEditClick = {},
             onDeleteClick = {},
+            onChartClick = {},
             modifier = Modifier.padding(16.dp),
         )
     }

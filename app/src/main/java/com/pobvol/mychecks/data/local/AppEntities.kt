@@ -169,5 +169,6 @@ data class ChecklistAnswerEntity(
     val questionid: Int = 0,
     val value: String,
     val notes: String? = null,
+    val imagePath: String? = null,
     val timestamp: Long = System.currentTimeMillis()
 )
