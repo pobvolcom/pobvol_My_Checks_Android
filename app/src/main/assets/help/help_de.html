@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="de">
+<!-- Test -->
+<head>
+    <title>My Checks - Benutzerhilfe</title>
+
+    <meta charset="UTF-8">
+
+    <!--meta-viewport
+    Wenn die Website am Computer getestet wird, funktioniert alles wie gewünscht. 
+    Auf einem echten mobilen Endgerät ist das allerdings noch nicht der Fall, denn hier arbeitet eine Technik namens Layout-Viewport im Hintergrund. Damit Tablets, Smartphones & Co. Media Queries korrekt interpretieren, muss folgende Zeile Code in den <head> der Website eingebunden werden:-->
+    <meta name="viewport" content="width=device-width; initial-scale=1.0;" />  
+
+    <meta name="apple-mobile-web-app-capable" content="yes"> 
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+    <meta name="description" content="Checklisten schnell und einfach erstellen | Ergebnisse protokollieren | Freie Software | Open Source | Android Smartphones und Tablets" />
+	<meta property="og:locale" content="de-DE" />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="pobvol My Checks Benutzerhilfe" />
+	<meta property="og:description" content="Checklisten schnell und einfach erstellen | Ergebnisse protokollieren | Freie Software | Open Source | Android Smartphones und Tablets" />
+	<meta property="og:url" content="help_de.html" />
+	<meta property="og:site_name" content="pobvol My Checks Benutzerhilfe" />
+    <!--<link type="text/css" rel="stylesheet" media="screen" href="../style.css" /> -->
+    <!--<link type="text/css" rel="stylesheet" media="print" href="../print.css" />    -->
+
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 16px;
+            line-height: 1.6;
+            margin: 0;
+        }
+        body.light {
+            background-color: #F8F9FA;
+            color: #2D2D2D;
+        }
+        body.light .card {
+            background: #ffffff;
+            color: #2D2D2D;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        body.light h1 { color: #6650a4; }
+        body.light h2 { color: #625b71; border-bottom: 2px solid #D0BCFF; }
+
+        body.dark {
+            background-color: #121212;
+            color: #E0E0E0;
+        }
+        body.dark .card {
+            background: #1E1E1E;
+            color: #FFFFFF;
+            box-shadow: 0 1px 3px rgba(255,255,255,0.05);
+            border: 1px solid #2C2C2C;
+        }
+        body.dark h1 { color: #FFB74D; }
+        body.dark h2 { color: #FFB74D; border-bottom: 2px solid #6650a4; }
+        body.dark code {
+            background-color: #2C2C2C;
+            color: #FFB74D;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        a { color: #FFB74D;}
+        h1 { font-size: 22px; margin-bottom: 10px; }
+        h2 { font-size: 16px; margin-top: 1px; padding-bottom: 0px; }
+        p { font-size: 14px; margin: 0px 0; }
+        ul { padding-left: 20px; font-size: 14px; }
+        li { margin-bottom: 6px; }
+        .card {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 1px;
+        }
+        .footer { text-align: center; font-size: 12px; opacity: 0.7; margin-top: 24px; }
+        img.imglft{
+            float: left;
+            margin-right: 9px;
+            margin-bottom: 9px;
+        }
+        img.imgrght{
+            float: right;
+            margin-left: 18px;
+            margin-bottom: 9px;
+        }
+        .contentflex {
+            display: flex;
+            flex-flow: row nowrap;
+
+            height: auto;
+            margin-bottom: 10px;
+            padding-bottom:10px;
+
+            max-width: 100%; /* Maximum width */
+            margin-left: auto;
+            margin-right: auto;
+            padding-right: 15px;
+            overflow-x: scroll;  
+
+            background: white;
+            border-radius: 25px;
+            line-height: 1.2;
+
+            /*align-items: center;*/
+
+            }
+        .contentflex > div {
+            background-color: whitesmoke;
+            margin-right:20px;
+            padding:15px;
+            min-width: 175px; 
+            max-height: 425px;
+            border: 1px solid grey;
+            border-radius: 25px;
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+        }
+    </style>
+    <script src="./scripts/myscript.js"></script>
+</head>
+<body>
+    <img class="logo" src="./images/logo.png" alt="Logo"/><br>
+    pobvol Software Services
+
+    <a name="_home"></a>
+    <div class="card">
+        <h1>My Checks - Benutzerhilfe</h1>
+        <!--<img class="imgrght" src="./images/dashboard.png" alt="dashboard.png" width="33%">-->
+        <p>
+            Mit der Android-App <b>pobvol My Checks</b> können Sie ganz einfach und schnell eigene Checklisten mit Kontrollpunkten und Fragen erstellen und anschließend die Ergebnisse von Prüfungen und anderen Aktivitäten festhalten, analysieren und in PDF-Protokollen ausgeben. Alle erfassten Daten werden automatisch in SQL-Dateien gesichert. Datenstrukturen müssen nicht mit großem Aufwand in Datenbanken programmiert werden. Deutsch, Englisch, Spanisch und Französisch werden unterstützt.<br>
+            <br>
+        </p>
+        <p style="font-size:normal;font-weight: normal;text-align: left;">
+            &#x1F517;&nbsp;<a href="#_screenshots" target="_self">Screenshots</a><br>
+            &#x1F517;&nbsp;<a href="#_dashboard" target="_self">Dashboard & Navigation</a><br>
+            &#x1F517;&nbsp;<a href="#_settings" target="_self">Einstellungen & Anpassungen</a><br>
+            &#x1F517;&nbsp;<a href="#_checklists" target="_self">Meine Checklisten</a><br>
+            &#x1F517;&nbsp;<a href="#_checkpoints" target="_self">Checkpunkte/Fragen</a><br>
+            &#x1F517;&nbsp;<a href="#_executions" target="_self">Prüfungen durchführen und Ergebnisse erfassen</a><br>
+            &#x1F517;&nbsp;<a href="#_reports" target="_self">Meine Protokolle & PDF und SQL-Export</a><br>
+            &#x1F517;&nbsp;<a href="#_data_security" target="_self">Datensicherheit & SQL-Export</a><br>
+            &#x1F517;&nbsp;<a href="#_architecture" target="_self">Technik / Architektur</a><br>
+            &#x1F517;&nbsp;<a href="#_copyright" target="_self">© Copyright</a><br>
+        </p>
+    </div>
+
+    <hr>
+    <a name="_screenshots"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>Screenshots</h2>
+        <div class="contentflex">
+            <div>
+                Dashboard
+                <img width=100% src="./images/dashboard.png" alt="Dashboard">
+            </div>
+            <div>
+                Meine Checklisten
+                <img width=100% src="./images/my-checklists.png" alt="My Checklists">
+            </div>
+            <div>
+                Checkliste bearbeiten
+                <img width=100% src="./images/edit-checklist.png" alt="Edit Checklist">
+            </div>
+            <div>
+                Checkpunkte/Fragen
+                <img width=100% src="./images/checkpoints-questions.png" alt="Checkpoints/Questions">
+            </div>
+            <div>
+                Meine Protokolle
+                <img width=100% src="./images/my-logs.png" alt="My Logs">
+            </div>
+            <div>
+                PDF-Report
+                <img width=100% src="./images/pdf-report.png" alt="PDF-Report">
+            </div>
+            <div>
+                PDF-Report Designer
+                <img width=100% src="./images/pdf-report-designer.png" alt="PDF-Report Designer">
+            </div>
+            <div>
+                Charts
+                <img width=100% src="./images/charts.png" alt="Charts">
+            </div>
+        </div>
+    </div>
+
+    <hr>
+    <a name="_dashboard"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>Dashboard & Navigation</h2>
+        <p>
+            Das Dashboard ist Ihr Startpunkt. Navigieren Sie mit den Karten zu Ihren Checklisten und Protokollen und greifen Sie über die obere Leiste auf Einstellungen und Hilfe zu.
+        </p>
+    </div>
+
+    <hr>
+    <a name="_settings"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p><h2>Einstellungen & Anpassungen</h2>
+        <p>
+            Mit einem Klick auf das Zahnrad-Symbol (⚙) rufen Sie die Einstellungen auf. Es öffnet sich der Dialog "Allgemeine Einstellungen".<br>
+            <br>
+            Passen Sie zuerst das Erscheinungsbild, die bevorzugte Sprache und die Kategorien an Ihre Bedürfnisse an. Tragen Sie dann Ihren Namen in das Feld Prüfer ein. Ihr Name wird in die Prüfberichte übernommen und ausgegeben.<br>
+            <br> 
+            Wenn Sie auf den Button "PDF-Bericht Layout anpassen" klicken, öffnet sich der Dialog "PDF-Berichts-Designer". Passen Sie das Layout der PDF-Berichte (Kopfzeile, Fußzeile, Seitenumbrüche, Datums- und Statusanzeige) an.
+        </p>
+    </div>
+
+    <hr>
+    <a name="_checklists"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p><h2>Meine Checklisten</h2>
+        <p>
+            Klicken Sie im Dashboard auf die Karte "Meine Checklisten" und öffnen Sie damit den entsprechenden Bildschirm.<br>
+            <br>
+            <b>Checkliste hinzufügen</b>: Neue Checklisten erstellen Sie recht schnell. Klicken Sie einfach auf den **`+`** Button in der unteren rechten Ecke. Es öffnet sich der Dialog "Checkliste hinzufügen". Tragen Sie im Feld Titel einen Namen für Ihre neue Checkliste ein, ordnen Sie eine Kategorie zu und wenn Sie mögen, geben Sie eine kurze Beschreibung ein. Mit dem Button "Hinzufügen" werden Ihre Eingaben gespeichert, Ihre neue Checkliste wird erstellt und in der Übersicht angezeigt.<br>
+            <br>
+            <b>Checklisten suchen</b>: Tippen Sie auf das Suchsymbol (🔍) in der oberen Leiste, um Checklisten nach Titel, Beschreibung oder Kategorie zu finden.<br>
+            <br>
+            <b>Checklisten nach Kategorie filtern</b>: Filtern Sie die Liste, indem Sie auf eine Kategorie tippen (Health, UVV, usw.). Ein Klick auf All hebt den Filter wieder auf.<br>
+            <br>
+            <b>Checkliste bearbeiten</b>: Tippen Sie in einer Checklistenkarte auf das Ändern-Symbol (✏️), öffnet sich das Fenster "Checkliste bearbeiten". Hier können Sie den Titel, die Kategorie und die Beschreibung anpassen.<br>
+            <br>
+            <b>Checkpunkte/Fragen</b>: Tippen Sie in einer Checklistenkarte auf das Frage-Symbol (💬), öffnet sich der Bildschirm "Checkpunkte/Fragen". Hier verwalten Sie die Checkpunkte und Fragen für die gewählte Checkliste. Wie das geht, finden Sie etwas weiter unten im Kapitel [Checkpunkte/Fragen].<br>
+            <br>
+            <b>Checkliste löschen</b>: Tippen Sie in einer Checklistenkarte auf das Lösch-Symbol (🗑️), öffnet sich ein Fenster, in welchem Sie die Löschung bestätigen müssen. Das Löschen einer Checkliste löscht automatisch die zugehörigen Fragen. Bitte beachten Sie: Checklisten, zu denen bereits ein Protokoll erfasst wurde, können nicht gelöscht werden.<br>
+            <br>
+            <b>Prüfung hinzufügen</b>: Mit einem Klick auf eine Checklistenkarte starten Sie die Erfassung einer Prüfung. Es öffnet sich das Formular "Checkliste ausfüllen".<br>
+            <br>
+            <b>Prüfungsprotokolle anzeigen</b>: Tippen Sie in einer Checklistenkarte auf das Protokoll-Symbol (📋), öffnet sich der Bildschirm "Meine Protokolle". Dieser listet die Protokolle für die gewählte Checkliste.<br>
+            <br>
+            <b>Chart anzeigen</b>: Tippen Sie in einer Checklistenkarte auf das Chart-Symbol (📋), öffnet sich der Chart-Bildschirm. Dieser zeigt in einem Chart, wieviele Prüfberichte pro Tag erfasst wurden. Sind Nummernfragen vorhanden, zeigt ein zusätzliches Chart die Kurve für die ersten beiden Werte.
+        </p>
+    </div>
+
+    <hr>
+    <a name="_checkpoints"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>Checkpunkte/Fragen</h2>
+        <p>
+            Auf diesem Bildschirm verwalten Sie die Checkpunkte/Fragen einer Checkliste. Dazu werden folgende Antworttypen unterstützt: Text, Zahl, Kontrollkästchen, einfache Auswahlliste, Mehrfachauswahlliste, NFC und QR-Code.<br>
+            <br>
+            - <b>Text</b>: Flexible Texteingaben<br>
+            <br>
+            - <b>Zahl</b>: Eingabe von numerischen Werten. Sie können einen Minimum- und einen Maximumwert zuordnen. Diese dürfen dann bei der Eingabe nicht unter- bzw. überschritten werden.<br>
+            <br>
+            - <b>Kontrollkästchen</b>: Ja/Nein-Umschalter<br>
+            <br>
+            - <b>Auswahlliste</b>: Mögliche Optionen müssen kommagetrennt erfasst werden. Eine Option wird dann beim Ausfüllen der Checkliste ausgewählt. Man kann auch Hintergrundfarben (grün, gelb oder rot) angeben, indem man Farbtags in Klammern einfügt, wie zum Beispiel ohne erkennbare Mängel [grün], Reparatur erforderlich [rot] oder Mängel beseitigt [gelb]. Im PDF-Export wird die ausgewählte Option mit einem farblich hervorgehobenen Hintergrundfeld gedruckt.<br>
+            <br>
+            - <b>Mehrfachauswahl</b>: Mögliche Optionen müssen kommagetrennt erfasst werden. Eine oder mehrere Optionen werden dann beim Ausfüllen der Checkliste ausgewählt. Man kann auch Hintergrundfarben (grün, gelb oder rot) angeben, indem man Farbtags in Klammern einfügt, wie zum Beispiel Optionn 1 [grün], Option 2 [rot] oder Option 3 [gelb]. Im PDF-Export wird die ausgewählte Option mit einem farblich hervorgehobenen Hintergrundfeld gedruckt.<br>
+            <br>
+            - <b>NFC</b>: Physische NFC-Tags auslesen und die Daten übernehmen<br>
+            <br>
+            - <b>QR-Code</b>: QR-Codes mit der Kamera scannen und den enthaltenen Wert in das Antwortfeld übernehmen.<br>
+            <br><br>
+            <b>Checkpunkt/Frage hinzufügen</b>: Klicken Sie einfach auf den **`+`** Button in der unteren rechten Ecke.
+            Es öffnet sich der Dialog "Checkpunkt/Frage hinzufügen".
+            Tragen Sie im Feld Titel einen Namen für Ihren neuen Checkpunkt/Frage ein und ordnen Sie einen Antworttyp zu.
+            Abhängig vom Antworttyp sind weitere Angaben erforderlich oder möglich.
+            Wenn Sie mögen, geben Sie eine kurze Beschreibung ein.
+            Sie können auch die Sortiernummer eintragen, das macht die App aber für Sie automatisch.
+            Neue Checkpunkte/Fragen werden automatisch als erforderlich markiert. Ändern Sie diese Einstellung, wenn die Frage nicht unbedingt beantwortet werden muss.
+            Mit dem Button "Speichern" werden Ihre Eingaben gespeichert und in der Übersicht angezeigt.<br>
+            <br>
+            <b>Reihenfolge anpassen</b>: Zu jedem Eintrag wird die Sortiernummer angezeigt (e.g., #1, #2). Damit wird die Position in der Liste gesteuert. Verwenden Sie die Aufwärts-(↑)/Abwärts-Pfeile(↓), um die Reihenfolge der Fragen anzupassen. Eine Änderung bewirkt, dass die Sortiernummern anderer Einträge automatisch angepasst werden.<br>
+            <br>
+            <b>Checkpunkt/Frage bearbeiten</b>: Tippen Sie bei einem Eintrag auf das Ändern-Symbol (✏️), öffnet sich der Dialog "Checkpunkt/Frage bearbeiten". Hier können Sie den Titel, die Beschreibung, die Sortiernummer, den Antworttyp anpassen. Natürlich können Sie auch anpassen, ob der Eintrag erforderlich oder optional ist.<br>
+            <br>
+            <b>Checkpunkt/Frage löschen</b>: Tippen Sie bei einem Eintrag auf das Lösch-Symbol (🗑️), öffnet sich ein Fenster, in welchem Sie die Löschung bestätigen müssen.
+        </p>
+    </div>
+
+    <hr>
+    <a name="_executions"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>Prüfungen durchführen und Ergebnisse erfassen</h2>
+        <p>
+            Klicken Sie im Dashboard auf die Karte "Meine Checklisten" und öffnen Sie damit den entsprechenden Bildschirm. Mit einem Klick auf eine Checklistenkarte starten Sie die Erfassung einer Prüfung. Es öffnet sich das Formular "Checkliste ausfüllen".<br>
+            <br>
+            - <b>Prüfer</b>: Der Prüfername wurde automatisch aus den Einstellungen ausgefüllt. Sie können diesen ändern.<br>
+            <br>
+            - </b>Prüfdatum</b>: Das Datum wurde mit dem aktuellen Datum vorbelegt (zur Zeit fest dd.MM.yyyyy). Sie können dieses ändern.<br>
+            <br>
+            - </b>Status</b>: Der Status wurde mit "in Bearbeitung" vorbelegt. Zur Zeit können Sie den Status noch ändern. Das wird aber abgestellt.<br>
+            <br>
+            - </b>Notizen</b>: Wenn Sie mögen, können Sie zusätzliche Angaben zur Prüfung in den Notizen eintragen. Nutzen Sie diese Möglichkeit, da die Notizen in der Protokollübersicht angezeigt werden. Das erleichtert Ihnen das Auffinden einer Prüfung.<br>
+            <br>
+            - </b>Checkpunkte/Fragen</b>: Beantworten Sie nun alle erforderlichen Checklistenfragen. Sie können die Bearbeitung jederzeit speichern und später weitermachen. Nutzen Sie dazu den Speichern-Button im Kopfbereich des Formulars. Zusätzlich finden Sie einen Speicherbutton auch am Ende der Liste. Sollten noch nicht alle erforderlichen Fragen beantwortet sein, wird der Status mit "in Bearbeitung" vorbelegt. Wenn alle erfordferlichen Checkpunkte/Fragen beantwortet wurden, wird der Status beim Speichern automatisch auf "Abgeschlossen" geändert.<br>
+            <br>
+            - </b>NFC Tags</b>: Für NFC-Fragen tippen Sie auf den NFC-Button  und halten Sie einen NFC-Tag an die Rückseite Ihres Geräts, damit dieser gescannt werden kann. Wenn alles geklappt hat, wurden die Daten in das Antwortfeld übernommen. Bitte beachten Sie, dass dazu auf Ihrem Gerät NFC eingeschaltet sein muss.<br>
+            <br>
+            - </b>QR-Codes</b>: Für QR-Code-Fragen tippen Sie auf den Button "QR-Code scannen". Damit öffnet sich der Kamerascanner und Sie können den Code aufnehmen. Wenn alles geklappt hat, wurden die Daten in das Antwortfeld übernommen. Bitte beachten Sie, dass die App dazu Kamera-Berechtigungen benötigt.
+        </p>
+    </div>
+
+    <hr>
+    <a name="_reports"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>Meine Protokolle & PDF und SQL-Export</h2>
+        <p>
+            Klicken Sie im Dashboard auf die Karte "Meine Protokolle" und öffnen Sie damit den entsprechenden Bildschirm. Sehen Sie aufgezeichnete Protokolle an, filtern Sie die Liste, bearbeiten Sie Ihre Antworten und erstellen Sie sofort Ihren DIN A4 PDF-Bericht.<br>
+            <br>
+            <b>Protokolle suchen</b>: Tippen Sie auf das Suchsymbol (🔍) in der oberen Leiste, um Protokolle nach Datum, Titel oder Notizen zu finden.<br>
+            <br>
+            <b>Checklisten nach Status filtern</b>: Filtern Sie die Liste, indem Sie auf einen Status tippen (Abgeschlossen, In Bearbeitung). Ein Klick auf Alle hebt den Filter wieder auf.<br>
+            <br>
+            <b>Protokoll bearbeiten</b>: Tippen Sie in einer Karte auf das Ändern-Symbol (✏️), öffnet sich das Fenster "Protokoll  bearbeiten" und Sie können Ihre Eingaben anpassen.<br>
+            <br>
+            <b>Protokoll löschen</b>: Tippen Sie in einer Karte auf das Lösch-Symbol (🗑️), öffnet sich ein Fenster, in welchem Sie die Löschung bestätigen müssen. Das Löschen eines Protokolls löscht alle zugehörigen Antworten.<br>
+            <br>
+            <b>PDF anzeigen</b>: Protokolle können direkt als professionelle A4-PDFs exportiert und geteilt werden. Tippen Sie in einer Karte auf das PDF-Symbol, öffnet sich ein PDF-Viewer und zeigt das erzeugte PDF an. Dieses können Sie dann drucken oder teilen.<br><br>
+            PDF-Reports werden für vollständig ausgefüllte Checklisten automatisch erstellt, sobald alle erforderlichen Daten erfasst wurden und alle erforderlichen Fragen beantwortet wurden. Der Status wird automatisch auf "Abgeschlossen" gesetzt und eine PDF-Datei auf dem Gerät in dem Ordner <b>Download/MyChecks</b> gespeichert. Der Dateiname wird automatisch generiert <b>Submission_Prüfnummer_Report.pdf</b>.
+        </p>
+    </div>
+
+    <hr>
+    <a name="_data_security"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>Datensicherheit & SQL-Export</h2>
+        <p>
+            Alle Daten einer Prüfung (Checkliste, Checkpunkte/Fragen, Prüfungsdaten und Antworten) werden sicher in Ihrer lokalen Android SQLite-Datenbank mit Fremdschlüsselkaskaden und automatischen Schema-Migrationen gespeichert. Zusätzlich werden die Daten aller abgeschlossenen Prüfberichte als SQL.TXT-Datei auf dem Gerät in dem Ordner <b>Download/MyChecks</b> gespeichert. Bilder werden ebenfalls hier gespeichert. 
+        </p>
+    </div>
+
+    <hr>
+    <a name="_architecture"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>🛠️ Technik / Architektur</h2>
+        <p>
+            - <b>Entwicklungssprache</b>: Kotlin<br>
+            - <b>UI Framework</b>: Jetpack Compose & Material 3 (with Edge-to-Edge support)<br>
+            - <b>Datenbank</b>: Room Persistence Library (SQLite with automatic schema migrations & cascade deletes)<br>
+            - <b>Dokumentenerstellung</b>: Android `PdfDocument` API (A4 vector rendering)<br>
+            - <b>Bildverarbeitung</b>: Coil Compose<br>
+            - <b>Permissions & Hardware</b>: Camera contracts, NFC foreground dispatch, and Scoped Storage MediaStore APIs<br>
+            - <b>Unterstützte Geräte</b>: Android Smartphones und Tablets<br>
+            - <b>Unterstützte Sprachen</b>: Deutsch, Englisch, Spanisch und Französisch<br>
+        </p>
+    </div>
+
+    <hr>
+    <a name="_copyright"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>© Copyright</h2>
+        <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow"><img class="imgrght" src="./images/gplv3-or-later.png" alt="imgage:gplv3-or-later.png"></a>
+        <p>
+            Die App <b>pobvol My Checks</b> ist <a href="https://de.wikipedia.org/wiki/Freie_Software" target="_blank" rel="nofollow">Freie Software</a>☯ und wird quelloffen via <a href="https://github.com/pobvolcom/pobvol_My_Checks_Android" target="_blank" rel="nofollow">GitHub</a>☯  ausgeliefert. Sie können die Lösung unter den Bedingungen der <a href="https://de.wikipedia.org/wiki/Freie_Software" target="_blank" rel="nofollow">GNU General Public License v3</a>☯ herunterladen, installieren, betreiben, modifizieren und weiter verteilen. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Entwickelt mit Google Android Studio und Gemini 3.5 Flash Lite and Gemini 3.6 Flash<br>
+            <br>
+            Die App wird in der Hoffnung, dass sie nützlich sein wird, aber OHNE JEDE GEWÄHRLEISTUNG, bereitgestellt; sogar ohne die implizite Gewährleistung der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK. Für die Inhalte verlinkter Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Externe Links sind mit diesem Symbol gekennzeichnet: ☯
+        </p>
+    </div>
+
+    <div class="footer">
+    </div>
+
+</body>
+</html>
