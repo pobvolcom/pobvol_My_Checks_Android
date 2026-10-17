@@ -5,14 +5,14 @@ Create checklists quickly and easily | Log results | Free Software | Open Source
 With the Android app pobvol My Checks, you can easily and quickly create custom checklists with checkpoints and questions, and then record, analyze, and output the results of inspections and other activities in PDF reports. All captured data is automatically backed up in SQL files. Data structures do not need to be programmed in databases with great effort. German, English, Spanish, and French are supported.
 
 
+
 ** Dashboard & Navigation **
-****************************
 
 The dashboard is your starting point. Use the cards to navigate to your checklists and logs, and access settings and help via the top bar.
 
 
+
 ** Settings & Customization **
-****************************
 
 Tap the gear icon (⚙) to open settings. The "General Settings" dialog will appear.
 
@@ -21,8 +21,8 @@ First, customize appearance, preferred language, and categories to your needs. E
 Tap the "Customize PDF Report Layout" button to open the "PDF Report Designer" dialog. Customize the PDF report layout (headers, footers, page breaks, date, and status display).
 
 
+
 ** My Checklists **
-****************************
 
 Tap the "My Checklists" card on the dashboard to open this screen.
 
@@ -45,8 +45,8 @@ View Inspection Logs: Tap the log icon (📋) on a checklist card to open "My Lo
 View Chart: Tap the chart icon (📋) on a checklist card to open analytics charts showing daily submissions and numeric trends.
 
 
+
 ** Checkpoints / Questions **
-*****************************
 
 Manage checkpoints and questions for a checklist here. Supported answer types: Text, Number, Checkbox, Combobox, Multi-select, NFC, and QR Code.
 
@@ -71,8 +71,8 @@ Adjust Order: Use the up (↑) and down (↓) arrows to adjust the sort order.
 Edit / Delete: Tap the edit or delete icons on any question card.
 
 
+
 ** Performing Inspections & Recording Results **
-************************************************
 
 Tap a checklist card on the dashboard to open the "Fill Checklist" form.
 
@@ -91,8 +91,8 @@ Tap a checklist card on the dashboard to open the "Fill Checklist" form.
 - QR Codes: Tap the scan QR code button to use the camera scanner.
 
 
+
 ** My Logs & PDF and SQL Export **
-************************************
 
 View recorded logs, filter lists, edit answers, and generate A4 PDF reports.
 Search & Filter: Search logs by date, title, or notes, and filter by status.
@@ -102,14 +102,14 @@ View PDF: Tap the PDF icon on a log card to open, print, or share the generated 
 PDF reports are automatically saved to the device folder Downloads/MyChecks with filename Submission_id_Report.pdf.
 
 
+
 ** Data Security & SQL Export **
-********************************
 
 All inspection data is securely stored in your local Android SQLite database with foreign key cascades and schema migrations. Additionally, completed reports are exported as SQL.TXT files in Downloads/MyChecks.
 
 
+
 ** Technology / Architecture **
-*******************************
 
 - Language: Kotlin
 - UI Framework: Jetpack Compose & Material 3 (with Edge-to-Edge support)
@@ -121,8 +121,8 @@ All inspection data is securely stored in your local Android SQLite database wit
 - Supported Languages: German, English, Spanish, and French
 
 
+
 ** Copyright **
-***************
 
 The app is Free Software and delivered as open source. You can download, install, operate, modify, and redistribute this software under the terms of the GNU General Public License v3. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
 
