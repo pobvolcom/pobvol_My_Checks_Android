@@ -202,4 +202,8 @@
     <string name="db_backup_button">Datenbank-Backup erstellen (SQLite)</string>
     <string name="msg_db_backup_saved">Datenbank-Backup in Downloads/MyChecks gespeichert</string>
     <string name="audio_feedback_label">Sprachausgabe (TTS)</string>
+    <string name="msg_submission_completed">Prüfung abgeschlossen! PDF &amp; SQL in MyChecks gespeichert</string>
+    <string name="msg_submission_in_progress">Prüfung als in Bearbeitung gespeichert</string>
+    <string name="msg_sql_export_saved">SQL-Export in Downloads gespeichert</string>
+    <string name="msg_submission_updated_in_progress">Protokoll aktualisiert (in Bearbeitung)</string>
 </resources>

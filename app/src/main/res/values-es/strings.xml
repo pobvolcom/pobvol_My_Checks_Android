@@ -202,4 +202,8 @@
     <string name="db_backup_button">Guardar copia de seguridad (SQLite)</string>
     <string name="msg_db_backup_saved">Copia de seguridad guardada en Downloads/MyChecks</string>
     <string name="audio_feedback_label">Retroalimentación de voz (TTS)</string>
+    <string name="msg_submission_completed">¡Envío completado! PDF &amp; SQL guardados en MyChecks</string>
+    <string name="msg_submission_in_progress">Envío guardado como En Progreso</string>
+    <string name="msg_sql_export_saved">Exportación SQL guardada en Descargas</string>
+    <string name="msg_submission_updated_in_progress">Envío actualizado (En Progreso)</string>
 </resources>

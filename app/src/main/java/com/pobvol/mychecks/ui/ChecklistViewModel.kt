@@ -61,7 +61,7 @@ class ChecklistViewModel(
 
     fun onNfcTagScanned(tagId: String) {
         _scannedNfcTag.value = tagId
-        _userMessage.value = "NFC Tag scanned: $tagId"
+        _userMessage.value = context.getString(R.string.msg_nfc_scanned, tagId)
     }
 
     fun clearNfcTag() {
@@ -389,7 +389,7 @@ class ChecklistViewModel(
                     timestamp = System.currentTimeMillis(),
                 )
                 repository.insertChecklist(newChecklist)
-                _userMessage.value = "Checklist added successfully"
+                _userMessage.value = context.getString(R.string.msg_checklist_added)
             } else {
                 val updatedChecklist = currentEdit.copy(
                     title = trimmedTitle,
@@ -400,7 +400,7 @@ class ChecklistViewModel(
                     timestamp = System.currentTimeMillis(),
                 )
                 repository.updateChecklist(updatedChecklist)
-                _userMessage.value = "Checklist updated successfully"
+                _userMessage.value = context.getString(R.string.msg_checklist_updated)
             }
             dismissAddEditDialog()
         }
@@ -411,7 +411,7 @@ class ChecklistViewModel(
         if (trimmed.isNotBlank()) {
             viewModelScope.launch {
                 categoryRepository.insertCategory(CategoryEntity(category = trimmed, title = trimmed))
-                _userMessage.value = "Category added successfully"
+                _userMessage.value = context.getString(R.string.msg_category_added)
             }
         }
     }
@@ -419,7 +419,7 @@ class ChecklistViewModel(
     fun deleteCategory(category: CategoryEntity) {
         viewModelScope.launch {
             categoryRepository.deleteCategory(category)
-            _userMessage.value = "Category deleted successfully"
+            _userMessage.value = context.getString(R.string.msg_category_deleted)
         }
     }
 
@@ -457,7 +457,7 @@ class ChecklistViewModel(
             }
             repository.deleteChecklist(checklist)
             _checklistToDelete.value = null
-            _userMessage.value = "Checklist deleted successfully"
+            _userMessage.value = context.getString(R.string.msg_checklist_deleted)
         }
     }
 
@@ -557,9 +557,9 @@ class ChecklistViewModel(
                 val createdSubmission = submission.copy(id = submissionId.toInt())
                 PdfExporter.savePdfToMyChecks(context, createdSubmission, checklist, questions, allAnswers, settings)
                 SqlExporter.saveSqlToMyChecks(context, createdSubmission, checklist, questions, allAnswers)
-                _userMessage.value = "Submission completed! PDF & SQL saved to 'MyChecks'"
+                _userMessage.value = context.getString(R.string.msg_submission_completed)
             } else {
-                _userMessage.value = "Submission saved as In Progress"
+                _userMessage.value = context.getString(R.string.msg_submission_in_progress)
             }
             closeFillChecklist()
         }
@@ -628,7 +628,7 @@ class ChecklistViewModel(
                 questions = questions,
                 answers = answers,
             )
-            _userMessage.value = "SQL export saved to Downloads"
+            _userMessage.value = context.getString(R.string.msg_sql_export_saved)
         }
     }
 
@@ -722,9 +722,9 @@ class ChecklistViewModel(
                 val settings = settingsRepository.userSettings.first()
                 PdfExporter.savePdfToMyChecks(context, finalSubmission, checklist, questions, allAnswers, settings)
                 SqlExporter.saveSqlToMyChecks(context, finalSubmission, checklist, questions, allAnswers)
-                _userMessage.value = "Submission completed! PDF & SQL saved to 'MyChecks'"
+                _userMessage.value = context.getString(R.string.msg_submission_completed)
             } else {
-                _userMessage.value = "Submission updated (In Progress)"
+                _userMessage.value = context.getString(R.string.msg_submission_updated_in_progress)
             }
             closeEditSubmission()
         }
@@ -743,7 +743,7 @@ class ChecklistViewModel(
         viewModelScope.launch {
             submissionRepository.deleteChecklistSubmission(submission)
             _submissionToDelete.value = null
-            _userMessage.value = "Submission deleted successfully"
+            _userMessage.value = context.getString(R.string.msg_submission_deleted)
         }
     }
 
@@ -794,7 +794,7 @@ class ChecklistViewModel(
                     timestamp = System.currentTimeMillis(),
                 )
                 questionRepository.insertChecklistQuestion(newQuestion)
-                _userMessage.value = "Question added successfully"
+                _userMessage.value = context.getString(R.string.msg_question_added)
             } else {
                 val autoSortNo = if (sortno > 0) sortno else currentEdit.sortno
                 val updatedQuestion = currentEdit.copy(
@@ -809,7 +809,7 @@ class ChecklistViewModel(
                     timestamp = System.currentTimeMillis(),
                 )
                 questionRepository.updateChecklistQuestion(updatedQuestion)
-                _userMessage.value = "Question updated successfully"
+                _userMessage.value = context.getString(R.string.msg_question_updated)
             }
             dismissAddEditQuestionDialog()
         }
@@ -875,7 +875,7 @@ class ChecklistViewModel(
         viewModelScope.launch {
             questionRepository.deleteChecklistQuestion(question)
             _questionToDelete.value = null
-            _userMessage.value = "Question deleted successfully"
+            _userMessage.value = context.getString(R.string.msg_question_deleted)
         }
     }
 

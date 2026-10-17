@@ -202,4 +202,8 @@
     <string name="db_backup_button">Sauvegarder la base de données (SQLite)</string>
     <string name="msg_db_backup_saved">Sauvegarde enregistrée dans Downloads/MyChecks</string>
     <string name="audio_feedback_label">Synthèse vocale (TTS)</string>
+    <string name="msg_submission_completed">Soumission terminée ! PDF &amp; SQL enregistrés dans MyChecks</string>
+    <string name="msg_submission_in_progress">Soumission enregistrée comme En cours</string>
+    <string name="msg_sql_export_saved">Exportation SQL enregistrée dans Téléchargements</string>
+    <string name="msg_submission_updated_in_progress">Soumission mise à jour (En cours)</string>
 </resources>

@@ -204,4 +204,8 @@
     <string name="db_backup_button">Save Database Backup (SQLite)</string>
     <string name="msg_db_backup_saved">Database backup saved to Downloads/MyChecks</string>
     <string name="audio_feedback_label">Voice Feedback (TTS)</string>
+    <string name="msg_submission_completed">Submission completed! PDF &amp; SQL saved to MyChecks</string>
+    <string name="msg_submission_in_progress">Submission saved as In Progress</string>
+    <string name="msg_sql_export_saved">SQL export saved to Downloads</string>
+    <string name="msg_submission_updated_in_progress">Submission updated (In Progress)</string>
 </resources>
