@@ -582,6 +582,37 @@ fun AnswerQuestionItem(
                     }
                 }
 
+                "multiselect" -> {
+                    val optionsList = question.options?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() } ?: emptyList()
+                    val selectedSet = currentAnswer.split(",").map { it.trim() }.filter { it.isNotBlank() }.toSet()
+
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        optionsList.forEach { option ->
+                            val isSelected = selectedSet.contains(option)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                Checkbox(
+                                    checked = isSelected,
+                                    onCheckedChange = { checked ->
+                                        val newSet = if (checked) {
+                                            selectedSet + option
+                                        } else {
+                                            selectedSet - option
+                                        }
+                                        onAnswerChanged(newSet.joinToString(", "))
+                                    },
+                                )
+                                Text(
+                                    text = option,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                        }
+                    }
+                }
+
                 "number" -> {
                     val labelText = buildString {
                         append(stringResource(R.string.enter_number))

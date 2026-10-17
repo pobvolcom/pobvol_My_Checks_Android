@@ -1,27 +1,18 @@
 package com.pobvol.mychecks.ui.screens
 
+import android.graphics.Color
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Checklist
-import androidx.compose.material.icons.rounded.Copyright
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.PictureAsPdf
-import androidx.compose.material.icons.rounded.QuestionAnswer
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.rounded.ZoomIn
+import androidx.compose.material.icons.rounded.ZoomOut
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,21 +24,22 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.pobvol.mychecks.R
+import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.ui.ChecklistUiState
 import com.pobvol.mychecks.ui.theme.mychecksTheme
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,8 +49,35 @@ fun HelpScreen(
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     BackHandler(onBack = onBackClick)
+
+    val darkTheme = when (uiState.userSettings.themeMode) {
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    }
+
+    var textZoomPercent by remember { mutableStateOf(100) }
+    var webViewRef by remember { mutableStateOf<WebView?>(null) }
+
+    val currentLang = uiState.userSettings.preferredLanguage.takeIf { it.isNotBlank() } ?: "en"
+    val assetFileName = when (currentLang.lowercase()) {
+        "de" -> "help/help_de.html"
+        "es" -> "help/help_es.html"
+        "fr" -> "help/help_fr.html"
+        else -> "help/help_en.html"
+    }
+
+    val htmlContent = remember(darkTheme, currentLang) {
+        try {
+            context.assets.open(assetFileName).bufferedReader().use { it.readText() }
+                .replace("<body>", if (darkTheme) "<body class=\"dark\">" else "<body class=\"light\">")
+        } catch (_: Exception) {
+            "<html><body><h1>Help</h1><p>Error loading help content.</p></body></html>"
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -83,6 +102,26 @@ fun HelpScreen(
                         )
                     }
                 },
+                actions = {
+                    IconButton(onClick = {
+                        textZoomPercent = maxOf(70, textZoomPercent - 15)
+                        webViewRef?.settings?.textZoom = textZoomPercent
+                    }) {
+                        Icon(
+                            imageVector = Icons.Rounded.ZoomOut,
+                            contentDescription = "Zoom Out",
+                        )
+                    }
+                    IconButton(onClick = {
+                        textZoomPercent = minOf(200, textZoomPercent + 15)
+                        webViewRef?.settings?.textZoom = textZoomPercent
+                    }) {
+                        Icon(
+                            imageVector = Icons.Rounded.ZoomIn,
+                            contentDescription = "Zoom In",
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
@@ -90,149 +129,26 @@ fun HelpScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
-        Column(
+        AndroidView(
+            factory = { ctx ->
+                WebView(ctx).apply {
+                    webViewClient = WebViewClient()
+                    settings.javaScriptEnabled = false
+                    settings.textZoom = textZoomPercent
+                    setBackgroundColor(Color.TRANSPARENT)
+                    loadDataWithBaseURL("file:///android_asset/help/", htmlContent, "text/html", "UTF-8", null)
+                    webViewRef = this
+                }
+            },
+            update = { webView ->
+                webView.settings.textZoom = textZoomPercent
+                webView.loadDataWithBaseURL("file:///android_asset/help/", htmlContent, "text/html", "UTF-8", null)
+                webViewRef = webView
+            },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            HelpHeaderCard()
-
-            HelpSectionCard(
-                title = stringResource(R.string.help_sec1_title),
-                icon = Icons.Rounded.Info,
-                content = stringResource(R.string.help_sec1_desc),
-            )
-
-            HelpSectionCard(
-                title = stringResource(R.string.help_sec7_title),
-                icon = Icons.Rounded.Settings,
-                content = stringResource(R.string.help_sec7_desc),
-            )
-
-            HelpSectionCard(
-                title = stringResource(R.string.help_sec2_title),
-                icon = Icons.Rounded.Checklist,
-                content = stringResource(R.string.help_sec2_desc),
-            )
-
-            HelpSectionCard(
-                title = stringResource(R.string.help_sec3_title),
-                icon = Icons.Rounded.QuestionAnswer,
-                content = stringResource(R.string.help_sec3_desc),
-            )
-
-            HelpSectionCard(
-                title = stringResource(R.string.help_sec5_title),
-                icon = Icons.Rounded.Checklist,
-                content = stringResource(R.string.help_sec5_desc),
-            )
-
-            HelpSectionCard(
-                title = stringResource(R.string.help_sec6_title),
-                icon = Icons.Rounded.PictureAsPdf,
-                content = stringResource(R.string.help_sec6_desc),
-            )
-
-            HelpSectionCard(
-                title = stringResource(R.string.help_sec4_title),
-                icon = Icons.Rounded.Info,
-                content = stringResource(R.string.help_sec4_desc),
-            )
-
-            HelpSectionCard(
-                title = stringResource(R.string.copyright),
-                icon = Icons.Rounded.Copyright,
-                content = stringResource(R.string.copyrightText),
-            )
-        }
-    }
-}
-
-@Composable
-fun HelpHeaderCard() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-        ),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Image(
-                //painter = painterResource(id = R.drawable.placeholder),
-                painter = painterResource(id = R.drawable.pobvol),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop,
-            )
-            Text(
-                text = stringResource(R.string.help_welcome_title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
-            Text(
-                text = stringResource(R.string.help_welcome_desc),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
-            )
-        }
-    }
-}
-
-@Composable
-fun HelpSectionCard(
-    title: String,
-    icon: ImageVector,
-    content: String,
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-            Text(
-                text = content,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+                .padding(innerPadding),
+        )
     }
 }
 

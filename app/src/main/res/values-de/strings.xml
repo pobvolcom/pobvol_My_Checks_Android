@@ -114,6 +114,7 @@
     <string name="answer_type_number">Zahl</string>
     <string name="answer_type_checkbox">Kontrollkästchen</string>
     <string name="answer_type_combobox">Auswahlliste</string>
+    <string name="answer_type_multiselect">Mehrfachauswahl</string>
     <string name="answer_type_nfc">NFC</string>
     <string name="answer_type_qr_code">QR-Code</string>
     <string name="records">Datensätze</string>
@@ -163,7 +164,7 @@
         \n
         ** Kontrollkästchen **: Ja/Nein-Umschalter\n
         \n
-        ** Auswahlliste **: Mögliche Optionen müssen kommagetrennt erfasst werden. Eine Option wird dann beim Ausfüllen der Checkliste ausgewählt.\n
+        ** Auswahlliste **: Mögliche Optionen müssen kommagetrennt erfasst werden. Eine Option wird dann beim Ausfüllen der Checkliste ausgewählt. Man kann auch Hintergrundfarben (grün, gelb oder rot) für Combobox-Optionen angeben, indem man Farbtags in Klammern einfügt, wie zum Beispiel ohne erkennbare Mängel [grün], Reparatur erforderlich [rot] oder Mängel beseitigt [gelb]. Unterstützt auch deutsche Tags wie [grün], [gelb], [rot]). Im PDF-Export wird die ausgewählte Option mit einem weichen, farblich hervorgehobenen Hintergrundfeld gedruckt.\n
         \n
         ** NFC **: Physische NFC-Tags auslesen und die Daten übernehmen\n
         \n

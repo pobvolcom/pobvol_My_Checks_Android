@@ -61,7 +61,7 @@ fun AddEditQuestionDialog(
     var titleError by remember { mutableStateOf(false) }
     var typeExpanded by remember { mutableStateOf(false) }
 
-    val answerTypes = listOf("text", "number", "checkbox", "combobox", "nfc", "qr-code")
+    val answerTypes = listOf("text", "number", "checkbox", "combobox", "multiselect", "nfc", "qr-code")
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -186,7 +186,7 @@ fun AddEditQuestionDialog(
                     }
                 }
 
-                if (type == "combobox") {
+                if (type == "combobox" || type == "multiselect") {
                     OutlinedTextField(
                         value = options,
                         onValueChange = { options = it },

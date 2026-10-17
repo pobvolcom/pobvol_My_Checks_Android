@@ -114,6 +114,7 @@
     <string name="answer_type_number">Número</string>
     <string name="answer_type_checkbox">Casilla de verificación</string>
     <string name="answer_type_combobox">Cuadro combinado</string>
+    <string name="answer_type_multiselect">Selección múltiple</string>
     <string name="answer_type_nfc">NFC</string>
     <string name="answer_type_qr_code">Código QR</string>
     <string name="records">Records</string>
@@ -164,6 +165,7 @@
         ** Casilla de verificación **: Selector Sí/No\n
         \n
         ** Lista desplegable **: Opciones separadas por comas para seleccionar al responder.\n
+        ** Combobox **: Possible options must be entered comma separated. An option is then selected when filling out the checklist. You can also specify background colors (green, yellow, or red) by adding color tags in parentheses, such as no defects [green], repair required [red] or defects eliminated [yellow]. In PDF export, the selected option will be printed with a soft, color-highlighted background box.\n
         \n
         ** NFC **: Leer etiquetas NFC físicas e importar los datos\n
         \n

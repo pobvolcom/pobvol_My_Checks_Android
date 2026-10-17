@@ -58,10 +58,7 @@ object PdfExporter {
         return "$truncated..."
     }
 
-    private fun getComboboxHighlightColor(
-        questionOptions: String?,
-        answerValue: String
-    ): HighlightColor {
+    private fun getComboboxHighlightColor(questionOptions: String?, answerValue: String): HighlightColor {
         if (questionOptions.isNullOrBlank()) {
             val lower = answerValue.lowercase()
             return when {
@@ -73,11 +70,8 @@ object PdfExporter {
         }
 
         val optionsList = questionOptions.split(",").map { it.trim() }
-        val matchingOption = optionsList.find {
-            cleanOptionText(it).equals(answerValue, ignoreCase = true) || it.equals(
-                answerValue,
-                ignoreCase = true
-            )
+        val matchingOption = optionsList.find { 
+            cleanOptionText(it).equals(answerValue, ignoreCase = true) || it.equals(answerValue, ignoreCase = true) 
         } ?: optionsList.firstOrNull() ?: ""
 
         val lowerOpt = matchingOption.lowercase()
@@ -89,14 +83,8 @@ object PdfExporter {
                 val lowerVal = answerValue.lowercase()
                 when {
                     lowerVal.contains("ohne") || lowerVal.contains("ok") || lowerVal.contains("bestanden") -> HighlightColor.GREEN
-                    lowerVal.contains("erforderlich") || lowerVal.contains("danger") || lowerVal.contains(
-                        "schwer"
-                    ) -> HighlightColor.RED
-
-                    lowerVal.contains("beseitigt") || lowerVal.contains("minor") || lowerVal.contains(
-                        "gering"
-                    ) -> HighlightColor.YELLOW
-
+                    lowerVal.contains("erforderlich") || lowerVal.contains("danger") || lowerVal.contains("schwer") -> HighlightColor.RED
+                    lowerVal.contains("beseitigt") || lowerVal.contains("minor") || lowerVal.contains("gering") -> HighlightColor.YELLOW
                     else -> HighlightColor.NONE
                 }
             }
@@ -236,8 +224,7 @@ object PdfExporter {
             paint.color = Color.GRAY
             var footerLine = ""
             if (settings.includeTimestamp) {
-                val formattedGenerated =
-                    SimpleDateFormat("dd.MM.yyyy • HH:mm", Locale.getDefault()).format(Date())
+                val formattedGenerated = SimpleDateFormat("dd.MM.yyyy • HH:mm", Locale.getDefault()).format(Date())
                 footerLine += context.getString(R.string.pdf_generated_on, formattedGenerated)
             }
             if (settings.pdfIncludePageNumber) {
@@ -343,20 +330,9 @@ object PdfExporter {
             val answerEntity = answersMap[q.id]
             val answerValueRaw = answerEntity?.value ?: context.getString(R.string.pdf_no_answer)
             val answerValue = if (q.type.lowercase() == "checkbox") {
-                if (answerValueRaw.equals("true", ignoreCase = true) || answerValueRaw.equals(
-                        "yes",
-                        ignoreCase = true
-                    ) || answerValueRaw.equals("ja", ignoreCase = true)
-                ) {
+                if (answerValueRaw.equals("true", ignoreCase = true) || answerValueRaw.equals("yes", ignoreCase = true) || answerValueRaw.equals("ja", ignoreCase = true)) {
                     context.getString(R.string.pdf_yes)
-                } else if (answerValueRaw.equals(
-                        "false",
-                        ignoreCase = true
-                    ) || answerValueRaw.equals(
-                        "no",
-                        ignoreCase = true
-                    ) || answerValueRaw.equals("nein", ignoreCase = true)
-                ) {
+                } else if (answerValueRaw.equals("false", ignoreCase = true) || answerValueRaw.equals("no", ignoreCase = true) || answerValueRaw.equals("nein", ignoreCase = true)) {
                     context.getString(R.string.pdf_no)
                 } else {
                     answerValueRaw
@@ -366,7 +342,7 @@ object PdfExporter {
             }
 
             val qType = q.type.lowercase()
-            val isRightAlignedType = qType in listOf("text", "number", "combobox", "checkbox")
+            val isRightAlignedType = qType in listOf("text", "number", "combobox", "multiselect", "checkbox")
 
             var blockHeight = 0f
             val hasTitle = settings.pdfIncludeQuestionTitle
@@ -375,7 +351,13 @@ object PdfExporter {
 
             if (hasTitle || hasValue) {
                 if (isRightAlignedType) {
-                    blockHeight += 18f
+                    if (qType == "multiselect") {
+                        val optionsSelected = answerValue.split(",").map { it.trim() }.filter { it.isNotBlank() }
+                        val linesCount = maxOf(1, optionsSelected.size)
+                        blockHeight += 14f + (linesCount * 16f)
+                    } else {
+                        blockHeight += 18f
+                    }
                 } else {
                     if (hasTitle) blockHeight += 14f
                     if (hasValue) {
@@ -384,28 +366,17 @@ object PdfExporter {
                         val answerContent = if (qType in listOf("nfc", "qr-code", "qrcode")) {
                             "    $answerValue"
                         } else {
-                            val answerLabel =
-                                context.getString(R.string.pdf_answer_label, "").trimEnd()
+                            val answerLabel = context.getString(R.string.pdf_answer_label, "").trimEnd()
                             "    $answerLabel $answerValue"
                         }
-                        blockHeight += calculateMultiLineHeight(
-                            answerContent,
-                            paint,
-                            endX - startX,
-                            16f
-                        )
+                        blockHeight += calculateMultiLineHeight(answerContent, paint, endX - startX, 16f)
                     }
                 }
             }
             if (hasNotes && answerEntity.notes != null) {
                 paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
                 paint.textSize = 10f
-                blockHeight += calculateMultiLineHeight(
-                    "    ${answerEntity.notes}",
-                    paint,
-                    endX - startX,
-                    14f
-                )
+                blockHeight += calculateMultiLineHeight("    ${answerEntity.notes}", paint, endX - startX, 14f)
             }
 
             var picBitmap: Bitmap? = null
@@ -448,41 +419,67 @@ object PdfExporter {
                     }
 
                     if (hasValue) {
-                        val cleanedVal =
-                            if (qType == "combobox") cleanOptionText(answerValue) else answerValue
-                        val highlightColor = if (qType == "combobox") getComboboxHighlightColor(
-                            q.options,
-                            answerValue
-                        ) else HighlightColor.NONE
-
-                        paint.typeface = Typeface.create(
-                            Typeface.DEFAULT,
-                            if (hasTitle) Typeface.NORMAL else Typeface.BOLD
-                        )
-                        paint.color = Color.BLACK
-
                         val valX = startX + 280f
-                        if (highlightColor != HighlightColor.NONE) {
-                            val bgPaint = Paint().apply {
-                                color = when (highlightColor) {
-                                    HighlightColor.GREEN -> Color.parseColor("#D4EDDA")
-                                    HighlightColor.YELLOW -> Color.parseColor("#FFF3CD")
-                                    HighlightColor.RED -> Color.parseColor("#F8D7DA")
-                                    else -> Color.TRANSPARENT
-                                }
-                                style = Paint.Style.FILL
-                            }
-                            val textWidth = paint.measureText(cleanedVal)
-                            canvas.drawRect(
-                                valX - 4f,
-                                y - 11f,
-                                valX + textWidth + 4f,
-                                y + 4f,
-                                bgPaint
-                            )
-                        }
+                        if (qType == "multiselect") {
+                            val optionsSelected = answerValue.split(",").map { it.trim() }.filter { it.isNotBlank() }
+                            if (optionsSelected.isEmpty()) {
+                                canvas.drawText(answerValue, valX, y, paint)
+                            } else {
+                                optionsSelected.forEachIndexed { optIndex, optVal ->
+                                    val optY = y + (optIndex * 16f)
+                                    val cleanedOpt = cleanOptionText(optVal)
+                                    val highlightColor = getComboboxHighlightColor(q.options, optVal)
 
-                        canvas.drawText(cleanedVal, valX, y, paint)
+                                    paint.typeface = Typeface.create(
+                                        Typeface.DEFAULT,
+                                        if (hasTitle && optIndex == 0) Typeface.NORMAL else Typeface.BOLD
+                                    )
+                                    paint.color = Color.BLACK
+
+                                    if (highlightColor != HighlightColor.NONE) {
+                                        val bgPaint = Paint().apply {
+                                            color = when (highlightColor) {
+                                                HighlightColor.GREEN -> Color.parseColor("#D4EDDA")
+                                                HighlightColor.YELLOW -> Color.parseColor("#FFF3CD")
+                                                HighlightColor.RED -> Color.parseColor("#F8D7DA")
+                                                else -> Color.TRANSPARENT
+                                            }
+                                            style = Paint.Style.FILL
+                                        }
+                                        val textWidth = paint.measureText(cleanedOpt)
+                                        canvas.drawRect(valX - 4f, optY - 11f, valX + textWidth + 4f, optY + 4f, bgPaint)
+                                    }
+
+                                    canvas.drawText(cleanedOpt, valX, optY, paint)
+                                }
+                                y += (optionsSelected.size - 1) * 16f
+                            }
+                        } else {
+                            val cleanedVal = if (qType == "combobox") cleanOptionText(answerValue) else answerValue
+                            val highlightColor = if (qType == "combobox") getComboboxHighlightColor(q.options, answerValue) else HighlightColor.NONE
+
+                            paint.typeface = Typeface.create(
+                                Typeface.DEFAULT,
+                                if (hasTitle) Typeface.NORMAL else Typeface.BOLD
+                            )
+                            paint.color = Color.BLACK
+
+                            if (highlightColor != HighlightColor.NONE) {
+                                val bgPaint = Paint().apply {
+                                    color = when (highlightColor) {
+                                        HighlightColor.GREEN -> Color.parseColor("#D4EDDA")
+                                        HighlightColor.YELLOW -> Color.parseColor("#FFF3CD")
+                                        HighlightColor.RED -> Color.parseColor("#F8D7DA")
+                                        else -> Color.TRANSPARENT
+                                    }
+                                    style = Paint.Style.FILL
+                                }
+                                val textWidth = paint.measureText(cleanedVal)
+                                canvas.drawRect(valX - 4f, y - 11f, valX + textWidth + 4f, y + 4f, bgPaint)
+                            }
+
+                            canvas.drawText(cleanedVal, valX, y, paint)
+                        }
                     }
                     y += 18f
                 } else {
@@ -499,8 +496,7 @@ object PdfExporter {
                         val answerContent = if (qType in listOf("nfc", "qr-code", "qrcode")) {
                             "    $answerValue"
                         } else {
-                            val answerLabel =
-                                context.getString(R.string.pdf_answer_label, "").trimEnd()
+                            val answerLabel = context.getString(R.string.pdf_answer_label, "").trimEnd()
                             "    $answerLabel $answerValue"
                         }
                         y = drawMultiLineText(
@@ -648,10 +644,10 @@ object PdfExporter {
                     selection,
                     selectionArgs,
                     null
-                )?.use { cursor ->
-                    if (cursor.moveToFirst()) {
-                        val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
-                        val id = cursor.getLong(idColumn)
+                )?.use { queryCursor ->
+                    if (queryCursor.moveToFirst()) {
+                        val idColumn = queryCursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
+                        val id = queryCursor.getLong(idColumn)
                         val existingUri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id)
                         resolver.delete(existingUri, null, null)
                     }
@@ -676,8 +672,7 @@ object PdfExporter {
                     pdfDocument.writeTo(fos)
                 }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
         }
         pdfDocument.close()
     }

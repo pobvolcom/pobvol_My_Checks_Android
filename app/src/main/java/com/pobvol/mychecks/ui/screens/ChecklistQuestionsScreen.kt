@@ -292,7 +292,7 @@ fun QuestionItem(
                 )
             }
 
-            if (question.type == "combobox" && !question.options.isNullOrBlank()) {
+            if ((question.type.lowercase() == "combobox" || question.type.lowercase() == "multiselect") && !question.options.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "${stringResource(R.string.options)}: ${question.options}",
@@ -421,6 +421,7 @@ fun getAnswerTypeLabel(type: String): String {
         "number" -> stringResource(R.string.answer_type_number)
         "checkbox" -> stringResource(R.string.answer_type_checkbox)
         "combobox" -> stringResource(R.string.answer_type_combobox)
+        "multiselect" -> stringResource(R.string.answer_type_multiselect)
         "nfc" -> stringResource(R.string.answer_type_nfc)
         "qr-code", "qrcode" -> stringResource(R.string.answer_type_qr_code)
         else -> type

@@ -26,7 +26,7 @@ fr          French
 */
 @Entity(tableName = "languages")
 data class LanguageEntity(
-    @PrimaryKey val language: String = "en",
+    @PrimaryKey val language: String = "de",
     val title: String = "Deutsch"
 )
 

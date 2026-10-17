@@ -114,6 +114,7 @@
     <string name="answer_type_number">Number</string>
     <string name="answer_type_checkbox">Checkbox</string>
     <string name="answer_type_combobox">Combobox</string>
+    <string name="answer_type_multiselect">Multi-select</string>
     <string name="answer_type_nfc">NFC</string>
     <string name="answer_type_qr_code">QR Code</string>
     <string name="records">Records</string>
@@ -163,7 +164,7 @@
         \n
         ** Checkbox **: Yes/No toggle\n
         \n
-        ** Combobox **: Comma-separated options that can be selected when filling out the checklist.\n
+        ** Combobox **: Possible options must be entered comma separated. An option is then selected when filling out the checklist. You can also specify background colors (green, yellow, or red) by adding color tags in parentheses, such as no defects [green], repair required [red] or defects eliminated [yellow]. In PDF export, the selected option will be printed with a soft, color-highlighted background box.\n
         \n
         ** NFC **: Read physical NFC tags and import tag data\n
         \n
