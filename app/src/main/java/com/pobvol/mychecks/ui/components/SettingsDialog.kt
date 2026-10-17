@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -52,6 +53,7 @@ fun SettingsDialog(
     onThemeModeSelected: (ThemeMode) -> Unit,
     onLanguageSelected: (String) -> Unit,
     onUserNameChanged: (String) -> Unit,
+    onAudioFeedbackChanged: (Boolean) -> Unit,
     onOpenPdfSettingsClick: () -> Unit,
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
@@ -145,6 +147,24 @@ fun SettingsDialog(
                         placeholder = { Text(stringResource(R.string.enter_user_name)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+
+                // 3b. Audio Feedback Toggle (TTS)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(R.string.audio_feedback_label),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Switch(
+                        checked = userSettings.audioFeedback,
+                        onCheckedChange = onAudioFeedbackChanged,
                     )
                 }
 
@@ -261,6 +281,7 @@ fun SettingsDialogPreview() {
                 themeMode = ThemeMode.DARK,
                 preferredLanguage = "en",
                 userName = "John Doe",
+                audioFeedback = true,
             ),
             languages = listOf(
                 LanguageEntity("en", "English"),
@@ -273,6 +294,7 @@ fun SettingsDialogPreview() {
             onThemeModeSelected = {},
             onLanguageSelected = {},
             onUserNameChanged = {},
+            onAudioFeedbackChanged = {},
             onOpenPdfSettingsClick = {},
             onDismissRequest = {},
         )

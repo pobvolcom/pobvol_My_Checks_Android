@@ -913,6 +913,12 @@ class ChecklistViewModel(
         }
     }
 
+    fun updateAudioFeedback(audioFeedback: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.updateAudioFeedback(audioFeedback)
+        }
+    }
+
     fun updatePdfHeaderTitle(title: String) {
         viewModelScope.launch { settingsRepository.updatePdfHeaderTitle(title) }
     }

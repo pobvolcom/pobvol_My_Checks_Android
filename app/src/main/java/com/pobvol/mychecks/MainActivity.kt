@@ -3,6 +3,7 @@ package com.pobvol.mychecks
 import android.app.PendingIntent
 import android.content.Intent
 import android.nfc.NdefMessage
+import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Build
@@ -38,16 +39,21 @@ import com.pobvol.mychecks.ui.screens.StartScreen
 import com.pobvol.mychecks.ui.screens.SubmissionDetailScreen
 import com.pobvol.mychecks.ui.screens.SubmissionsOverviewScreen
 import com.pobvol.mychecks.ui.theme.mychecksTheme
+import com.pobvol.mychecks.util.TtsHelper
+import java.nio.charset.Charset
 
 class MainActivity : AppCompatActivity() {
 
     private var nfcAdapter: NfcAdapter? = null
     private var pendingIntent: PendingIntent? = null
     private var viewModelRef: ChecklistViewModel? = null
+    private var ttsHelper: TtsHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        ttsHelper = TtsHelper(applicationContext)
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         if (nfcAdapter != null) {
@@ -87,6 +93,13 @@ class MainActivity : AppCompatActivity() {
             )
             viewModelRef = viewModel
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+            LaunchedEffect(uiState.userMessage, uiState.userSettings.audioFeedback) {
+                val message = uiState.userMessage
+                if (!message.isNullOrBlank() && uiState.userSettings.audioFeedback) {
+                    ttsHelper?.speak(message, uiState.userSettings.preferredLanguage)
+                }
+            }
 
             LaunchedEffect(uiState.userSettings.preferredLanguage) {
                 val appLocale = LocaleListCompat.forLanguageTags(uiState.userSettings.preferredLanguage)
@@ -209,14 +222,13 @@ class MainActivity : AppCompatActivity() {
                         onUserMessageShown = viewModel::userMessageShown,
                         onBackClick = viewModel::closeChecklistsScreen,
                         onOpenHelpClick = viewModel::openHelpScreen,
-                        /*onOpenSubmissionsOverviewClick = viewModel::openSubmissionsOverview,*/
-                        /*onOpenSettingsClick = viewModel::openSettingsDialog,*/
                         onDismissSettingsDialog = viewModel::dismissSettingsDialog,
                         onOpenPdfSettingsClick = viewModel::openPdfSettings,
                         onDismissPdfSettingsDialog = viewModel::closePdfSettings,
                         onThemeModeSelected = viewModel::updateThemeMode,
                         onLanguageSelected = viewModel::updatePreferredLanguage,
                         onUserNameChanged = viewModel::updateUserName,
+                        onAudioFeedbackChanged = viewModel::updateAudioFeedback,
                         onPdfHeaderTitleChanged = viewModel::updatePdfHeaderTitle,
                         onPdfIncludeChecklistTitleChanged = viewModel::updatePdfIncludeChecklistTitle,
                         onPdfIncludeDateChanged = viewModel::updatePdfIncludeDate,
@@ -248,6 +260,7 @@ class MainActivity : AppCompatActivity() {
                         onThemeModeSelected = viewModel::updateThemeMode,
                         onLanguageSelected = viewModel::updatePreferredLanguage,
                         onUserNameChanged = viewModel::updateUserName,
+                        onAudioFeedbackChanged = viewModel::updateAudioFeedback,
                         onPdfHeaderTitleChanged = viewModel::updatePdfHeaderTitle,
                         onPdfIncludeChecklistTitleChanged = viewModel::updatePdfIncludeChecklistTitle,
                         onPdfIncludeDateChanged = viewModel::updatePdfIncludeDate,
@@ -271,6 +284,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ttsHelper?.shutdown()
     }
 
     override fun onResume() {
@@ -308,7 +326,6 @@ class MainActivity : AppCompatActivity() {
 
             var tagContent: String? = null
 
-            // 1. Try reading NDEF message records (text payload)
             val rawMsgs = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES, NdefMessage::class.java)
             } else {
@@ -318,41 +335,33 @@ class MainActivity : AppCompatActivity() {
 
             if (!rawMsgs.isNullOrEmpty()) {
                 val msgs = rawMsgs.mapNotNull { it as? NdefMessage }
-                val records = msgs.flatMap { it.records.toList() }
-                for (record in records) {
-                    val payload = record.payload
-                    if (payload != null && payload.isNotEmpty()) {
-                        try {
-                            val textEncoding = if ((payload[0].toInt() and 128) == 0) "UTF-8" else "UTF-16"
-                            val languageCodeLength = payload[0].toInt() and 63
-                            val parsedText = String(
-                                payload,
-                                languageCodeLength + 1,
-                                payload.size - languageCodeLength - 1,
-                                charset(textEncoding)
-                            )
-                            if (parsedText.isNotBlank()) {
-                                tagContent = parsedText
-                                break
+                for (msg in msgs) {
+                    for (record in msg.records) {
+                        if (record.tnf == NdefRecord.TNF_WELL_KNOWN && record.type.contentEquals(
+                                NdefRecord.RTD_TEXT)) {
+                            try {
+                                val payload = record.payload
+                                val textEncoding = if ((payload[0].toInt() and 128) == 0) "UTF-8" else "UTF-16"
+                                val languageCodeLength = payload[0].toInt() and 63
+                                tagContent = String(payload, languageCodeLength + 1, payload.size - languageCodeLength - 1, Charset.forName(textEncoding))
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
-                        } catch (_: Exception) {
-                            tagContent = String(payload, Charsets.UTF_8)
                         }
                     }
                 }
             }
 
-            // 2. Fallback to Tag UID if no NDEF payload
-            if (tagContent.isNullOrBlank()) {
-                val tag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (tagContent == null) {
+                val tag: Tag? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, Tag::class.java)
                 } else {
                     @Suppress("DEPRECATION")
                     intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
                 }
-                val tagIdBytes = tag?.id
-                if (tagIdBytes != null) {
-                    tagContent = tagIdBytes.joinToString(":") { "%02X".format(it) }
+                if (tag != null) {
+                    val id = tag.id
+                    tagContent = id.joinToString("") { "%02X".format(it) }
                 }
             }
 

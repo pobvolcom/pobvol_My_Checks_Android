@@ -201,4 +201,5 @@
     <string name="pdf_no">Nein</string>
     <string name="db_backup_button">Datenbank-Backup erstellen (SQLite)</string>
     <string name="msg_db_backup_saved">Datenbank-Backup in Downloads/MyChecks gespeichert</string>
+    <string name="audio_feedback_label">Sprachausgabe (TTS)</string>
 </resources>

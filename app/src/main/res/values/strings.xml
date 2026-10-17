@@ -161,8 +161,8 @@
     <string name="edit">Edit</string> 
     <string name="back">Back</string>
     <string name="cannot_delete_checklist_with_submissions">Cannot delete checklist because it is used in submissions</string>
-    <string name="copyright">Copyright</string>
-    <string name="copyrightText">The software solution pobvol My Checks is Free Software and delivered as Open Source\n\nSee wikipedia.org for more details:\nhttps://en.wikipedia.org/wiki/Free_software\n\nYou can download, install, operate, modify and redistribute it under the terms of the GNU General Public License, as published by the Free Software Foundation, version 3 of the license or any later version. Contributions to improve it are welcome.\n\nSee the GNU General Public License for more details:\nhttps://www.gnu.org/licenses/gpl-3.0\n\nThe solution is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\nCopyright @ 2026 Volker Pobloth</string>
+    <string name="copyright" translatable="false">Copyright</string>
+    <string name="copyrightText" translatable="false">The software solution pobvol My Checks is Free Software and delivered as Open Source\n\nSee wikipedia.org for more details:\nhttps://en.wikipedia.org/wiki/Free_software\n\nYou can download, install, operate, modify and redistribute it under the terms of the GNU General Public License, as published by the Free Software Foundation, version 3 of the license or any later version. Contributions to improve it are welcome.\n\nSee the GNU General Public License for more details:\nhttps://www.gnu.org/licenses/gpl-3.0\n\nThe solution is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\nCopyright @ 2026 Volker Pobloth</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -203,4 +203,5 @@
     <string name="pdf_no">No</string>
     <string name="db_backup_button">Save Database Backup (SQLite)</string>
     <string name="msg_db_backup_saved">Database backup saved to Downloads/MyChecks</string>
+    <string name="audio_feedback_label">Voice Feedback (TTS)</string>
 </resources>

@@ -27,6 +27,7 @@ data class UserSettings(
     val pdfIncludeAnswerPicture: Boolean = true,
     val compactAnswerLayout: Boolean = false,
     val pdfFooterText: String = "",
+    val audioFeedback: Boolean = false,
 )
 
 interface SettingsRepository {
@@ -49,4 +50,5 @@ interface SettingsRepository {
     suspend fun updatePdfIncludeAnswerPicture(include: Boolean)
     suspend fun updatePdfCompactAnswerLayout(compact: Boolean)
     suspend fun updatePdfFooterText(text: String)
+    suspend fun updateAudioFeedback(audioFeedback: Boolean)
 }

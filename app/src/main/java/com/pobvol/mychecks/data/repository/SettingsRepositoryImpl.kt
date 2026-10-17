@@ -35,6 +35,7 @@ class SettingsRepositoryImpl(
         val PDF_INCLUDE_ANSWER_PICTURE = booleanPreferencesKey("pdf_include_answer_picture")
         val COMPACT_ANSWER_LAYOUT = booleanPreferencesKey("compact_answer_layout")
         val PDF_FOOTER_TEXT = stringPreferencesKey("pdf_footer_text")
+        val AUDIO_FEEDBACK = booleanPreferencesKey("audio_feedback")
     }
 
     override val userSettings: Flow<UserSettings> = context.dataStore.data
@@ -66,6 +67,7 @@ class SettingsRepositoryImpl(
                 preferences[PreferencesKeys.PDF_INCLUDE_ANSWER_PICTURE] ?: true
             val compactAnswerLayout = preferences[PreferencesKeys.COMPACT_ANSWER_LAYOUT] ?: false
             val pdfFooterText = preferences[PreferencesKeys.PDF_FOOTER_TEXT] ?: ""
+            val audioFeedback = preferences[PreferencesKeys.AUDIO_FEEDBACK] ?: false
 
             UserSettings(
                 themeMode = themeMode,
@@ -86,6 +88,7 @@ class SettingsRepositoryImpl(
                 pdfIncludeAnswerPicture = pdfIncludeAnswerPicture,
                 compactAnswerLayout = compactAnswerLayout,
                 pdfFooterText = pdfFooterText,
+                audioFeedback = audioFeedback,
             )
         }
 
@@ -194,6 +197,12 @@ class SettingsRepositoryImpl(
     override suspend fun updatePdfFooterText(text: String) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.PDF_FOOTER_TEXT] = text
+        }
+    }
+
+    override suspend fun updateAudioFeedback(audioFeedback: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.AUDIO_FEEDBACK] = audioFeedback
         }
     }
 }
