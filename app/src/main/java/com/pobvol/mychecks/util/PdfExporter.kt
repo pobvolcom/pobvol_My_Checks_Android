@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.os.Build
@@ -342,7 +343,8 @@ object PdfExporter {
             }
 
             val qType = q.type.lowercase()
-            val isRightAlignedType = qType in listOf("text", "number", "combobox", "multiselect", "checkbox")
+            val isRightAlignedType =
+                qType in listOf("number", "combobox", "multiselect", "checkbox")
 
             var blockHeight = 0f
             val hasTitle = settings.pdfIncludeQuestionTitle
@@ -387,10 +389,10 @@ object PdfExporter {
                     try {
                         picBitmap = BitmapFactory.decodeFile(picFile.absolutePath)
                         if (picBitmap != null) {
-                            val targetWidth = 100f
+                            val targetWidth = minOf(picBitmap.width.toFloat(), 240f)
                             val targetHeight =
                                 (picBitmap.height.toFloat() / picBitmap.width.toFloat()) * targetWidth
-                            picHeight = targetHeight + 8f
+                            picHeight = targetHeight + 10f
                             blockHeight += picHeight
                         }
                     } catch (e: Exception) {
@@ -533,18 +535,22 @@ object PdfExporter {
 
                 if (picBitmap != null && picHeight > 0f) {
                     try {
-                        val targetWidth = 100f
+                        val targetWidth = minOf(picBitmap.width.toFloat(), 240f)
                         val targetHeight =
                             (picBitmap.height.toFloat() / picBitmap.width.toFloat()) * targetWidth
-                        val scaledPicBitmap = Bitmap.createScaledBitmap(
-                            picBitmap,
-                            targetWidth.toInt(),
-                            targetHeight.toInt(),
-                            true
+                        val destRect = RectF(
+                            startX + 20f,
+                            y,
+                            startX + 20f + targetWidth,
+                            y + targetHeight
                         )
-                        canvas.drawBitmap(scaledPicBitmap, startX + 20f, y, paint)
-                        y += targetHeight + 6f
-                        scaledPicBitmap.recycle()
+                        val bitmapPaint = Paint().apply {
+                            isAntiAlias = true
+                            isFilterBitmap = true
+                            isDither = true
+                        }
+                        canvas.drawBitmap(picBitmap, null, destRect, bitmapPaint)
+                        y += targetHeight + 8f
                     } catch (e: Exception) {
                         e.printStackTrace()
                     } finally {

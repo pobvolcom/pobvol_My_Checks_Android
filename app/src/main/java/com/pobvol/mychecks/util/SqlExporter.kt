@@ -170,28 +170,46 @@ object SqlExporter {
 
             if (checklist != null) {
                 append("INSERT OR REPLACE INTO `checklists` (`id`, `title`, `language`, `description`, `category`, `icon`, `timestamp`) VALUES (\n")
-                append("  ${checklist.id}, '${escapeSql(checklist.title)}', '${escapeSql(checklist.language)}', '${escapeSql(checklist.description ?: "")}', '${escapeSql(checklist.category)}', '${escapeSql(checklist.icon ?: "")}', ${checklist.timestamp}\n);\n\n")
+                append(
+                    "  '${checklist.id}', '${escapeSql(checklist.title)}', '${escapeSql(checklist.language)}', '${
+                        escapeSql(
+                            checklist.description
+                        )
+                    }', '${escapeSql(checklist.category)}', '${escapeSql(checklist.icon ?: "")}', ${checklist.timestamp}\n);\n\n"
+                )
             }
 
             if (questions.isNotEmpty()) {
                 append("-- Questions\n")
                 questions.forEach { q ->
                     append("INSERT OR REPLACE INTO `checklist_questions` (`id`, `checklistid`, `title`, `description`, `type`, `options`, `required`, `sortno`, `min_value`, `max_value`) VALUES (\n")
-                    append("  ${q.id}, ${q.checklistid}, '${escapeSql(q.title)}', '${escapeSql(q.description ?: "")}', '${escapeSql(q.type)}', '${escapeSql(q.options ?: "")}', ${if (q.required) 1 else 0}, ${q.sortno}, ${q.minValue ?: "NULL"}, ${q.maxValue ?: "NULL"}\n);\n")
+                    append(
+                        "  '${q.id}', '${q.checklistid}', '${escapeSql(q.title)}', '${escapeSql(q.description ?: "")}', '${
+                            escapeSql(
+                                q.type
+                            )
+                        }', '${escapeSql(q.options ?: "")}', ${if (q.required) 1 else 0}, ${q.sortno}, ${q.minValue ?: "NULL"}, ${q.maxValue ?: "NULL"}\n);\n"
+                    )
                 }
                 append("\n")
             }
 
             append("-- Submission\n")
             append("INSERT OR REPLACE INTO `checklist_submissions` (`id`, `checklistid`, `status`, `inspector`, `notes`, `date`, `timestamp`) VALUES (\n")
-            append("  ${submission.id}, ${submission.checklistid}, '${escapeSql(submission.status)}', '${escapeSql(submission.inspector ?: "")}', '${escapeSql(submission.notes ?: "")}', '${escapeSql(submission.date)}', ${submission.timestamp}\n);\n\n")
+            append(
+                "  '${submission.id}', '${submission.checklistid}', '${escapeSql(submission.status)}', '${
+                    escapeSql(
+                        submission.inspector ?: ""
+                    )
+                }', '${escapeSql(submission.notes ?: "")}', '${escapeSql(submission.date)}', ${submission.timestamp}\n);\n\n"
+            )
 
             if (submissionAnswers.isNotEmpty()) {
                 append("-- Answers\n")
                 submissionAnswers.forEach { a ->
                     append("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES (\n")
                     append(
-                        "  ${a.id}, ${a.submissionid}, ${a.questionid}, '${escapeSql(a.value)}', '${
+                        "  '${a.id}', '${a.submissionid}', '${a.questionid}', '${escapeSql(a.value)}', '${
                             escapeSql(
                                 a.notes ?: ""
                             )
@@ -204,8 +222,8 @@ object SqlExporter {
 
     fun savePictureToMyChecks(
         context: Context,
-        submissionId: Int,
-        answerId: Int,
+        submissionId: String,
+        answerId: String,
         sourceUri: Uri
     ): String? {
         val fileName = "Submission_${submissionId}_Answer_${answerId}_Picture.jpg"

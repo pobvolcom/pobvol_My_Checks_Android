@@ -10,7 +10,8 @@ class ChecklistRepositoryImpl(
 
     override fun getAllChecklists(): Flow<List<ChecklistEntity>> = checklistDao.getAllChecklists()
 
-    override suspend fun getChecklistById(id: Int): ChecklistEntity? = checklistDao.getChecklistById(id)
+    override suspend fun getChecklistById(id: String): ChecklistEntity? =
+        checklistDao.getChecklistById(id)
 
     override suspend fun insertChecklist(checklist: ChecklistEntity): Long = checklistDao.insertChecklist(checklist)
 

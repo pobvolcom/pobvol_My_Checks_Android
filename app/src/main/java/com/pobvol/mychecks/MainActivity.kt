@@ -16,6 +16,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,6 +38,7 @@ import com.pobvol.mychecks.ui.screens.ChecklistListScreen
 import com.pobvol.mychecks.ui.screens.ChecklistQuestionsScreen
 import com.pobvol.mychecks.ui.screens.FillChecklistScreen
 import com.pobvol.mychecks.ui.screens.HelpScreen
+import com.pobvol.mychecks.ui.screens.SplashScreen
 import com.pobvol.mychecks.ui.screens.StartScreen
 import com.pobvol.mychecks.ui.screens.SubmissionDetailScreen
 import com.pobvol.mychecks.ui.screens.SubmissionsOverviewScreen
@@ -50,6 +54,12 @@ class MainActivity : AppCompatActivity() {
     private var ttsHelper: TtsHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefs = getSharedPreferences("my_checks_prefs", MODE_PRIVATE)
+        val savedLang = prefs.getString("saved_language", null)
+        if (!savedLang.isNullOrBlank()) {
+            AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(savedLang))
+        }
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
@@ -94,6 +104,8 @@ class MainActivity : AppCompatActivity() {
             viewModelRef = viewModel
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+            var isSplashVisible by remember { mutableStateOf(true) }
+
             LaunchedEffect(uiState.userMessage, uiState.userSettings.audioFeedback) {
                 val message = uiState.userMessage
                 if (!message.isNullOrBlank() && uiState.userSettings.audioFeedback) {
@@ -113,174 +125,179 @@ class MainActivity : AppCompatActivity() {
             }
 
             mychecksTheme(darkTheme = darkTheme) {
-                val selectedSubmissionToEdit = uiState.selectedSubmissionToEdit
-                val selectedChecklistToAnswer = uiState.selectedChecklistToAnswer
-                val selectedChecklistForQuestions = uiState.selectedChecklistForQuestions
-
-                val chartChecklist = uiState.selectedChecklistForChart
-                if (chartChecklist != null) {
-                    ChecklistChartScreen(
-                        checklist = chartChecklist,
-                        uiState = uiState,
-                        onBackClick = viewModel::closeChartScreen,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                } else if (uiState.isHelpVisible) {
-                    HelpScreen(
-                        uiState = uiState,
-                        onBackClick = viewModel::closeHelpScreen,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                } else if (selectedSubmissionToEdit != null) {
-                    val checklist = uiState.checklists.find { it.id == selectedSubmissionToEdit.checklistid }
-                    SubmissionDetailScreen(
-                        submission = selectedSubmissionToEdit,
-                        checklist = checklist,
-                        uiState = uiState,
-                        onBackClick = viewModel::closeEditSubmission,
-                        onOpenHelpClick = viewModel::openHelpScreen,
-                        onSaveSubmission = viewModel::updateSubmissionAndAnswers,
-                        onUserMessageShown = viewModel::userMessageShown,
-                        onNfcTagConsumed = viewModel::clearNfcTag,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                } else if (uiState.isSubmissionsOverviewVisible) {
-                    SubmissionsOverviewScreen(
-                        uiState = uiState,
-                        onSearchQueryChange = viewModel::onSearchQueryChange,
-                        onStatusFilterChange = viewModel::onSubmissionStatusFilterChange,
-                        onClearChecklistFilter = viewModel::clearChecklistSubmissionsFilter,
-                        onBackClick = viewModel::closeSubmissionsOverview,
-                        onOpenHelpClick = viewModel::openHelpScreen,
-                        onExportPdfClick = { submission ->
-                            viewModel.exportSubmissionPdf(this, submission)
-                        },
-                        onExportSqlClick = { submission ->
-                            viewModel.exportSubmissionSql(this, submission)
-                        },
-                        onEditSubmissionClick = viewModel::openEditSubmission,
-                        onDeleteSubmissionClick = viewModel::requestDeleteSubmission,
-                        onDismissDeleteSubmissionDialog = viewModel::dismissDeleteSubmission,
-                        onConfirmDeleteSubmission = viewModel::confirmDeleteSubmission,
-                        onUserMessageShown = viewModel::userMessageShown,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                } else if (selectedChecklistToAnswer != null) {
-                    FillChecklistScreen(
-                        checklist = selectedChecklistToAnswer,
-                        uiState = uiState,
-                        onBackClick = viewModel::closeFillChecklist,
-                        onOpenHelpClick = viewModel::openHelpScreen,
-                        onSubmit = { checklistId, inspector, notes, date, status, answers ->
-                            viewModel.submitChecklistAnswers(
-                                checklistId = checklistId,
-                                inspector = inspector,
-                                notes = notes,
-                                date = date,
-                                status = status,
-                                answers = answers,
-                            )
-                        },
-                        onUserMessageShown = viewModel::userMessageShown,
-                        onNfcTagConsumed = viewModel::clearNfcTag,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                } else if (selectedChecklistForQuestions != null) {
-                    ChecklistQuestionsScreen(
-                        checklist = selectedChecklistForQuestions,
-                        uiState = uiState,
-                        onBackClick = viewModel::closeQuestionsScreen,
-                        onOpenHelpClick = viewModel::openHelpScreen,
-                        onAddQuestionClick = viewModel::openAddQuestionDialog,
-                        onEditQuestionClick = viewModel::openEditQuestionDialog,
-                        onDeleteQuestionClick = viewModel::requestDeleteQuestionConfirmation,
-                        onMoveQuestionUp = viewModel::moveQuestionUp,
-                        onMoveQuestionDown = viewModel::moveQuestionDown,
-                        onDismissAddEditQuestionDialog = viewModel::dismissAddEditQuestionDialog,
-                        onSaveQuestion = viewModel::saveQuestion,
-                        onDismissDeleteQuestionDialog = viewModel::dismissDeleteQuestionConfirmation,
-                        onConfirmDeleteQuestion = viewModel::confirmDeleteQuestion,
-                        onUserMessageShown = viewModel::userMessageShown,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                } else if (uiState.isChecklistListVisible) {
-                    ChecklistListScreen(
-                        uiState = uiState,
-                        onSearchQueryChange = viewModel::onSearchQueryChange,
-                        onCategoryFilterChange = viewModel::onCategoryFilterChange,
-                        onAddClick = viewModel::openAddDialog,
-                        onSelectChecklist = viewModel::openSubmissionsForChecklist,
-                        onFillClick = viewModel::openFillChecklist,
-                        onQuestionsClick = viewModel::openQuestionsForChecklist,
-                        onEditClick = viewModel::openEditDialog,
-                        onDeleteClick = viewModel::requestDeleteConfirmation,
-                        onChartClick = viewModel::openChartForChecklist,
-                        onDismissAddEditDialog = viewModel::dismissAddEditDialog,
-                        onSaveChecklist = viewModel::saveChecklist,
-                        onDismissDeleteDialog = viewModel::dismissDeleteConfirmation,
-                        onConfirmDelete = viewModel::confirmDelete,
-                        onUserMessageShown = viewModel::userMessageShown,
-                        onBackClick = viewModel::closeChecklistsScreen,
-                        onOpenHelpClick = viewModel::openHelpScreen,
-                        onDismissSettingsDialog = viewModel::dismissSettingsDialog,
-                        onOpenPdfSettingsClick = viewModel::openPdfSettings,
-                        onDismissPdfSettingsDialog = viewModel::closePdfSettings,
-                        onThemeModeSelected = viewModel::updateThemeMode,
-                        onLanguageSelected = viewModel::updatePreferredLanguage,
-                        onUserNameChanged = viewModel::updateUserName,
-                        onAudioFeedbackChanged = viewModel::updateAudioFeedback,
-                        onPdfHeaderTitleChanged = viewModel::updatePdfHeaderTitle,
-                        onPdfIncludeChecklistTitleChanged = viewModel::updatePdfIncludeChecklistTitle,
-                        onPdfIncludeDateChanged = viewModel::updatePdfIncludeDate,
-                        onPdfIncludeInspectorChanged = viewModel::updatePdfIncludeInspector,
-                        onPdfIncludeStatusChanged = viewModel::updatePdfIncludeStatus,
-                        onPdfIncludeNotesChanged = viewModel::updatePdfIncludeNotes,
-                        onPdfIncludeTimestampChanged = viewModel::updatePdfIncludeTimestamp,
-                        onPdfIncludePageNumberChanged = viewModel::updatePdfIncludePageNumber,
-                        onPdfIncludeUnansweredQuestionsChanged = viewModel::updatePdfIncludeUnansweredQuestions,
-                        onPdfIncludeQuestionTitleChanged = viewModel::updatePdfIncludeQuestionTitle,
-                        onPdfIncludeAnswerValueChanged = viewModel::updatePdfIncludeAnswerValue,
-                        onPdfIncludeAnswerNotesChanged = viewModel::updatePdfIncludeAnswerNotes,
-                        onPdfIncludeAnswerPictureChanged = viewModel::updatePdfIncludeAnswerPicture,
-                        onPdfCompactAnswerLayoutChanged = viewModel::updatePdfCompactAnswerLayout,
-                        onPdfFooterTextChanged = viewModel::updatePdfFooterText,
-                        onAddCategory = viewModel::addCategory,
-                        modifier = Modifier.fillMaxSize(),
-                    )
+                if (isSplashVisible) {
+                    SplashScreen(onTimeout = { isSplashVisible = false })
                 } else {
-                    StartScreen(
-                        uiState = uiState,
-                        onOpenChecklistsClick = viewModel::openChecklistsScreen,
-                        onOpenSubmissionsClick = viewModel::openSubmissionsOverview,
-                        onOpenSettingsClick = viewModel::openSettingsDialog,
-                        onOpenHelpClick = viewModel::openHelpScreen,
-                        onDismissSettingsDialog = viewModel::dismissSettingsDialog,
-                        onOpenPdfSettingsClick = viewModel::openPdfSettings,
-                        onDismissPdfSettingsDialog = viewModel::closePdfSettings,
-                        onThemeModeSelected = viewModel::updateThemeMode,
-                        onLanguageSelected = viewModel::updatePreferredLanguage,
-                        onUserNameChanged = viewModel::updateUserName,
-                        onAudioFeedbackChanged = viewModel::updateAudioFeedback,
-                        onPdfHeaderTitleChanged = viewModel::updatePdfHeaderTitle,
-                        onPdfIncludeChecklistTitleChanged = viewModel::updatePdfIncludeChecklistTitle,
-                        onPdfIncludeDateChanged = viewModel::updatePdfIncludeDate,
-                        onPdfIncludeInspectorChanged = viewModel::updatePdfIncludeInspector,
-                        onPdfIncludeStatusChanged = viewModel::updatePdfIncludeStatus,
-                        onPdfIncludeNotesChanged = viewModel::updatePdfIncludeNotes,
-                        onPdfIncludeTimestampChanged = viewModel::updatePdfIncludeTimestamp,
-                        onPdfIncludePageNumberChanged = viewModel::updatePdfIncludePageNumber,
-                        onPdfIncludeUnansweredQuestionsChanged = viewModel::updatePdfIncludeUnansweredQuestions,
-                        onPdfIncludeQuestionTitleChanged = viewModel::updatePdfIncludeQuestionTitle,
-                        onPdfIncludeAnswerValueChanged = viewModel::updatePdfIncludeAnswerValue,
-                        onPdfIncludeAnswerNotesChanged = viewModel::updatePdfIncludeAnswerNotes,
-                        onPdfIncludeAnswerPictureChanged = viewModel::updatePdfIncludeAnswerPicture,
-                        onPdfCompactAnswerLayoutChanged = viewModel::updatePdfCompactAnswerLayout,
-                        onPdfFooterTextChanged = viewModel::updatePdfFooterText,
-                        onAddCategory = viewModel::addCategory,
-                        onDeleteCategory = viewModel::deleteCategory,
-                        onUserMessageShown = viewModel::userMessageShown,
-                        modifier = Modifier.fillMaxSize(),
-                    )
+                    val selectedSubmissionToEdit = uiState.selectedSubmissionToEdit
+                    val selectedChecklistToAnswer = uiState.selectedChecklistToAnswer
+                    val selectedChecklistForQuestions = uiState.selectedChecklistForQuestions
+
+                    val chartChecklist = uiState.selectedChecklistForChart
+                    if (chartChecklist != null) {
+                        ChecklistChartScreen(
+                            checklist = chartChecklist,
+                            uiState = uiState,
+                            onBackClick = viewModel::closeChartScreen,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else if (uiState.isHelpVisible) {
+                        HelpScreen(
+                            uiState = uiState,
+                            onBackClick = viewModel::closeHelpScreen,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else if (selectedSubmissionToEdit != null) {
+                        val checklist =
+                            uiState.checklists.find { it.id == selectedSubmissionToEdit.checklistid }
+                        SubmissionDetailScreen(
+                            submission = selectedSubmissionToEdit,
+                            checklist = checklist,
+                            uiState = uiState,
+                            onBackClick = viewModel::closeEditSubmission,
+                            onOpenHelpClick = viewModel::openHelpScreen,
+                            onSaveSubmission = viewModel::updateSubmissionAndAnswers,
+                            onUserMessageShown = viewModel::userMessageShown,
+                            onNfcTagConsumed = viewModel::clearNfcTag,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else if (uiState.isSubmissionsOverviewVisible) {
+                        SubmissionsOverviewScreen(
+                            uiState = uiState,
+                            onSearchQueryChange = viewModel::onSearchQueryChange,
+                            onStatusFilterChange = viewModel::onSubmissionStatusFilterChange,
+                            onClearChecklistFilter = viewModel::clearChecklistSubmissionsFilter,
+                            onBackClick = viewModel::closeSubmissionsOverview,
+                            onOpenHelpClick = viewModel::openHelpScreen,
+                            onExportPdfClick = { submission ->
+                                viewModel.exportSubmissionPdf(this, submission)
+                            },
+                            onExportSqlClick = { submission ->
+                                viewModel.exportSubmissionSql(this, submission)
+                            },
+                            onEditSubmissionClick = viewModel::openEditSubmission,
+                            onDeleteSubmissionClick = viewModel::requestDeleteSubmission,
+                            onDismissDeleteSubmissionDialog = viewModel::dismissDeleteSubmission,
+                            onConfirmDeleteSubmission = viewModel::confirmDeleteSubmission,
+                            onUserMessageShown = viewModel::userMessageShown,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else if (selectedChecklistToAnswer != null) {
+                        FillChecklistScreen(
+                            checklist = selectedChecklistToAnswer,
+                            uiState = uiState,
+                            onBackClick = viewModel::closeFillChecklist,
+                            onOpenHelpClick = viewModel::openHelpScreen,
+                            onSubmit = { checklistId, inspector, notes, date, status, answers ->
+                                viewModel.submitChecklistAnswers(
+                                    checklistId = checklistId,
+                                    inspector = inspector,
+                                    notes = notes,
+                                    date = date,
+                                    status = status,
+                                    answers = answers,
+                                )
+                            },
+                            onUserMessageShown = viewModel::userMessageShown,
+                            onNfcTagConsumed = viewModel::clearNfcTag,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else if (selectedChecklistForQuestions != null) {
+                        ChecklistQuestionsScreen(
+                            checklist = selectedChecklistForQuestions,
+                            uiState = uiState,
+                            onBackClick = viewModel::closeQuestionsScreen,
+                            onOpenHelpClick = viewModel::openHelpScreen,
+                            onAddQuestionClick = viewModel::openAddQuestionDialog,
+                            onEditQuestionClick = viewModel::openEditQuestionDialog,
+                            onDeleteQuestionClick = viewModel::requestDeleteQuestionConfirmation,
+                            onMoveQuestionUp = viewModel::moveQuestionUp,
+                            onMoveQuestionDown = viewModel::moveQuestionDown,
+                            onDismissAddEditQuestionDialog = viewModel::dismissAddEditQuestionDialog,
+                            onSaveQuestion = viewModel::saveQuestion,
+                            onDismissDeleteQuestionDialog = viewModel::dismissDeleteQuestionConfirmation,
+                            onConfirmDeleteQuestion = viewModel::confirmDeleteQuestion,
+                            onUserMessageShown = viewModel::userMessageShown,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else if (uiState.isChecklistListVisible) {
+                        ChecklistListScreen(
+                            uiState = uiState,
+                            onSearchQueryChange = viewModel::onSearchQueryChange,
+                            onCategoryFilterChange = viewModel::onCategoryFilterChange,
+                            onAddClick = viewModel::openAddDialog,
+                            onSelectChecklist = viewModel::openSubmissionsForChecklist,
+                            onFillClick = viewModel::openFillChecklist,
+                            onQuestionsClick = viewModel::openQuestionsForChecklist,
+                            onEditClick = viewModel::openEditDialog,
+                            onDeleteClick = viewModel::requestDeleteConfirmation,
+                            onChartClick = viewModel::openChartForChecklist,
+                            onDismissAddEditDialog = viewModel::dismissAddEditDialog,
+                            onSaveChecklist = viewModel::saveChecklist,
+                            onDismissDeleteDialog = viewModel::dismissDeleteConfirmation,
+                            onConfirmDelete = viewModel::confirmDelete,
+                            onUserMessageShown = viewModel::userMessageShown,
+                            onBackClick = viewModel::closeChecklistsScreen,
+                            onOpenHelpClick = viewModel::openHelpScreen,
+                            onDismissSettingsDialog = viewModel::dismissSettingsDialog,
+                            onOpenPdfSettingsClick = viewModel::openPdfSettings,
+                            onDismissPdfSettingsDialog = viewModel::closePdfSettings,
+                            onThemeModeSelected = viewModel::updateThemeMode,
+                            onLanguageSelected = viewModel::updatePreferredLanguage,
+                            onUserNameChanged = viewModel::updateUserName,
+                            onAudioFeedbackChanged = viewModel::updateAudioFeedback,
+                            onPdfHeaderTitleChanged = viewModel::updatePdfHeaderTitle,
+                            onPdfIncludeChecklistTitleChanged = viewModel::updatePdfIncludeChecklistTitle,
+                            onPdfIncludeDateChanged = viewModel::updatePdfIncludeDate,
+                            onPdfIncludeInspectorChanged = viewModel::updatePdfIncludeInspector,
+                            onPdfIncludeStatusChanged = viewModel::updatePdfIncludeStatus,
+                            onPdfIncludeNotesChanged = viewModel::updatePdfIncludeNotes,
+                            onPdfIncludeTimestampChanged = viewModel::updatePdfIncludeTimestamp,
+                            onPdfIncludePageNumberChanged = viewModel::updatePdfIncludePageNumber,
+                            onPdfIncludeUnansweredQuestionsChanged = viewModel::updatePdfIncludeUnansweredQuestions,
+                            onPdfIncludeQuestionTitleChanged = viewModel::updatePdfIncludeQuestionTitle,
+                            onPdfIncludeAnswerValueChanged = viewModel::updatePdfIncludeAnswerValue,
+                            onPdfIncludeAnswerNotesChanged = viewModel::updatePdfIncludeAnswerNotes,
+                            onPdfIncludeAnswerPictureChanged = viewModel::updatePdfIncludeAnswerPicture,
+                            onPdfCompactAnswerLayoutChanged = viewModel::updatePdfCompactAnswerLayout,
+                            onPdfFooterTextChanged = viewModel::updatePdfFooterText,
+                            onAddCategory = viewModel::addCategory,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else {
+                        StartScreen(
+                            uiState = uiState,
+                            onOpenChecklistsClick = viewModel::openChecklistsScreen,
+                            onOpenSubmissionsClick = viewModel::openSubmissionsOverview,
+                            onOpenSettingsClick = viewModel::openSettingsDialog,
+                            onOpenHelpClick = viewModel::openHelpScreen,
+                            onDismissSettingsDialog = viewModel::dismissSettingsDialog,
+                            onOpenPdfSettingsClick = viewModel::openPdfSettings,
+                            onDismissPdfSettingsDialog = viewModel::closePdfSettings,
+                            onThemeModeSelected = viewModel::updateThemeMode,
+                            onLanguageSelected = viewModel::updatePreferredLanguage,
+                            onUserNameChanged = viewModel::updateUserName,
+                            onAudioFeedbackChanged = viewModel::updateAudioFeedback,
+                            onPdfHeaderTitleChanged = viewModel::updatePdfHeaderTitle,
+                            onPdfIncludeChecklistTitleChanged = viewModel::updatePdfIncludeChecklistTitle,
+                            onPdfIncludeDateChanged = viewModel::updatePdfIncludeDate,
+                            onPdfIncludeInspectorChanged = viewModel::updatePdfIncludeInspector,
+                            onPdfIncludeStatusChanged = viewModel::updatePdfIncludeStatus,
+                            onPdfIncludeNotesChanged = viewModel::updatePdfIncludeNotes,
+                            onPdfIncludeTimestampChanged = viewModel::updatePdfIncludeTimestamp,
+                            onPdfIncludePageNumberChanged = viewModel::updatePdfIncludePageNumber,
+                            onPdfIncludeUnansweredQuestionsChanged = viewModel::updatePdfIncludeUnansweredQuestions,
+                            onPdfIncludeQuestionTitleChanged = viewModel::updatePdfIncludeQuestionTitle,
+                            onPdfIncludeAnswerValueChanged = viewModel::updatePdfIncludeAnswerValue,
+                            onPdfIncludeAnswerNotesChanged = viewModel::updatePdfIncludeAnswerNotes,
+                            onPdfIncludeAnswerPictureChanged = viewModel::updatePdfIncludeAnswerPicture,
+                            onPdfCompactAnswerLayoutChanged = viewModel::updatePdfCompactAnswerLayout,
+                            onPdfFooterTextChanged = viewModel::updatePdfFooterText,
+                            onAddCategory = viewModel::addCategory,
+                            onDeleteCategory = viewModel::deleteCategory,
+                            onUserMessageShown = viewModel::userMessageShown,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
                 }
             }
         }
@@ -338,7 +355,9 @@ class MainActivity : AppCompatActivity() {
                 for (msg in msgs) {
                     for (record in msg.records) {
                         if (record.tnf == NdefRecord.TNF_WELL_KNOWN && record.type.contentEquals(
-                                NdefRecord.RTD_TEXT)) {
+                                NdefRecord.RTD_TEXT
+                            )
+                        ) {
                             try {
                                 val payload = record.payload
                                 val textEncoding = if ((payload[0].toInt() and 128) == 0) "UTF-8" else "UTF-16"
@@ -364,6 +383,7 @@ class MainActivity : AppCompatActivity() {
                     tagContent = id.joinToString("") { "%02X".format(it) }
                 }
             }
+
 
             if (!tagContent.isNullOrBlank()) {
                 viewModelRef?.onNfcTagScanned(tagContent)

@@ -1,7 +1,7 @@
 <resources>
-
     <style name="Theme.mychecks" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 </resources>

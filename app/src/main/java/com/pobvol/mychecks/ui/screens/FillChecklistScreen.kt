@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,9 +24,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.HelpCenter
+import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material.icons.rounded.CameraAlt
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.AssistChip
@@ -35,22 +38,21 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -61,6 +63,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -83,8 +86,10 @@ import com.pobvol.mychecks.ui.theme.mychecksTheme
 import com.pobvol.mychecks.util.PdfExporter
 import java.io.File
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,7 +98,7 @@ fun FillChecklistScreen(
     uiState: ChecklistUiState,
     onBackClick: () -> Unit,
     onOpenHelpClick: () -> Unit = {},
-    onSubmit: (checklistId: Int, inspector: String?, notes: String?, date: String, status: String, answers: Map<Int, AnswerInput>) -> Unit,
+    onSubmit: (checklistId: String, inspector: String?, notes: String?, date: String, status: String, answers: Map<String, AnswerInput>) -> Unit,
     onUserMessageShown: () -> Unit,
     onNfcTagConsumed: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -105,11 +110,9 @@ fun FillChecklistScreen(
     var notes by remember { mutableStateOf("") }
     var checkDate by remember { mutableStateOf(SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())) }
     var status by remember { mutableStateOf("IN_PROGRESS") }
-    var statusExpanded by remember { mutableStateOf(false) }
-    val availableStatuses = listOf("IN_PROGRESS", "COMPLETED", "PENDING")
 
     val answersMap = remember(uiState.questionsForSelectedChecklist) {
-        mutableStateMapOf<Int, AnswerInput>().apply {
+        mutableStateMapOf<String, AnswerInput>().apply {
             uiState.questionsForSelectedChecklist.forEach { q ->
                 if (q.type.lowercase() == "combobox") {
                     val options = q.options?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() } ?: emptyList()
@@ -121,7 +124,7 @@ fun FillChecklistScreen(
         }
     }
     var validationError by remember { mutableStateOf<String?>(null) }
-    var activeNfcQuestionId by remember { mutableStateOf<Int?>(null) }
+    var activeNfcQuestionId by remember { mutableStateOf<String?>(null) }
 
     BackHandler(onBack = onBackClick)
 
@@ -291,15 +294,74 @@ fun FillChecklistScreen(
                             modifier = Modifier.fillMaxWidth(),
                         )
 
+                        var showDatePicker by remember { mutableStateOf(false) }
+
+                        if (showDatePicker) {
+                            val datePickerState = rememberDatePickerState(
+                                initialSelectedDateMillis = remember(checkDate) {
+                                    try {
+                                        val sdf =
+                                            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                                        sdf.parse(checkDate)?.time ?: System.currentTimeMillis()
+                                    } catch (_: Exception) {
+                                        System.currentTimeMillis()
+                                    }
+                                }
+                            )
+
+                            DatePickerDialog(
+                                onDismissRequest = { showDatePicker = false },
+                                confirmButton = {
+                                    TextButton(
+                                        onClick = {
+                                            datePickerState.selectedDateMillis?.let { millis ->
+                                                val calendar =
+                                                    Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                                                calendar.timeInMillis = millis
+                                                val formattedDate = SimpleDateFormat(
+                                                    "dd.MM.yyyy",
+                                                    Locale.getDefault()
+                                                ).format(calendar.time)
+                                                checkDate = formattedDate
+                                            }
+                                            showDatePicker = false
+                                        }
+                                    ) {
+                                        Text(stringResource(R.string.add))
+                                    }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = { showDatePicker = false }) {
+                                        Text(stringResource(R.string.cancel))
+                                    }
+                                }
+                            ) {
+                                DatePicker(state = datePickerState)
+                            }
+                        }
+
                         OutlinedTextField(
                             value = checkDate,
-                            onValueChange = { checkDate = it },
+                            onValueChange = { },
+                            readOnly = true,
                             label = { Text(stringResource(R.string.check_date)) },
+                            trailingIcon = {
+                                IconButton(onClick = { showDatePicker = true }) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.CalendarToday,
+                                        contentDescription = stringResource(R.string.check_date),
+                                    )
+                                }
+                            },
                             singleLine = true,
                             shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusProperties { canFocus = false }
+                                .clickable { showDatePicker = true },
                         )
 
+                        /*
                         ExposedDropdownMenuBox(
                             expanded = statusExpanded,
                             onExpandedChange = { statusExpanded = !statusExpanded },
@@ -331,13 +393,13 @@ fun FillChecklistScreen(
                                     )
                                 }
                             }
-                        }
+                        }*/
 
                         OutlinedTextField(
                             value = notes,
                             onValueChange = { notes = it },
                             label = { Text(stringResource(R.string.notes_optional)) },
-                            minLines = 2,
+                            minLines = 3,
                             maxLines = 4,
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth(),
@@ -759,18 +821,29 @@ fun AnswerQuestionItem(
                 }
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = stringResource(R.string.picture_optional),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
 
                 if (!currentImageUri.isNullOrBlank()) {
+
+                    //Picture (optionally)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
+                        Text(
+                            text = stringResource(R.string.picture_optional),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+
+                    //Picture, Camera, Upload, Delete
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+
                         val imageModel: Any =
                             if (currentImageUri.startsWith("content://") || currentImageUri.startsWith(
                                     "file://"
@@ -791,7 +864,75 @@ fun AnswerQuestionItem(
                             contentScale = ContentScale.Crop,
                         )
 
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        //Column (verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+
+                            //CAMERA
+                            IconButton(
+                                onClick =
+                                    {
+                                        if (ContextCompat.checkSelfPermission(
+                                                context,
+                                                Manifest.permission.CAMERA
+                                            ) == PackageManager.PERMISSION_GRANTED
+                                        ) {
+                                            val photoFile = File(
+                                                context.cacheDir,
+                                                "camera_pic_${System.currentTimeMillis()}.jpg"
+                                            )
+                                            val uri = FileProvider.getUriForFile(
+                                                context,
+                                                "${context.packageName}.fileprovider",
+                                                photoFile
+                                            )
+                                            tempCameraUri = uri
+                                            cameraLauncher.launch(uri)
+                                        } else {
+                                            permissionLauncher.launch(Manifest.permission.CAMERA)
+                                        }
+                                    }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.CameraAlt,
+                                    contentDescription = stringResource(R.string.camera),
+                                    modifier = Modifier.weight(1f),
+                                    //modifier = Modifier.padding(end = 4.dp),
+                                )
+                            }
+
+                            //UPLOAD PICTURE
+                            IconButton(
+                                onClick =
+                                    {
+                                        galleryLauncher.launch("image/*")
+                                    }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Upload,
+                                    contentDescription = stringResource(R.string.upload),
+                                    modifier = Modifier.weight(1f),
+                                )
+                            }
+
+                            //DELETE PICTURE
+                            IconButton(
+                                onClick =
+                                    {
+                                        onImageChanged(null)
+                                    }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Delete,
+                                    contentDescription = stringResource(R.string.remove),
+                                    modifier = Modifier.weight(1f),
+                                )
+                            }
+
+                            /*
                             Button(
                                 onClick = {
                                     if (ContextCompat.checkSelfPermission(
@@ -818,28 +959,95 @@ fun AnswerQuestionItem(
                             ) {
                                 Text(stringResource(R.string.take_photo))
                             }
+
                             Button(
                                 onClick = { galleryLauncher.launch("image/*") },
                                 shape = RoundedCornerShape(8.dp),
                             ) {
                                 Text(stringResource(R.string.upload_image))
                             }
+
+                             */
+                             */
                         }
 
-                        Spacer(modifier = Modifier.weight(1f))
+                        // Spacer(modifier = Modifier.weight(1f))
 
+                        /*
                         OutlinedButton(
                             onClick = { onImageChanged(null) },
                             shape = RoundedCornerShape(8.dp),
                         ) {
                             Text(stringResource(R.string.remove))
                         }
+                        */
                     }
+
                 } else {
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
+
+                        //Picture (Optional)
+                        Text(
+                            text = stringResource(R.string.picture_optional),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+
+                        //CAMERA
+                        IconButton(
+                            onClick =
+                                {
+                                    if (ContextCompat.checkSelfPermission(
+                                            context,
+                                            Manifest.permission.CAMERA
+                                        ) == PackageManager.PERMISSION_GRANTED
+                                    ) {
+                                        val photoFile = File(
+                                            context.cacheDir,
+                                            "camera_pic_${System.currentTimeMillis()}.jpg"
+                                        )
+                                        val uri = FileProvider.getUriForFile(
+                                            context,
+                                            "${context.packageName}.fileprovider",
+                                            photoFile
+                                        )
+                                        tempCameraUri = uri
+                                        cameraLauncher.launch(uri)
+                                    } else {
+                                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                                    }
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.CameraAlt,
+                                contentDescription = stringResource(R.string.camera),
+                                modifier = Modifier.weight(1f),
+                                //modifier = Modifier.padding(end = 4.dp),
+                            )
+                        }
+
+                        //UPLOAD PICTURE
+                        IconButton(
+                            onClick =
+                                {
+                                    galleryLauncher.launch("image/*")
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Upload,
+                                contentDescription = stringResource(R.string.upload),
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
+
+                        //CAMERA
+                        /*
+
                         Button(
                             onClick = {
                                 if (ContextCompat.checkSelfPermission(
@@ -870,8 +1078,10 @@ fun AnswerQuestionItem(
                                 contentDescription = null,
                                 modifier = Modifier.padding(end = 4.dp),
                             )
-                            Text(stringResource(R.string.camera))
+                            //Text(stringResource(R.string.camera))
                         }
+
+                        //UPLOAD PICTURE
                         Button(
                             onClick = { galleryLauncher.launch("image/*") },
                             shape = RoundedCornerShape(12.dp),
@@ -882,8 +1092,11 @@ fun AnswerQuestionItem(
                                 contentDescription = null,
                                 modifier = Modifier.padding(end = 4.dp),
                             )
-                            Text(stringResource(R.string.upload))
+                            //Text(stringResource(R.string.upload))
                         }
+
+                         */
+                         */
                     }
                 }
             }
@@ -896,12 +1109,17 @@ fun AnswerQuestionItem(
 fun FillChecklistScreenPreview() {
     mychecksTheme {
         FillChecklistScreen(
-            checklist = ChecklistEntity(id = 1, title = "UVV Safety Inspection", language = "en", icon = "Null"),
+            checklist = ChecklistEntity(
+                id = "1",
+                title = "UVV Safety Inspection",
+                language = "en",
+                icon = "Null"
+            ),
             uiState = ChecklistUiState(
                 questionsForSelectedChecklist = listOf(
                     ChecklistQuestionEntity(
-                        id = 1,
-                        checklistid = 1,
+                        id = "1",
+                        checklistid = "1",
                         title = "Are all guards in place?",
                         description = "Check machine covers.",
                         type = "checkbox",
@@ -909,8 +1127,8 @@ fun FillChecklistScreenPreview() {
                         required = true,
                     ),
                     ChecklistQuestionEntity(
-                        id = 2,
-                        checklistid = 1,
+                        id = "2",
+                        checklistid = "1",
                         title = "Select shift",
                         description = null,
                         type = "combobox",

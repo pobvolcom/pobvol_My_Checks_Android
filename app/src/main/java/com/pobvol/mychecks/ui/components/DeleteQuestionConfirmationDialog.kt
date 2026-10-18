@@ -82,7 +82,8 @@ fun DeleteQuestionConfirmationDialogPreview() {
     mychecksTheme {
         DeleteQuestionConfirmationDialog(
             question = ChecklistQuestionEntity(
-                id = 1,
+                id = "1",
+                checklistid = "1",
                 title = "Is safety equipment worn?",
                 description = "Check compliance",
                 type = "checkbox",

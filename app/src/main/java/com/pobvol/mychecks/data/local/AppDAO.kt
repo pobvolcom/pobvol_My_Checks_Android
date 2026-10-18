@@ -80,7 +80,7 @@ interface ChecklistDAO {
     fun getAllChecklists(): Flow<List<ChecklistEntity>>
 
     @Query("SELECT * FROM checklists WHERE id = :id")
-    suspend fun getChecklistById(id: Int): ChecklistEntity?
+    suspend fun getChecklistById(id: String): ChecklistEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChecklist(checklist: ChecklistEntity): Long
@@ -100,10 +100,10 @@ interface ChecklistQuestionDAO {
     fun getAllChecklistQuestions(): Flow<List<ChecklistQuestionEntity>>
 
     @Query("SELECT * FROM checklist_questions WHERE id = :id")
-    suspend fun getChecklistQuestionById(id: Int): ChecklistQuestionEntity?
+    suspend fun getChecklistQuestionById(id: String): ChecklistQuestionEntity?
 
     @Query("SELECT * FROM checklist_questions WHERE checklistid = :checklistid ORDER BY sortno ASC, id ASC")
-    fun getChecklistQuestionsByChecklistId(checklistid: Int): Flow<List<ChecklistQuestionEntity>>
+    fun getChecklistQuestionsByChecklistId(checklistid: String): Flow<List<ChecklistQuestionEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChecklistQuestion(question: ChecklistQuestionEntity): Long
@@ -123,10 +123,10 @@ interface ChecklistSubmissionDAO {
     fun getAllChecklistSubmissions(): Flow<List<ChecklistSubmissionEntity>>
 
     @Query("SELECT * FROM checklist_submissions WHERE id = :id")
-    suspend fun getChecklistSubmissionById(id: Int): ChecklistSubmissionEntity?
+    suspend fun getChecklistSubmissionById(id: String): ChecklistSubmissionEntity?
 
     @Query("SELECT * FROM checklist_submissions WHERE checklistid = :checklistid")
-    suspend fun getChecklistSubmissionsByChecklistId(checklistid: Int): ChecklistSubmissionEntity?
+    suspend fun getChecklistSubmissionsByChecklistId(checklistid: String): ChecklistSubmissionEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChecklistSubmission(submission: ChecklistSubmissionEntity): Long
@@ -144,20 +144,22 @@ interface ChecklistAnswerDAO {
 
     @Query("SELECT * FROM checklist_answers ORDER BY timestamp DESC")
     fun getAllChecklistAnswers(): Flow<List<ChecklistAnswerEntity>>
+
     @Query("SELECT * FROM checklist_answers WHERE id = :id")
-    suspend fun getChecklistAnswerById(id: Int): ChecklistAnswerEntity?
+    suspend fun getChecklistAnswerById(id: String): ChecklistAnswerEntity?
 
     @Query("SELECT * FROM checklist_answers WHERE questionid = :questionid")
-    suspend fun getChecklistAnswerByQuestionId(questionid: Int): ChecklistAnswerEntity?
+    suspend fun getChecklistAnswerByQuestionId(questionid: String): ChecklistAnswerEntity?
 
     @Query("SELECT * FROM checklist_answers WHERE submissionid = :submissionid")
-    suspend fun getChecklistAnswersBySubmissionId(submissionid: Int): ChecklistAnswerEntity?
+    suspend fun getChecklistAnswersBySubmissionId(submissionid: String): ChecklistAnswerEntity?
 
     @Query("SELECT * FROM checklist_answers WHERE submissionid = :submissionid")
-    suspend fun getChecklistAnswersListBySubmissionId(submissionid: Int): List<ChecklistAnswerEntity>
+    suspend fun getChecklistAnswersListBySubmissionId(submissionid: String): List<ChecklistAnswerEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChecklistAnswer(answer: ChecklistAnswerEntity): Long
+
     @Update
     suspend fun updateChecklistAnswer(answer: ChecklistAnswerEntity)
 

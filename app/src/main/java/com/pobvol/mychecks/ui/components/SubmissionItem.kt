@@ -92,7 +92,7 @@ fun SubmissionItem(
                 )
             }
 
-            if (checklist.description!!.isNotBlank()) {
+            if (checklist.description.isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = checklist.description,
@@ -176,7 +176,7 @@ fun SubmissionItemPreview() {
     mychecksTheme {
         SubmissionItem(
             checklist = ChecklistEntity(
-                id = 1,
+                id = "1",
                 title = "Database Migration Notes",
                 language = "en",
                 description = "Updated Room database to version 2 with indices for title and timestamp.",

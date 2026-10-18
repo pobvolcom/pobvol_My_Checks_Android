@@ -503,8 +503,8 @@ fun SubmissionsOverviewScreenPreview() {
             uiState = ChecklistUiState(
                 submissions = listOf(
                     ChecklistSubmissionEntity(
-                        id = 1,
-                        checklistid = 1,
+                        id = "1",
+                        checklistid = "1",
                         status = "COMPLETED",
                         inspector = "John Doe",
                         notes = "All safety guards passed inspection.",

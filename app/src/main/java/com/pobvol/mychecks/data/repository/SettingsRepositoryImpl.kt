@@ -47,6 +47,15 @@ class SettingsRepositoryImpl(
                 ThemeMode.SYSTEM
             }
             val preferredLanguage = preferences[PreferencesKeys.PREFERRED_LANGUAGE] ?: "en"
+
+            try {
+                val prefs = context.getSharedPreferences("my_checks_prefs", Context.MODE_PRIVATE)
+                if (prefs.getString("saved_language", null) == null) {
+                    prefs.edit().putString("saved_language", preferredLanguage).apply()
+                }
+            } catch (_: Exception) {
+            }
+
             val userName = preferences[PreferencesKeys.USER_NAME] ?: ""
             val pdfHeaderTitle = preferences[PreferencesKeys.PDF_HEADER_TITLE] ?: "My Checks Inspection Report"
             val pdfIncludeChecklistTitle =
@@ -99,6 +108,14 @@ class SettingsRepositoryImpl(
     }
 
     override suspend fun updatePreferredLanguage(language: String) {
+        try {
+            context.getSharedPreferences("my_checks_prefs", Context.MODE_PRIVATE)
+                .edit()
+                .putString("saved_language", language)
+                .apply()
+        } catch (_: Exception) {
+        }
+
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.PREFERRED_LANGUAGE] = language
         }

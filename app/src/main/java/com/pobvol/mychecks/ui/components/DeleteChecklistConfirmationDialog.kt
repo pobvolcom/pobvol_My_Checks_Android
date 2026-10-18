@@ -78,7 +78,7 @@ fun DeleteChecklistConfirmationDialogPreview() {
     mychecksTheme {
         DeleteChecklistConfirmationDialog(
             checklist = ChecklistEntity(
-                id = 1,
+                id = "1",
                 language = "English",
                 title = "Important Document",
                 description = "Scan of passport",

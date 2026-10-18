@@ -23,10 +23,8 @@ import androidx.compose.material.icons.automirrored.rounded.HelpCenter
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
@@ -373,12 +371,17 @@ fun QuestionItem(
 fun ChecklistQuestionsScreenPreview() {
     mychecksTheme {
         ChecklistQuestionsScreen(
-            checklist = ChecklistEntity(id = 1, title = "UVV Safety Inspection", language = "en", icon = "Null"),
+            checklist = ChecklistEntity(
+                id = "1",
+                title = "UVV Safety Inspection",
+                language = "en",
+                icon = "Null"
+            ),
             uiState = ChecklistUiState(
                 questionsForSelectedChecklist = listOf(
                     ChecklistQuestionEntity(
-                        id = 1,
-                        checklistid = 1,
+                        id = "1",
+                        checklistid = "1",
                         sortno = 1,
                         title = "Are all guards in place?",
                         description = "Check machine covers.",
@@ -387,8 +390,8 @@ fun ChecklistQuestionsScreenPreview() {
                         required = true,
                     ),
                     ChecklistQuestionEntity(
-                        id = 2,
-                        checklistid = 1,
+                        id = "2",
+                        checklistid = "1",
                         sortno = 2,
                         title = "Select shift",
                         description = null,

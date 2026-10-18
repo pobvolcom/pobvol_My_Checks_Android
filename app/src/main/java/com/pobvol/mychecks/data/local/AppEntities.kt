@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 
 /* table: records */
@@ -74,14 +75,14 @@ data class CategoryEntity(
 /* table: checklists */
 @Entity(tableName = "checklists")
 data class ChecklistEntity(
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0,
-    var title: String,
-    var language: String = "en", // NOT NULL
-    var description: String = "",
-    var category: String = "UVV",
-    var icon: String?, // OPTIONAL
-    var timestamp: Long = System.currentTimeMillis()
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val title: String,
+    val language: String = "en", // NOT NULL
+    val description: String = "",
+    val category: String = "UVV",
+    val icon: String?, // OPTIONAL
+    val timestamp: Long = System.currentTimeMillis()
 )
 
 /* table: checklist_questions */
@@ -100,9 +101,9 @@ data class ChecklistEntity(
     ]
 )
 data class ChecklistQuestionEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val checklistid: Int = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val checklistid: String,
     val sortno: Int = 0,
     val title: String,
     val description: String?,
@@ -130,9 +131,9 @@ data class ChecklistQuestionEntity(
     ]
 )
 data class ChecklistSubmissionEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val checklistid: Int = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val checklistid: String,
     val status: String,
     val inspector: String?,
     val notes: String?,
@@ -163,10 +164,10 @@ data class ChecklistSubmissionEntity(
     ]
 )
 data class ChecklistAnswerEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val submissionid: Int = 0,
-    val questionid: Int = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val submissionid: String,
+    val questionid: String,
     val value: String,
     val notes: String? = null,
     val imagePath: String? = null,

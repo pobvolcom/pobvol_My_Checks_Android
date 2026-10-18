@@ -8,8 +8,11 @@ class ChecklistSubmissionRepositoryImpl(
     private val checklistsubmissionDao: ChecklistSubmissionDAO
 ) : ChecklistSubmissionRepository {
     override fun getAllChecklistSubmissions(): Flow<List<ChecklistSubmissionEntity>> = checklistsubmissionDao.getAllChecklistSubmissions()
-    override suspend fun getChecklistSubmissionById(id: Int): ChecklistSubmissionEntity? = checklistsubmissionDao.getChecklistSubmissionById(id)
-    override suspend fun getChecklistSubmissionsByChecklistId(checklistid: Int): ChecklistSubmissionEntity? = checklistsubmissionDao.getChecklistSubmissionsByChecklistId(checklistid)
+    override suspend fun getChecklistSubmissionById(id: String): ChecklistSubmissionEntity? =
+        checklistsubmissionDao.getChecklistSubmissionById(id)
+
+    override suspend fun getChecklistSubmissionsByChecklistId(checklistid: String): ChecklistSubmissionEntity? =
+        checklistsubmissionDao.getChecklistSubmissionsByChecklistId(checklistid)
     override suspend fun insertChecklistSubmission(submission: ChecklistSubmissionEntity): Long = checklistsubmissionDao.insertChecklistSubmission(submission)
     override suspend fun updateChecklistSubmission(submission: ChecklistSubmissionEntity) = checklistsubmissionDao.updateChecklistSubmission(submission)
     override suspend fun deleteChecklistSubmission(submission: ChecklistSubmissionEntity) = checklistsubmissionDao.deleteChecklistSubmission(submission)

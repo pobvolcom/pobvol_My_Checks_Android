@@ -43,6 +43,7 @@ import java.util.Locale
 @Composable
 fun ChecklistItem(
     checklist: ChecklistEntity,
+    submissionCount: Int = 0,
     onSelectChecklist: (ChecklistEntity) -> Unit = {},
     onFillClick: (ChecklistEntity) -> Unit = {},
     onQuestionsClick: (ChecklistEntity) -> Unit,
@@ -98,7 +99,7 @@ fun ChecklistItem(
                 )
             }
 
-            if (checklist.description!!.isNotBlank()) {
+            if (checklist.description.isNotBlank()) {
                 Text(
                     text = checklist.description,
                     style = MaterialTheme.typography.bodyMedium,
@@ -129,8 +130,6 @@ fun ChecklistItem(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                //horizontalArrangement = Arrangement.SpaceBetween,
-
             ) {
                 Row(
                     modifier = Modifier
@@ -174,6 +173,19 @@ fun ChecklistItem(
                         )
                     }
 
+                    // CHART (Only if more than 2 submissions are recorded)
+                    if (submissionCount > 2) {
+                        IconButton(onClick = { onChartClick(checklist) }) {
+                            Icon(
+                                imageVector = Icons.Rounded.Analytics,
+                                contentDescription = stringResource(R.string.checklist_analytics),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            )
+                        }
+                    }
+
                     // LOGS
                     IconButton(onClick = { onFillClick(checklist) }) {
                         Icon(
@@ -185,18 +197,6 @@ fun ChecklistItem(
                         )
                     }
 
-                    // CHART
-                    IconButton(onClick = { onChartClick(checklist) }) {
-                        Icon(
-                            imageVector = Icons.Rounded.Analytics,
-                            contentDescription = stringResource(R.string.checklist_analytics),
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier
-                                .fillMaxSize()
-                            //.widthIn(16.dp)
-                            //.height(16.dp)
-                        )
-                    }
 
                 }
             }
@@ -215,7 +215,7 @@ fun ChecklistItemPreview() {
     mychecksTheme {
         ChecklistItem(
             checklist = ChecklistEntity(
-                id = 1,
+                id = "1",
                 title = "Database Migration Notes",
                 language = "en",
                 description = "Updated Room database to version 2 with indices for title and timestamp.",
@@ -223,6 +223,7 @@ fun ChecklistItemPreview() {
                 icon = "Null",
                 timestamp = System.currentTimeMillis(),
             ),
+            submissionCount = 3,
             onSelectChecklist = {},
             onQuestionsClick = {},
             onEditClick = {},

@@ -55,7 +55,7 @@ fun ChecklistChartScreen(
 ) {
     BackHandler(onBack = onBackClick)
 
-    val submissions = uiState.submissions.filter { it.checklistid == checklist.id }
+    val submissions = uiState.allSubmissions.filter { it.checklistid == checklist.id }
         .sortedBy { it.date }
     val questions = uiState.questionsForSelectedChecklist.filter { it.checklistid == checklist.id }
     val numberQuestions = questions.filter { it.type.lowercase() == "number" }
@@ -185,6 +185,7 @@ fun ChecklistChartScreen(
 
 @Composable
 fun SubmissionsLineChart(data: List<Pair<String, Int>>) {
+    if (data.isEmpty()) return
     val maxCount = data.maxOfOrNull { it.second }?.toFloat() ?: 1f
     val primaryColor = MaterialTheme.colorScheme.primary
     val scrollState = rememberScrollState()
@@ -207,7 +208,8 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>) {
                 ) {
                     val width = size.width
                     val height = size.height
-                    val stepX = if (data.size > 1) width / (data.size - 1) else width
+                    val stepX =
+                        if (data.size > 1) width / (data.size - 1) else if (data.size == 1) width else 0f
 
                     val points = data.mapIndexed { index, pair ->
                         val x = index * stepX + (if (data.size == 1) width / 2f else 0f)
@@ -266,6 +268,7 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>) {
 
 @Composable
 fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>) {
+    if (data.isEmpty()) return
     val maxVal = maxOf(
         data.maxOfOrNull { maxOf(it.second, it.third) } ?: 1.0,
         1.0
@@ -293,7 +296,8 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>) {
                 ) {
                     val width = size.width
                     val height = size.height
-                    val stepX = if (data.size > 1) width / (data.size - 1) else width
+                    val stepX =
+                        if (data.size > 1) width / (data.size - 1) else if (data.size == 1) width else 0f
 
                     val points1 = data.mapIndexed { index, triple ->
                         val x = index * stepX + (if (data.size == 1) width / 2f else 0f)

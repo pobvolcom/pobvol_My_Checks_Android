@@ -365,8 +365,11 @@ fun ChecklistListScreen(
                         items = uiState.checklists,
                         key = { it.id }
                     ) { checklist ->
+                        val subCount =
+                            uiState.allSubmissions.count { it.checklistid == checklist.id }
                         ChecklistItem(
                             checklist = checklist,
+                            submissionCount = subCount,
                             onSelectChecklist = onFillClick,
                             onFillClick = onSelectChecklist,
                             onQuestionsClick = onQuestionsClick,
@@ -514,7 +517,7 @@ fun ChecklistListScreenPreview() {
             uiState = ChecklistUiState(
                 checklists = listOf(
                     ChecklistEntity(
-                        id = 1,
+                        id = "1",
                         title = "UVV Safety Inspection",
                         language = "en",
                         description = "Monthly safety check for equipment.",
@@ -522,7 +525,7 @@ fun ChecklistListScreenPreview() {
                         icon = null
                     ),
                     ChecklistEntity(
-                        id = 2,
+                        id = "2",
                         title = "Health & Hygiene Check",
                         language = "en",
                         description = "Daily hygiene protocol.",

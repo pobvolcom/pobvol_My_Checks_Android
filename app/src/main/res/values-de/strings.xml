@@ -34,7 +34,7 @@
     <string name="clear_search">Suche löschen</string>
     <string name="add_new_checklist">Neue Checkliste</string>
     <string name="add_category">+ Kategorie</string>
-    <string name="add_new_category">Neue Kategorie</string>
+    <string name="add_new_category">Kategorie +</string>
     <string name="category_name">Kategorie *</string>
     <string name="category_name_empty">Kategorie darf nicht leer sein</string>
     <string name="no_matching_checklists">Keine passenden Checklisten gefunden</string>
@@ -100,7 +100,7 @@
     <string name="dark">Dunkel</string>
     <string name="help_welcome_title">Willkommen bei My Checks</string>
     <string name="help_welcome_desc">Checklisten schnell und einfach erstellen | Ergebnisse protokollieren | Freie Software | Open Source | Android-Smartphones und -Tablets</string>
-    <string name="new_category">Neue Kategorie</string>
+    <string name="new_category">Kategorie +</string>
     <string name="table_languages">Tabelle: Sprachen</string>
     <string name="camera_permission_required">Kameraerlaubnis ist erforderlich, um QR-Codes mit Ihrem Gerät zu scannen.</string>
     <string name="grant_camera_permission">Kameraerlaubnis erteilen</string>

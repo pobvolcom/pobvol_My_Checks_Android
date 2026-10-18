@@ -247,7 +247,7 @@ class ChecklistViewModel(
         val filteredChecklists = effectiveChecklists.filter { checklist ->
             val matchesQuery = query.isBlank() ||
                     checklist.title.contains(query, ignoreCase = true) ||
-                    checklist.description!!.contains(query, ignoreCase = true) ||
+                    checklist.description.contains(query, ignoreCase = true) ||
                     checklist.category.contains(query, ignoreCase = true)
 
             val matchesCategory = category == null || category.equals("All", ignoreCase = true) ||
@@ -297,6 +297,7 @@ class ChecklistViewModel(
             categories = globalState.settingsState.categories,
             selectedChecklistToAnswer = dialogState.selectedChecklistToAnswer,
             submissions = filteredSubmissions,
+            allSubmissions = globalState.submissionState.submissions,
             answers = globalState.submissionState.answers,
             isSubmissionsOverviewVisible = globalState.submissionState.isOverviewVisible,
             selectedSubmissionToEdit = globalState.submissionState.selectedSubmissionToEdit,
@@ -494,12 +495,12 @@ class ChecklistViewModel(
     }
 
     fun submitChecklistAnswers(
-        checklistId: Int,
+        checklistId: String,
         inspector: String?,
         notes: String?,
         date: String = "",
         status: String = "IN_PROGRESS",
-        answers: Map<Int, AnswerInput>
+        answers: Map<String, AnswerInput>
     ) {
         viewModelScope.launch {
             val formattedDate = date.ifBlank {
@@ -521,29 +522,29 @@ class ChecklistViewModel(
                 timestamp = System.currentTimeMillis(),
             )
 
-            val submissionId = submissionRepository.insertChecklistSubmission(submission)
+            submissionRepository.insertChecklistSubmission(submission)
 
             answers.forEach { (questionId, answerInput) ->
                 if (answerInput.value.isNotBlank() || !answerInput.notes.isNullOrBlank() || !answerInput.imageUri.isNullOrBlank()) {
                     val answer = ChecklistAnswerEntity(
-                        submissionid = submissionId.toInt(),
+                        submissionid = submission.id,
                         questionid = questionId,
                         value = answerInput.value,
                         notes = answerInput.notes?.ifBlank { null },
                         imagePath = answerInput.imagePath,
                         timestamp = System.currentTimeMillis(),
                     )
-                    val answerId = answerRepository.insertChecklistAnswer(answer)
+                    answerRepository.insertChecklistAnswer(answer)
                     if (!answerInput.imageUri.isNullOrBlank()) {
                         val savedFileName = SqlExporter.savePictureToMyChecks(
                             context,
-                            submissionId.toInt(),
-                            answerId.toInt(),
+                            submission.id,
+                            answer.id,
                             Uri.parse(answerInput.imageUri)
                         )
                         if (savedFileName != null) {
                             val updatedAnswer =
-                                answer.copy(id = answerId.toInt(), imagePath = savedFileName)
+                                answer.copy(imagePath = savedFileName)
                             answerRepository.updateChecklistAnswer(updatedAnswer)
                         }
                     }
@@ -554,9 +555,15 @@ class ChecklistViewModel(
                 val checklist = repository.getAllChecklists().first().find { it.id == checklistId }
                 val allAnswers = answerRepository.getAllChecklistAnswers().first()
                 val settings = settingsRepository.userSettings.first()
-                val createdSubmission = submission.copy(id = submissionId.toInt())
-                PdfExporter.savePdfToMyChecks(context, createdSubmission, checklist, questions, allAnswers, settings)
-                SqlExporter.saveSqlToMyChecks(context, createdSubmission, checklist, questions, allAnswers)
+                PdfExporter.savePdfToMyChecks(
+                    context,
+                    submission,
+                    checklist,
+                    questions,
+                    allAnswers,
+                    settings
+                )
+                SqlExporter.saveSqlToMyChecks(context, submission, checklist, questions, allAnswers)
                 _userMessage.value = context.getString(R.string.msg_submission_completed)
             } else {
                 _userMessage.value = context.getString(R.string.msg_submission_in_progress)
@@ -650,7 +657,7 @@ class ChecklistViewModel(
 
     fun updateSubmissionAndAnswers(
         updatedSubmission: ChecklistSubmissionEntity,
-        updatedAnswersMap: Map<Int, AnswerInput>,
+        updatedAnswersMap: Map<String, AnswerInput>,
     ) {
         viewModelScope.launch {
             val questions = questionRepository.getChecklistQuestionsByChecklistId(updatedSubmission.checklistid).first()
@@ -699,17 +706,17 @@ class ChecklistViewModel(
                         notes = newAnswerInput.notes?.ifBlank { null },
                         timestamp = System.currentTimeMillis(),
                     )
-                    val answerId = answerRepository.insertChecklistAnswer(newAnswer)
+                    answerRepository.insertChecklistAnswer(newAnswer)
                     if (!newAnswerInput.imageUri.isNullOrBlank()) {
                         val savedFileName = SqlExporter.savePictureToMyChecks(
                             context,
                             finalSubmission.id,
-                            answerId.toInt(),
+                            newAnswer.id,
                             Uri.parse(newAnswerInput.imageUri)
                         )
                         if (savedFileName != null) {
                             val updatedNewAnswer =
-                                newAnswer.copy(id = answerId.toInt(), imagePath = savedFileName)
+                                newAnswer.copy(imagePath = savedFileName)
                             answerRepository.updateChecklistAnswer(updatedNewAnswer)
                         }
                     }

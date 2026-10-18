@@ -177,7 +177,7 @@ fun EditChecklistDialogPreview() {
     mychecksTheme {
         AddEditChecklistDialog(
             checklistToEdit = ChecklistEntity(
-                id = 1,
+                id = "1",
                 title = "Shopping List",
                 language = "en",
                 description = "Milk, Eggs, Bread",

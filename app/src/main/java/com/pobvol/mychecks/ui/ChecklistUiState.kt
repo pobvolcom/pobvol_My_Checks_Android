@@ -30,6 +30,7 @@ data class ChecklistUiState(
     val categories: List<CategoryEntity> = emptyList(),
     val selectedChecklistToAnswer: ChecklistEntity? = null,
     val submissions: List<ChecklistSubmissionEntity> = emptyList(),
+    val allSubmissions: List<ChecklistSubmissionEntity> = emptyList(),
     val answers: List<ChecklistAnswerEntity> = emptyList(),
     val isSubmissionsOverviewVisible: Boolean = false,
     val selectedSubmissionToEdit: ChecklistSubmissionEntity? = null,

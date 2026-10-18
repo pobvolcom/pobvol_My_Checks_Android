@@ -1,6 +1,7 @@
 package com.pobvol.mychecks.ui.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,25 +19,26 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpCenter
+import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,8 +64,10 @@ import com.pobvol.mychecks.ui.AnswerInput
 import com.pobvol.mychecks.ui.ChecklistUiState
 import com.pobvol.mychecks.ui.theme.mychecksTheme
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,7 +77,7 @@ fun SubmissionDetailScreen(
     uiState: ChecklistUiState,
     onBackClick: () -> Unit,
     onOpenHelpClick: () -> Unit = {},
-    onSaveSubmission: (updatedSubmission: ChecklistSubmissionEntity, updatedAnswers: Map<Int, AnswerInput>) -> Unit,
+    onSaveSubmission: (updatedSubmission: ChecklistSubmissionEntity, updatedAnswers: Map<String, AnswerInput>) -> Unit,
     onUserMessageShown: () -> Unit,
     onNfcTagConsumed: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -81,7 +86,6 @@ fun SubmissionDetailScreen(
 
     var inspectorName by remember(submission) { mutableStateOf(submission.inspector ?: "") }
     var status by remember(submission) { mutableStateOf(submission.status) }
-    var statusExpanded by remember { mutableStateOf(false) }
     var notes by remember(submission) { mutableStateOf(submission.notes ?: "") }
     var checkDate by remember(submission) {
         mutableStateOf(submission.date.ifBlank { SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()) })
@@ -98,7 +102,7 @@ fun SubmissionDetailScreen(
     }
 
     val answersMap = remember(submission.id, uiState.questionsForSelectedChecklist) {
-        mutableStateMapOf<Int, AnswerInput>().apply {
+        mutableStateMapOf<String, AnswerInput>().apply {
             putAll(existingAnswersMap)
             uiState.questionsForSelectedChecklist.forEach { q ->
                 if (q.type.lowercase() == "combobox") {
@@ -114,8 +118,7 @@ fun SubmissionDetailScreen(
         }
     }
 
-    val availableStatuses = listOf("COMPLETED", "IN_PROGRESS", "PENDING")
-    var activeNfcQuestionId by remember { mutableStateOf<Int?>(null) }
+    var activeNfcQuestionId by remember { mutableStateOf<String?>(null) }
 
     BackHandler(onBack = onBackClick)
 
@@ -157,8 +160,6 @@ fun SubmissionDetailScreen(
                     }
                 },
                 actions = {
-                    val context = LocalContext.current
-
                     /*
                     IconButton(onClick = onOpenHelpClick) {
                         Icon(
@@ -287,14 +288,82 @@ fun SubmissionDetailScreen(
                         )
 
                         OutlinedTextField(
-                            value = checkDate,
-                            onValueChange = { checkDate = it },
-                            label = { Text(stringResource(R.string.check_date)) },
+                            value = inspectorName,
+                            onValueChange = { inspectorName = it },
+                            label = { Text(stringResource(R.string.inspector_user_name)) },
                             singleLine = true,
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth(),
                         )
 
+                        var showDatePicker by remember { mutableStateOf(false) }
+
+                        if (showDatePicker) {
+                            val datePickerState = rememberDatePickerState(
+                                initialSelectedDateMillis = remember(checkDate) {
+                                    try {
+                                        val sdf =
+                                            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                                        sdf.parse(checkDate)?.time ?: System.currentTimeMillis()
+                                    } catch (_: Exception) {
+                                        System.currentTimeMillis()
+                                    }
+                                }
+                            )
+
+                            DatePickerDialog(
+                                onDismissRequest = { showDatePicker = false },
+                                confirmButton = {
+                                    TextButton(
+                                        onClick = {
+                                            datePickerState.selectedDateMillis?.let { millis ->
+                                                val calendar =
+                                                    Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                                                calendar.timeInMillis = millis
+                                                val formattedDate = SimpleDateFormat(
+                                                    "dd.MM.yyyy",
+                                                    Locale.getDefault()
+                                                ).format(calendar.time)
+                                                checkDate = formattedDate
+                                            }
+                                            showDatePicker = false
+                                        }
+                                    ) {
+                                        Text(stringResource(R.string.add))
+                                    }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = { showDatePicker = false }) {
+                                        Text(stringResource(R.string.cancel))
+                                    }
+                                }
+                            ) {
+                                DatePicker(state = datePickerState)
+                            }
+                        }
+
+                        OutlinedTextField(
+                            value = checkDate,
+                            onValueChange = { },
+                            readOnly = true,
+                            label = { Text(stringResource(R.string.check_date)) },
+                            trailingIcon = {
+                                IconButton(onClick = { showDatePicker = true }) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.CalendarToday,
+                                        contentDescription = stringResource(R.string.check_date),
+                                    )
+                                }
+                            },
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusProperties { canFocus = false }
+                                .clickable { showDatePicker = true },
+                        )
+
+                        /*
                         ExposedDropdownMenuBox(
                             expanded = statusExpanded,
                             onExpandedChange = { statusExpanded = !statusExpanded },
@@ -327,6 +396,7 @@ fun SubmissionDetailScreen(
                                 }
                             }
                         }
+                        */
 
                         OutlinedTextField(
                             value = notes,
@@ -474,19 +544,24 @@ fun SubmissionDetailScreenPreview() {
     mychecksTheme {
         SubmissionDetailScreen(
             submission = ChecklistSubmissionEntity(
-                id = 1,
-                checklistid = 1,
+                id = "1",
+                checklistid = "1",
                 status = "COMPLETED",
                 inspector = "John Doe",
                 notes = "Sample notes",
                 date = "Today()",
             ),
-            checklist = ChecklistEntity(id = 1, title = "UVV Inspection", language = "en", icon = "Null"),
+            checklist = ChecklistEntity(
+                id = "1",
+                title = "UVV Inspection",
+                language = "en",
+                icon = "Null"
+            ),
             uiState = ChecklistUiState(
                 questionsForSelectedChecklist = listOf(
                     ChecklistQuestionEntity(
-                        id = 1,
-                        checklistid = 1,
+                        id = "1",
+                        checklistid = "1",
                         title = "Guards checked?",
                         description = null,
                         type = "checkbox",
@@ -494,7 +569,13 @@ fun SubmissionDetailScreenPreview() {
                     )
                 ),
                 answers = listOf(
-                    ChecklistAnswerEntity(id = 1, submissionid = 1, questionid = 1, value = "true", notes = "Checked ok")
+                    ChecklistAnswerEntity(
+                        id = "1",
+                        submissionid = "1",
+                        questionid = "1",
+                        value = "true",
+                        notes = "Checked ok"
+                    )
                 )
             ),
             onBackClick = {},
