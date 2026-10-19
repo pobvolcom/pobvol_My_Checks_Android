@@ -206,4 +206,14 @@
     <string name="msg_submission_in_progress">Prüfung als in Bearbeitung gespeichert</string>
     <string name="msg_sql_export_saved">SQL-Export in Downloads gespeichert</string>
     <string name="msg_submission_updated_in_progress">Protokoll aktualisiert (in Bearbeitung)</string>
+    <string name="device_id_label">Geräte-ID</string>
+    <string name="menu">Menü</string>
+    <string name="menu_create_db_copy">Datenbank-Kopie erstellen</string>
+    <string name="menu_import_db">Datenbank importieren</string>
+    <string name="menu_close_app">App schließen</string>
+    <string name="msg_db_imported">Datenbank erfolgreich importiert. Neustart...</string>
+    <string name="msg_db_import_failed">Fehler beim Importieren der Datenbank</string>
+    <string name="import_db_dialog_title">Datenbank importieren &amp; überschreiben?</string>
+    <string name="import_db_dialog_message">Beim Importieren eines Datenbank-Backups werden alle aktuellen Checklisten, Fragen und Protokolle in der App überschrieben. Nicht gespeicherte Änderungen gehen verloren. Möchten Sie fortfahren?</string>
+    <string name="import_db_confirm_button">Importieren &amp; Überschreiben</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.pobvol.mychecks.ui.components
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,15 +38,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.CategoryEntity
+import com.pobvol.mychecks.data.local.DeviceEntity
 import com.pobvol.mychecks.data.local.LanguageEntity
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.data.repository.UserSettings
 import com.pobvol.mychecks.ui.theme.mychecksTheme
-import com.pobvol.mychecks.util.SqlExporter
 
 @Composable
 fun SettingsDialog(
     userSettings: UserSettings,
+    devices: List<DeviceEntity>,
     languages: List<LanguageEntity>,
     categories: List<CategoryEntity> = emptyList(),
     onThemeModeSelected: (ThemeMode) -> Unit,
@@ -150,6 +150,25 @@ fun SettingsDialog(
                     )
                 }
 
+                // 3c. Device ID Display
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = stringResource(R.string.device_id_label),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    val deviceId = devices.firstOrNull()?.id ?: "N/A"
+                    OutlinedTextField(
+                        value = deviceId,
+                        onValueChange = {},
+                        readOnly = true,
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+
                 // 3b. Audio Feedback Toggle (TTS)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -178,6 +197,7 @@ fun SettingsDialog(
                 }
 
                 // 5. Database Backup Button (SQLite)
+                /*
                 Button(
                     onClick = {
                         val success = SqlExporter.exportDatabaseCopy(context)
@@ -192,7 +212,7 @@ fun SettingsDialog(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(stringResource(R.string.db_backup_button))
-                }
+                }*/
 
                 // 6. Manage Categories
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -283,6 +303,7 @@ fun SettingsDialogPreview() {
                 userName = "John Doe",
                 audioFeedback = true,
             ),
+            devices = listOf(DeviceEntity("device-uuid-1234", "Primary Device")),
             languages = listOf(
                 LanguageEntity("en", "English"),
                 LanguageEntity("de", "Deutsch"),

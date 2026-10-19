@@ -146,11 +146,29 @@ fun SubmissionDetailScreen(
         }
     }
 
+    val localizedStatus = when (status) {
+        "COMPLETED" -> stringResource(R.string.status_completed)
+        "IN_PROGRESS" -> stringResource(R.string.status_in_progress)
+        "PENDING" -> stringResource(R.string.status_pending)
+        else -> status
+    }
+    val baseTitle = checklist?.title ?: "Submission #${submission.id}"
+    val titleWithStatus = "$baseTitle ($localizedStatus)"
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             CenterAlignedTopAppBar(
-                title = {},
+                title = {
+                    Text(
+                        //text = titleWithStatus,
+                        text = "",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -243,7 +261,7 @@ fun SubmissionDetailScreen(
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
-                        text = checklist?.title ?: "Submission #${submission.id}",
+                        text = titleWithStatus,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Medium,

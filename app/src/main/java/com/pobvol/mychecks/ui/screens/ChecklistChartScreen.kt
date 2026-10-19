@@ -3,6 +3,7 @@ package com.pobvol.mychecks.ui.screens
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,12 +38,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistEntity
+import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.ui.ChecklistUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,6 +57,13 @@ fun ChecklistChartScreen(
     modifier: Modifier = Modifier,
 ) {
     BackHandler(onBack = onBackClick)
+
+    val systemDark = isSystemInDarkTheme()
+    val isDarkTheme = when (uiState.userSettings.themeMode) {
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+        ThemeMode.SYSTEM -> systemDark
+    }
 
     val submissions = uiState.allSubmissions.filter { it.checklistid == checklist.id }
         .sortedBy { it.date }
@@ -122,13 +132,61 @@ fun ChecklistChartScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         } else {
-                            SubmissionsLineChart(data = submissionsPerDay)
+                            SubmissionsLineChart(
+                                data = submissionsPerDay,
+                                isDarkTheme = isDarkTheme
+                            )
                         }
                     }
                 }
             }
 
-            // 2. If 2 number questions exist, plot Series 1 and Series 2 values per submission
+            // 2. New Single-Series Numeric Value Chart (Shown if >= 1 number question exists)
+            if (numberQuestions.isNotEmpty()) {
+                val q1 = numberQuestions[0]
+
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Numeric Value: ${q1.title}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            val singleSeriesData = submissions.map { sub ->
+                                val subAnswers =
+                                    uiState.answers.filter { it.submissionid == sub.id }
+                                val v1 =
+                                    subAnswers.find { it.questionid == q1.id }?.value?.toDoubleOrNull()
+                                        ?: 0.0
+                                Pair(sub.date.ifBlank { "Sub #${sub.id}" }, v1)
+                            }
+
+                            if (singleSeriesData.isEmpty()) {
+                                Text(
+                                    text = "No submission answers recorded.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            } else {
+                                SingleSeriesLineChart(
+                                    data = singleSeriesData,
+                                    isDarkTheme = isDarkTheme
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 3. If >= 2 number questions exist, plot Dual-Series chart
             if (numberQuestions.size >= 2) {
                 val q1 = numberQuestions[0]
                 val q2 = numberQuestions[1]
@@ -173,7 +231,7 @@ fun ChecklistChartScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             } else {
-                                DualSeriesLineChart(data = seriesData)
+                                DualSeriesLineChart(data = seriesData, isDarkTheme = isDarkTheme)
                             }
                         }
                     }
@@ -183,15 +241,19 @@ fun ChecklistChartScreen(
     }
 }
 
+private fun shortDate(dateStr: String): String {
+    return if (dateStr.length >= 5) dateStr.take(5) else dateStr
+}
+
 @Composable
-fun SubmissionsLineChart(data: List<Pair<String, Int>>) {
+fun SubmissionsLineChart(data: List<Pair<String, Int>>, isDarkTheme: Boolean) {
     if (data.isEmpty()) return
     val maxCount = data.maxOfOrNull { it.second }?.toFloat() ?: 1f
     val primaryColor = MaterialTheme.colorScheme.primary
     val scrollState = rememberScrollState()
 
-    val itemWidth = 60.dp
-    val totalWidth = maxOf(300.dp, itemWidth * data.size)
+    val itemWidth = 65.dp
+    val totalWidth = maxOf(320.dp, itemWidth * data.size)
 
     Column(
         modifier = Modifier
@@ -208,11 +270,13 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>) {
                 ) {
                     val width = size.width
                     val height = size.height
-                    val stepX =
-                        if (data.size > 1) width / (data.size - 1) else if (data.size == 1) width else 0f
+                    val horizontalPadding = 36f
+                    val effectiveWidth = width - (horizontalPadding * 2f)
+                    val stepX = if (data.size > 1) effectiveWidth / (data.size - 1) else 0f
 
                     val points = data.mapIndexed { index, pair ->
-                        val x = index * stepX + (if (data.size == 1) width / 2f else 0f)
+                        val x =
+                            horizontalPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
                         val y = height - (pair.second.toFloat() / maxOf(maxCount, 1f)) * (height - 30f) - 20f
                         Offset(x, y)
                     }
@@ -229,9 +293,25 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>) {
                         drawPath(path, color = primaryColor, style = Stroke(width = 3.dp.toPx()))
                     }
 
-                    points.forEach { point ->
+                    val labelColor =
+                        if (isDarkTheme) android.graphics.Color.WHITE else android.graphics.Color.BLACK
+                    val textPaint = android.graphics.Paint().apply {
+                        color = labelColor
+                        textSize = 32f
+                        isAntiAlias = true
+                        textAlign = android.graphics.Paint.Align.CENTER
+                    }
+
+                    points.forEachIndexed { index, point ->
                         drawCircle(color = primaryColor, radius = 6.dp.toPx(), center = point)
                         drawCircle(color = Color.White, radius = 3.dp.toPx(), center = point)
+
+                        drawContext.canvas.nativeCanvas.drawText(
+                            "${data[index].second}",
+                            point.x,
+                            point.y - 28f, // increased padding-bottom from line
+                            textPaint
+                        )
                     }
                 }
 
@@ -241,18 +321,11 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>) {
                 ) {
                     data.forEach { pair ->
                         Column(
-                            modifier = Modifier.width(55.dp),
+                            modifier = Modifier.width(60.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "${pair.second}",
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Text(
-                                text = pair.first,
+                                text = shortDate(pair.first),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
@@ -267,19 +340,18 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>) {
 }
 
 @Composable
-fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>) {
+fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean) {
     if (data.isEmpty()) return
     val maxVal = maxOf(
-        data.maxOfOrNull { maxOf(it.second, it.third) } ?: 1.0,
+        data.maxOfOrNull { it.second } ?: 1.0,
         1.0
     ).toFloat()
 
-    val series1Color = Color(0xFFFFA726) // Orange
-    val series2Color = Color(0xFF29B6F6) // Blue
+    val seriesColor = Color(0xFFD4AF37) // Gold
     val scrollState = rememberScrollState()
 
-    val itemWidth = 70.dp
-    val totalWidth = maxOf(300.dp, itemWidth * data.size)
+    val itemWidth = 75.dp
+    val totalWidth = maxOf(320.dp, itemWidth * data.size)
 
     Column(
         modifier = Modifier
@@ -296,17 +368,129 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>) {
                 ) {
                     val width = size.width
                     val height = size.height
-                    val stepX =
-                        if (data.size > 1) width / (data.size - 1) else if (data.size == 1) width else 0f
+                    val horizontalPadding = 36f
+                    val effectiveWidth = width - (horizontalPadding * 2f)
+                    val stepX = if (data.size > 1) effectiveWidth / (data.size - 1) else 0f
+
+                    val points = data.mapIndexed { index, pair ->
+                        val x =
+                            horizontalPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
+                        val y = height - (pair.second.toFloat() / maxVal) * (height - 40f) - 20f
+                        Offset(x, y)
+                    }
+
+                    if (points.size > 1) {
+                        val path = Path().apply {
+                            moveTo(points.first().x, points.first().y)
+                            for (i in 0 until points.size - 1) {
+                                val p1 = points[i]
+                                val p2 = points[i + 1]
+                                cubicTo(
+                                    (p1.x + p2.x) / 2f,
+                                    p1.y,
+                                    (p1.x + p2.x) / 2f,
+                                    p2.y,
+                                    p2.x,
+                                    p2.y
+                                )
+                            }
+                        }
+                        drawPath(path, color = seriesColor, style = Stroke(width = 3.dp.toPx()))
+                    }
+
+                    val labelColor = if (isDarkTheme) android.graphics.Color.rgb(
+                        212,
+                        175,
+                        55
+                    ) else android.graphics.Color.BLACK
+                    val textPaint = android.graphics.Paint().apply {
+                        color = labelColor
+                        textSize = 32f
+                        isAntiAlias = true
+                        textAlign = android.graphics.Paint.Align.CENTER
+                    }
+
+                    points.forEachIndexed { index, point ->
+                        drawCircle(color = seriesColor, radius = 6.dp.toPx(), center = point)
+                        drawCircle(color = Color.White, radius = 3.dp.toPx(), center = point)
+
+                        drawContext.canvas.nativeCanvas.drawText(
+                            "${data[index].second}",
+                            point.x,
+                            point.y - 28f, // increased padding-bottom from line
+                            textPaint
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    data.forEach { pair ->
+                        Column(
+                            modifier = Modifier.width(70.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = shortDate(pair.first),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme: Boolean) {
+    if (data.isEmpty()) return
+    val maxVal = maxOf(
+        data.maxOfOrNull { maxOf(it.second, it.third) } ?: 1.0,
+        1.0
+    ).toFloat()
+
+    val series1Color = Color(0xFFD4AF37) // Gold
+    val series2Color = Color(0xFF29B6F6) // Blue
+    val scrollState = rememberScrollState()
+
+    val itemWidth = 75.dp
+    val totalWidth = maxOf(320.dp, itemWidth * data.size)
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(scrollState)
+    ) {
+        Box(modifier = Modifier.width(totalWidth)) {
+            Column {
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(8.dp)
+                ) {
+                    val width = size.width
+                    val height = size.height
+                    val horizontalPadding = 36f
+                    val effectiveWidth = width - (horizontalPadding * 2f)
+                    val stepX = if (data.size > 1) effectiveWidth / (data.size - 1) else 0f
 
                     val points1 = data.mapIndexed { index, triple ->
-                        val x = index * stepX + (if (data.size == 1) width / 2f else 0f)
+                        val x =
+                            horizontalPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
                         val y = height - (triple.second.toFloat() / maxVal) * (height - 40f) - 20f
                         Offset(x, y)
                     }
 
                     val points2 = data.mapIndexed { index, triple ->
-                        val x = index * stepX + (if (data.size == 1) width / 2f else 0f)
+                        val x =
+                            horizontalPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
                         val y = height - (triple.third.toFloat() / maxVal) * (height - 40f) - 20f
                         Offset(x, y)
                     }
@@ -335,13 +519,51 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>) {
                         drawPath(path2, color = series2Color, style = Stroke(width = 3.dp.toPx()))
                     }
 
-                    points1.forEach { point ->
+                    val labelColor1 = if (isDarkTheme) android.graphics.Color.rgb(
+                        212,
+                        175,
+                        55
+                    ) else android.graphics.Color.BLACK
+                    val labelColor2 = if (isDarkTheme) android.graphics.Color.rgb(
+                        41,
+                        182,
+                        246
+                    ) else android.graphics.Color.BLACK
+
+                    val textPaint1 = android.graphics.Paint().apply {
+                        color = labelColor1
+                        textSize = 32f
+                        isAntiAlias = true
+                        textAlign = android.graphics.Paint.Align.CENTER
+                    }
+                    val textPaint2 = android.graphics.Paint().apply {
+                        color = labelColor2
+                        textSize = 32f
+                        isAntiAlias = true
+                        textAlign = android.graphics.Paint.Align.CENTER
+                    }
+
+                    points1.forEachIndexed { index, point ->
                         drawCircle(color = series1Color, radius = 6.dp.toPx(), center = point)
                         drawCircle(color = Color.White, radius = 3.dp.toPx(), center = point)
+
+                        drawContext.canvas.nativeCanvas.drawText(
+                            "${data[index].second}",
+                            point.x,
+                            point.y - 32f, // increased padding-bottom for upper line
+                            textPaint1
+                        )
                     }
-                    points2.forEach { point ->
+                    points2.forEachIndexed { index, point ->
                         drawCircle(color = series2Color, radius = 6.dp.toPx(), center = point)
                         drawCircle(color = Color.White, radius = 3.dp.toPx(), center = point)
+
+                        drawContext.canvas.nativeCanvas.drawText(
+                            "${data[index].third}",
+                            point.x,
+                            point.y + 40f, // increased padding-bottom for lower line
+                            textPaint2
+                        )
                     }
                 }
 
@@ -351,27 +573,11 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>) {
                 ) {
                     data.forEach { triple ->
                         Column(
-                            modifier = Modifier.width(65.dp),
+                            modifier = Modifier.width(70.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "S1: ${triple.second}",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = series1Color,
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Text(
-                                text = "S2: ${triple.third}",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = series2Color,
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Text(
-                                text = triple.first,
+                                text = shortDate(triple.first),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,

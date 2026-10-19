@@ -208,4 +208,14 @@
     <string name="msg_submission_in_progress">Submission saved as In Progress</string>
     <string name="msg_sql_export_saved">SQL export saved to Downloads</string>
     <string name="msg_submission_updated_in_progress">Submission updated (In Progress)</string>
+    <string name="device_id_label">Device ID</string>
+    <string name="menu">Menu</string>
+    <string name="menu_create_db_copy">Create Database Copy</string>
+    <string name="menu_import_db">Import Database</string>
+    <string name="menu_close_app">Close App</string>
+    <string name="msg_db_imported">Database imported successfully. Restarting...</string>
+    <string name="msg_db_import_failed">Failed to import database</string>
+    <string name="import_db_dialog_title">Import Database &amp; Overwrite?</string>
+    <string name="import_db_dialog_message">Importing a database backup will overwrite all current checklists, questions, and submission logs in the app. Unsaved local changes will be lost. Do you want to proceed?</string>
+    <string name="import_db_confirm_button">Import &amp; Overwrite</string>
 </resources>

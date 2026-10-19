@@ -20,10 +20,15 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.automirrored.rounded.FactCheck
 import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.Storage
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,11 +38,15 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -87,10 +96,14 @@ fun StartScreen(
     onPdfFooterTextChanged: (String) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
+    onExportDbClick: () -> Unit = {},
+    onImportDbClick: () -> Unit = {},
+    onCloseAppClick: () -> Unit = {},
     onUserMessageShown: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    var showImportWarningDialog by remember { mutableStateOf(false) }
 
     BackHandler(enabled = true) {
         // Do nothing to prevent back key on start screen
@@ -103,20 +116,96 @@ fun StartScreen(
         }
     }
 
+    if (showImportWarningDialog) {
+        AlertDialog(
+            onDismissRequest = { showImportWarningDialog = false },
+            title = {
+                Text(
+                    text = stringResource(R.string.import_db_dialog_title),
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(stringResource(R.string.import_db_dialog_message))
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showImportWarningDialog = false
+                        onImportDbClick()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(stringResource(R.string.import_db_confirm_button))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showImportWarningDialog = false },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            shape = RoundedCornerShape(20.dp)
+        )
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
+                navigationIcon = {
+                    var menuExpanded by remember { mutableStateOf(false) }
+
+                    IconButton(onClick = { menuExpanded = true }) {
+                        Icon(
+                            imageVector = Icons.Rounded.Menu,
+                            contentDescription = stringResource(R.string.menu),
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_create_db_copy)) },
+                            onClick = {
+                                menuExpanded = false
+                                onExportDbClick()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_import_db)) },
+                            onClick = {
+                                menuExpanded = false
+                                showImportWarningDialog = true
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_close_app)) },
+                            onClick = {
+                                menuExpanded = false
+                                onCloseAppClick()
+                            }
+                        )
+                    }
+                },
                 title = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        Icon(
+                        /*Icon(
                             imageVector = Icons.Rounded.Storage,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
-                        )
+                        )*/
                         Text(
                             text = "${stringResource(R.string.app_name)} v${com.pobvol.mychecks.BuildConfig.VERSION_NAME}",
                             fontWeight = FontWeight.Bold,
@@ -205,6 +294,7 @@ fun StartScreen(
         if (uiState.isSettingsDialogVisible) {
             SettingsDialog(
                 userSettings = uiState.userSettings,
+                devices = uiState.availableDevices,
                 languages = uiState.availableLanguages,
                 categories = uiState.categories,
                 onThemeModeSelected = onThemeModeSelected,

@@ -152,11 +152,28 @@ fun FillChecklistScreen(
         }
     }
 
+    val localizedStatus = when (status) {
+        "COMPLETED" -> stringResource(R.string.status_completed)
+        "IN_PROGRESS" -> stringResource(R.string.status_in_progress)
+        "PENDING" -> stringResource(R.string.status_pending)
+        else -> status
+    }
+    val titleWithStatus = "${checklist.title} ($localizedStatus)"
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             CenterAlignedTopAppBar(
-                title = {},
+                title = {
+                    Text(
+                        //text = titleWithStatus,
+                        text = "",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -244,7 +261,7 @@ fun FillChecklistScreen(
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
-                        text = checklist.title,
+                        text = titleWithStatus,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Medium,
@@ -844,7 +861,7 @@ fun AnswerQuestionItem(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
 
-                        val imageModel: Any =
+                        val imageModel: Any = remember(currentImageUri) {
                             if (currentImageUri.startsWith("content://") || currentImageUri.startsWith(
                                     "file://"
                                 )
@@ -854,6 +871,7 @@ fun AnswerQuestionItem(
                                 PdfExporter.getPictureFile(context, currentImageUri)
                                     ?: currentImageUri
                             }
+                        }
 
                         AsyncImage(
                             model = imageModel,

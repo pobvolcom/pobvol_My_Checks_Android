@@ -8,6 +8,7 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pobvol.mychecks.data.local.AppDatabase
 import com.pobvol.mychecks.data.repository.CategoryRepositoryImpl
@@ -29,6 +31,7 @@ import com.pobvol.mychecks.data.repository.ChecklistAnswerRepositoryImpl
 import com.pobvol.mychecks.data.repository.ChecklistQuestionRepositoryImpl
 import com.pobvol.mychecks.data.repository.ChecklistRepositoryImpl
 import com.pobvol.mychecks.data.repository.ChecklistSubmissionRepositoryImpl
+import com.pobvol.mychecks.data.repository.DeviceRepositoryImpl
 import com.pobvol.mychecks.data.repository.LanguageRepositoryImpl
 import com.pobvol.mychecks.data.repository.SettingsRepositoryImpl
 import com.pobvol.mychecks.data.repository.ThemeMode
@@ -43,7 +46,11 @@ import com.pobvol.mychecks.ui.screens.StartScreen
 import com.pobvol.mychecks.ui.screens.SubmissionDetailScreen
 import com.pobvol.mychecks.ui.screens.SubmissionsOverviewScreen
 import com.pobvol.mychecks.ui.theme.mychecksTheme
+import com.pobvol.mychecks.util.SqlExporter
 import com.pobvol.mychecks.util.TtsHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.nio.charset.Charset
 
 class MainActivity : AppCompatActivity() {
@@ -81,6 +88,7 @@ class MainActivity : AppCompatActivity() {
 
         val database = AppDatabase.getDatabase(applicationContext)
         val repository = ChecklistRepositoryImpl(database.checklistDao())
+        val deviceRepository = DeviceRepositoryImpl(database.deviceDao())
         val questionRepository = ChecklistQuestionRepositoryImpl(database.checklistquestionDao())
         val languageRepository = LanguageRepositoryImpl(database.languageDao())
         val settingsRepository = SettingsRepositoryImpl(applicationContext)
@@ -93,6 +101,7 @@ class MainActivity : AppCompatActivity() {
                 factory = ChecklistViewModel.Factory(
                     repository = repository,
                     questionRepository = questionRepository,
+                    deviceRepository = deviceRepository,
                     languageRepository = languageRepository,
                     settingsRepository = settingsRepository,
                     categoryRepository = categoryRepository,
@@ -294,6 +303,47 @@ class MainActivity : AppCompatActivity() {
                             onPdfFooterTextChanged = viewModel::updatePdfFooterText,
                             onAddCategory = viewModel::addCategory,
                             onDeleteCategory = viewModel::deleteCategory,
+                            onExportDbClick = {
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    val success = SqlExporter.exportDatabaseCopy(this@MainActivity)
+                                    withContext(Dispatchers.Main) {
+                                        val msg =
+                                            if (success) getString(R.string.msg_db_backup_saved) else "Failed to export database"
+                                        Toast.makeText(this@MainActivity, msg, Toast.LENGTH_LONG)
+                                            .show()
+                                    }
+                                }
+                            },
+                            onImportDbClick = {
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    val success = SqlExporter.importDatabase(this@MainActivity)
+                                    withContext(Dispatchers.Main) {
+                                        if (success) {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                R.string.msg_db_imported,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                            val intent =
+                                                packageManager.getLaunchIntentForPackage(packageName)
+                                            if (intent != null) {
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                                startActivity(intent)
+                                                Runtime.getRuntime().exit(0)
+                                            }
+                                        } else {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                R.string.msg_db_import_failed,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    }
+                                }
+                            },
+                            onCloseAppClick = {
+                                finishAffinity()
+                            },
                             onUserMessageShown = viewModel::userMessageShown,
                             modifier = Modifier.fillMaxSize(),
                         )

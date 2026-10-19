@@ -342,6 +342,26 @@ object SqlExporter {
         return false
     }
 
+    fun importDatabase(context: Context): Boolean {
+        try {
+            val dbFile = context.getDatabasePath("mychecksdb.sqlite3")
+            val dir = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                "MyChecks"
+            )
+            if (!dir.exists()) return false
+
+            val backupFiles = dir.listFiles { _, name -> name.endsWith(".sqlite3") }
+            val latestBackup = backupFiles?.maxByOrNull { it.lastModified() } ?: return false
+
+            latestBackup.copyTo(dbFile, overwrite = true)
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return false
+    }
+
     private fun escapeSql(input: String): String {
         return input.replace("'", "''")
     }

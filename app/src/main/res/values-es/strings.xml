@@ -206,4 +206,14 @@
     <string name="msg_submission_in_progress">Envío guardado como En Progreso</string>
     <string name="msg_sql_export_saved">Exportación SQL guardada en Descargas</string>
     <string name="msg_submission_updated_in_progress">Envío actualizado (En Progreso)</string>
+    <string name="device_id_label">ID de Dispositivo</string>
+    <string name="menu">Menú</string>
+    <string name="menu_create_db_copy">Crear copia de base de datos</string>
+    <string name="menu_import_db">Importar base de datos</string>
+    <string name="menu_close_app">Cerrar aplicación</string>
+    <string name="msg_db_imported">Base de datos importada. Reiniciando...</string>
+    <string name="msg_db_import_failed">Error al importar la base de datos</string>
+    <string name="import_db_dialog_title">¿Importar y sobrescribir base de datos?</string>
+    <string name="import_db_dialog_message">Al importar una copia de seguridad de la base de datos se sobrescribirán todas las listas, preguntas y registros actuales de la aplicación. Los cambios no guardados se perderán. ¿Desea continuar?</string>
+    <string name="import_db_confirm_button">Importar y sobrescribir</string>
 </resources>

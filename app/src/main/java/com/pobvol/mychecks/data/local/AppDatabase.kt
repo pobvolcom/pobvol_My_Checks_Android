@@ -8,6 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [
+        DeviceEntity::class,
         RecordEntity::class,
         LanguageEntity::class,
         CategoryEntity::class,
@@ -17,11 +18,12 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         ChecklistSubmissionEntity::class,
         ChecklistAnswerEntity::class,
     ],
-    version = 16,
+    version = 1,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
 
+    abstract fun deviceDao(): DeviceDAO
     abstract fun recordDao(): RecordDAO
     abstract fun languageDao(): LanguageDAO
     abstract fun answertypeDao(): AnswerTypeDAO
@@ -186,6 +188,9 @@ abstract class AppDatabase : RoomDatabase() {
                         object : Callback() {
                             override fun onCreate(db: SupportSQLiteDatabase) {
                                 super.onCreate(db)
+
+                                // db.execSQL("INSERT OR IGNORE INTO device (notes) VALUES ('unique device id')")
+
                                 db.execSQL("INSERT OR IGNORE INTO languages (language, title) VALUES ('de', 'Deutsch')")
                                 db.execSQL("INSERT OR IGNORE INTO languages (language, title) VALUES ('en', 'English')")
                                 db.execSQL("INSERT OR IGNORE INTO languages (language, title) VALUES ('es', 'Español')")
@@ -202,21 +207,37 @@ abstract class AppDatabase : RoomDatabase() {
                                 db.execSQL("INSERT OR IGNORE INTO categories (category, title) VALUES ('HEALTH', 'Health')")
                                 db.execSQL("INSERT OR IGNORE INTO categories (category, title) VALUES ('UVV', 'UVV')")
 
-                                db.execSQL("INSERT OR IGNORE INTO checklists (id, title, language, description, category, icon, timestamp) VALUES ('checklist-1','UVV Prüfung Flurförderzeuge','English','Beispiel für eine UVV Checkliste','UVV','',1791566533405)")
+                                db.execSQL("INSERT OR IGNORE INTO checklists (id, title, language, description, category, icon, timestamp) VALUES ('checklist-1','UVV Prüfung Flurförderzeuge','Deutsch','Beispiel für eine UVV Checkliste','UVV','',1791566533405)")
+                                db.execSQL("INSERT OR IGNORE INTO checklists (id, title, language, description, category, icon, timestamp) VALUES ('checklist-2','Blutdruckmessung','Deutsch','Beispiel für eine Blutdruckmessung','Health','',1791566533405)")
 
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-1','checklist-1',2,'Abgas','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791565513627,NULL,NULL)")
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-2','checklist-1',3,'Bereifung','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791565540674,NULL,NULL)")
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-3','checklist-1',4,'DGUV V3 Ladegerät','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791565566843,NULL,NULL)")
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-4','checklist-1',5,'Elektrische Ausrüstung','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791565590303,NULL,NULL)")
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-5','checklist-1',6,'Fahrersitz und Bedienelemente','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791565648815,NULL,NULL)")
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-6','checklist-1',7,'Gasanlage','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791565668282,NULL,NULL)")
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-7','checklist-1',8,'Hubwerk','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791565686399,NULL,NULL)")
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-8','checklist-1',9,'Hydrauliksystem','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791565707843,NULL,NULL)")
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-9','checklist-1',10,'Ketten','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791565730095,NULL,NULL)")
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-10','checklist-1',11,'Rahmen','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791565750737,NULL,NULL)")
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-11','checklist-1',13,'Plakette erteilt?','','checkbox',NULL,1,1791565490961,NULL,NULL)")
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-12','checklist-1',12,'Sicherheitsausrüstung','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791565796128,NULL,NULL)")
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('q-13','checklist-1',1,'Kunde und Flurförderzeug','Daten zu Kunde und Flurförderzeug erfassn. Diese können auch von einem NFC Tag gelesen werden, wenn das benutzte Smartphen/Tablet NFC unterstützt.','nfc',NULL,1,1791719679758,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-1','checklist-1',2,'Abgas','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-2','checklist-1',3,'Bereifung','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-3','checklist-1',4,'DGUV V3 Ladegerät','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-4','checklist-1',5,'Elektrische Ausrüstung','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-5','checklist-1',6,'Fahrersitz und Bedienelemente','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-6','checklist-1',7,'Gasanlage','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-7','checklist-1',8,'Hubwerk','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-8','checklist-1',9,'Hydrauliksystem','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-9','checklist-1',10,'Ketten','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-10','checklist-1',11,'Rahmen','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-11','checklist-1',13,'Plakette erteilt?','','checkbox',NULL,1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-12','checklist-1',12,'Sicherheitsausrüstung','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-13','checklist-1',1,'Kunde und Flurförderzeug','Daten zu Kunde und Flurförderzeug erfassn. Diese können auch von einem NFC Tag gelesen werden, wenn das benutzte Smartphen/Tablet NFC unterstützt.','nfc',NULL,1,1791566533405,NULL,NULL)")
+
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question2-1','checklist-2',1,'Wert1','','number',NULL,1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question2-2','checklist-2',2,'Wert2','','number',NULL,1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question2-3','checklist-2',3,'Puls','','number',NULL,0,1791566533405,NULL,NULL)")
+
+                                db.execSQL("INSERT OR IGNORE INTO `checklist_submissions` (`id`, `checklistid`, `status`, `inspector`, `notes`, `date`, `timestamp`) VALUES ('submission2-1','checklist-2','COMPLETED', 'Dummy', '', '10.10.2026', 1791566533405)")
+                                db.execSQL("INSERT OR IGNORE INTO `checklist_submissions` (`id`, `checklistid`, `status`, `inspector`, `notes`, `date`, `timestamp`) VALUES ('submission2-2','checklist-2','COMPLETED', 'Dummy', '', '11.10.2026', 1791566533405)")
+                                db.execSQL("INSERT OR IGNORE INTO `checklist_submissions` (`id`, `checklistid`, `status`, `inspector`, `notes`, `date`, `timestamp`) VALUES ('submission2-3','checklist-2','COMPLETED', 'Dummy', '', '12.10.2026', 1791566533405)")
+
+                                db.execSQL("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer1-1', 'submission2-1', 'question2-1', '120', '', '', 1791566533405)")
+                                db.execSQL("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer1-2', 'submission2-1', 'question2-2', '80', '', '', 1791566533405)")
+                                db.execSQL("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer2-1', 'submission2-2', 'question2-1', '125', '', '', 1791566533405)")
+                                db.execSQL("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer2-2', 'submission2-2', 'question2-2', '85', '', '', 1791566533405)")
+                                db.execSQL("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer3-1', 'submission2-3', 'question2-1', '130', '', '', 1791566533405)")
+                                db.execSQL("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer3-2', 'submission2-3', 'question2-2', '90', '', '', 1791566533405)")
 
                             }
                         },

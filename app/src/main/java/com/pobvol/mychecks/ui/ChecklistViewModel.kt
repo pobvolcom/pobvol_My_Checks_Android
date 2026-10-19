@@ -11,18 +11,21 @@ import com.pobvol.mychecks.data.local.ChecklistAnswerEntity
 import com.pobvol.mychecks.data.local.ChecklistEntity
 import com.pobvol.mychecks.data.local.ChecklistQuestionEntity
 import com.pobvol.mychecks.data.local.ChecklistSubmissionEntity
+import com.pobvol.mychecks.data.local.DeviceEntity
 import com.pobvol.mychecks.data.local.LanguageEntity
 import com.pobvol.mychecks.data.repository.CategoryRepository
 import com.pobvol.mychecks.data.repository.ChecklistAnswerRepository
 import com.pobvol.mychecks.data.repository.ChecklistQuestionRepository
 import com.pobvol.mychecks.data.repository.ChecklistRepository
 import com.pobvol.mychecks.data.repository.ChecklistSubmissionRepository
+import com.pobvol.mychecks.data.repository.DeviceRepository
 import com.pobvol.mychecks.data.repository.LanguageRepository
 import com.pobvol.mychecks.data.repository.SettingsRepository
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.data.repository.UserSettings
 import com.pobvol.mychecks.util.PdfExporter
 import com.pobvol.mychecks.util.SqlExporter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,6 +42,7 @@ import java.util.Locale
 class ChecklistViewModel(
     private val repository: ChecklistRepository,
     private val questionRepository: ChecklistQuestionRepository,
+    private val deviceRepository: DeviceRepository,
     private val languageRepository: LanguageRepository,
     private val settingsRepository: SettingsRepository,
     private val categoryRepository: CategoryRepository,
@@ -46,6 +50,18 @@ class ChecklistViewModel(
     private val answerRepository: ChecklistAnswerRepository,
     private val context: Context,
 ) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            try {
+                val devices = deviceRepository.getDeviceId().first()
+                if (devices.isEmpty()) {
+                    deviceRepository.insertDevice(DeviceEntity(notes = "unique device id"))
+                }
+            } catch (_: Exception) {
+            }
+        }
+    }
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -178,16 +194,33 @@ class ChecklistViewModel(
         val categories: List<CategoryEntity>,
         val isVisible: Boolean,
         val isPdfVisible: Boolean,
+        val devices: List<DeviceEntity>,
     )
 
     private val _settingsState = combine(
-        settingsRepository.userSettings,
-        languageRepository.getAllLanguages(),
-        categoryRepository.getAllCategories(),
-        _isSettingsDialogVisible,
-        _isPdfSettingsVisible,
-    ) { settings, languages, categories, isVisible, isPdfVisible ->
-        SettingsState(settings, languages, categories, isVisible, isPdfVisible)
+        combine(
+            settingsRepository.userSettings,
+            languageRepository.getAllLanguages(),
+            categoryRepository.getAllCategories(),
+        ) { settings, languages, categories ->
+            Triple(settings, languages, categories)
+        },
+        combine(
+            _isSettingsDialogVisible,
+            _isPdfSettingsVisible,
+            deviceRepository.getDeviceId(),
+        ) { isVisible, isPdfVisible, devices ->
+            Triple(isVisible, isPdfVisible, devices)
+        }
+    ) { t1, t2 ->
+        SettingsState(
+            settings = t1.first,
+            languages = t1.second,
+            categories = t1.third,
+            isVisible = t2.first,
+            isPdfVisible = t2.second,
+            devices = t2.third,
+        )
     }
 
     private data class SubmissionState(
@@ -291,6 +324,7 @@ class ChecklistViewModel(
             questionToDelete = dialogState.questionToDelete,
             userMessage = dialogState.message,
             userSettings = globalState.settingsState.settings,
+            availableDevices = globalState.settingsState.devices,
             availableLanguages = globalState.settingsState.languages,
             isSettingsDialogVisible = globalState.settingsState.isVisible,
             isPdfSettingsVisible = globalState.settingsState.isPdfVisible,
@@ -502,7 +536,7 @@ class ChecklistViewModel(
         status: String = "IN_PROGRESS",
         answers: Map<String, AnswerInput>
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val formattedDate = date.ifBlank {
                 SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
             }
@@ -607,7 +641,7 @@ class ChecklistViewModel(
     }
 
     fun exportSubmissionPdf(context: Context, submission: ChecklistSubmissionEntity) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val checklist = repository.getAllChecklists().first().find { it.id == submission.checklistid }
             val questions = questionRepository.getChecklistQuestionsByChecklistId(submission.checklistid).first()
             val answers = answerRepository.getAllChecklistAnswers().first()
@@ -624,7 +658,7 @@ class ChecklistViewModel(
     }
 
     fun exportSubmissionSql(context: Context, submission: ChecklistSubmissionEntity) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val checklist = repository.getAllChecklists().first().find { it.id == submission.checklistid }
             val questions = questionRepository.getChecklistQuestionsByChecklistId(submission.checklistid).first()
             val answers = answerRepository.getAllChecklistAnswers().first()
@@ -659,7 +693,7 @@ class ChecklistViewModel(
         updatedSubmission: ChecklistSubmissionEntity,
         updatedAnswersMap: Map<String, AnswerInput>,
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val questions = questionRepository.getChecklistQuestionsByChecklistId(updatedSubmission.checklistid).first()
             val allRequiredAnswered = questions.all { q ->
                 !q.required || updatedAnswersMap[q.id]?.value?.isNotBlank() == true
@@ -994,6 +1028,7 @@ class ChecklistViewModel(
         fun Factory(
             repository: ChecklistRepository,
             questionRepository: ChecklistQuestionRepository,
+            deviceRepository: DeviceRepository,
             languageRepository: LanguageRepository,
             settingsRepository: SettingsRepository,
             categoryRepository: CategoryRepository,
@@ -1007,6 +1042,7 @@ class ChecklistViewModel(
                     return ChecklistViewModel(
                         repository,
                         questionRepository,
+                        deviceRepository,
                         languageRepository,
                         settingsRepository,
                         categoryRepository,

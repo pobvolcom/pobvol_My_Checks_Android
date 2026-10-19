@@ -318,6 +318,7 @@ fun QuestionItem(
                             imageVector = Icons.Rounded.ArrowUpward,
                             contentDescription = stringResource(R.string.move_question_up),
                             tint = if (!isFirst) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.38f),
+                            modifier = Modifier.size(28.dp),
                         )
                     }
                     IconButton(
@@ -328,6 +329,7 @@ fun QuestionItem(
                             imageVector = Icons.Rounded.ArrowDownward,
                             contentDescription = stringResource(R.string.move_question_down),
                             tint = if (!isLast) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.38f),
+                            modifier = Modifier.size(28.dp),
                         )
                     }
                     Surface(
@@ -351,6 +353,7 @@ fun QuestionItem(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = stringResource(R.string.edit_question),
                             tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(28.dp),
                         )
                     }
                     IconButton(onClick = onDeleteClick) {
@@ -358,6 +361,7 @@ fun QuestionItem(
                             imageVector = Icons.Rounded.Delete,
                             contentDescription = stringResource(R.string.delete),
                             tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(28.dp),
                         )
                     }
                 }

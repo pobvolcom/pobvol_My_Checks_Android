@@ -4,9 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -118,7 +116,7 @@ fun ChecklistItem(
                     imageVector = Icons.Rounded.Schedule,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(18.dp),
                 )
                 Text(
                     text = formatTimestamp(checklist.timestamp),
@@ -128,26 +126,24 @@ fun ChecklistItem(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                // Left group: Edit checklist, answers (questions), and delete
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp)
-                        .padding(0.dp, 10.dp, 0.dp, 0.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(0.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-
                     // EDIT CHECKLIST
                     IconButton(onClick = { onEditClick(checklist) }) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = stringResource(R.string.edit_checklist),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
-                            modifier = Modifier
-                                .fillMaxSize()
+                            modifier = Modifier.size(28.dp)
                         )
                     }
 
@@ -157,8 +153,7 @@ fun ChecklistItem(
                             imageVector = Icons.Rounded.QuestionAnswer,
                             contentDescription = stringResource(R.string.manage_questions),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier
-                                .fillMaxSize()
+                            modifier = Modifier.size(28.dp)
                         )
                     }
 
@@ -168,11 +163,16 @@ fun ChecklistItem(
                             imageVector = Icons.Rounded.Delete,
                             contentDescription = stringResource(R.string.delete_checklist),
                             tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier
-                                .fillMaxSize()
+                            modifier = Modifier.size(28.dp)
                         )
                     }
+                }
 
+                // Right group: Chart (if submissionCount > 2) and Submissions/Fill
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(0.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     // CHART (Only if more than 2 submissions are recorded)
                     if (submissionCount > 2) {
                         IconButton(onClick = { onChartClick(checklist) }) {
@@ -180,8 +180,7 @@ fun ChecklistItem(
                                 imageVector = Icons.Rounded.Analytics,
                                 contentDescription = stringResource(R.string.checklist_analytics),
                                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                modifier = Modifier
-                                    .fillMaxSize()
+                                modifier = Modifier.size(28.dp)
                             )
                         }
                     }
@@ -192,12 +191,9 @@ fun ChecklistItem(
                             imageVector = Icons.AutoMirrored.Rounded.Assignment,
                             contentDescription = stringResource(R.string.fill_checklist),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier
-                                .fillMaxSize()
+                            modifier = Modifier.size(28.dp)
                         )
                     }
-
-
                 }
             }
         }

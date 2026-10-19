@@ -5,6 +5,7 @@ import com.pobvol.mychecks.data.local.ChecklistAnswerEntity
 import com.pobvol.mychecks.data.local.ChecklistEntity
 import com.pobvol.mychecks.data.local.ChecklistQuestionEntity
 import com.pobvol.mychecks.data.local.ChecklistSubmissionEntity
+import com.pobvol.mychecks.data.local.DeviceEntity
 import com.pobvol.mychecks.data.local.LanguageEntity
 import com.pobvol.mychecks.data.repository.UserSettings
 
@@ -23,6 +24,7 @@ data class ChecklistUiState(
     val userMessage: String? = null,
     val userSettings: UserSettings = UserSettings(),
     val availableLanguages: List<LanguageEntity> = emptyList(),
+    val availableDevices: List<DeviceEntity> = emptyList(),
     val isSettingsDialogVisible: Boolean = false,
     val isPdfSettingsVisible: Boolean = false,
     val isHelpVisible: Boolean = false,

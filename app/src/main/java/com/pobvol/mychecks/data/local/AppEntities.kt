@@ -6,6 +6,13 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.UUID
 
+/* table: device */
+@Entity(tableName = "device")
+data class DeviceEntity(
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
+    val notes: String?
+)
 
 /* table: records */
 @Entity(tableName = "records")

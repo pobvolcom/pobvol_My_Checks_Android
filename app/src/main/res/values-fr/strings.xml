@@ -206,4 +206,14 @@
     <string name="msg_submission_in_progress">Soumission enregistrée comme En cours</string>
     <string name="msg_sql_export_saved">Exportation SQL enregistrée dans Téléchargements</string>
     <string name="msg_submission_updated_in_progress">Soumission mise à jour (En cours)</string>
+    <string name="device_id_label">"ID d'appareil"</string>
+    <string name="menu">Menu</string>
+    <string name="menu_create_db_copy">Créer une copie de la base de données</string>
+    <string name="menu_import_db">Importer la base de données</string>
+    <string name="menu_close_app">"Fermer l'application"</string>
+    <string name="msg_db_imported">Base de données importée. Redémarrage...</string>
+    <string name="msg_db_import_failed">"Échec de l'importation de la base de données"</string>
+    <string name="import_db_dialog_title">Importer et écraser la base de données ?</string>
+    <string name="import_db_dialog_message">"L'importation d'une sauvegarde de base de données écrasera toutes les listes, questions et journaux actuels dans l'application. Les modifications non enregistrées seront perdues. Voulez-vous continuer ?"</string>
+    <string name="import_db_confirm_button">Importer et écraser</string>
 </resources>

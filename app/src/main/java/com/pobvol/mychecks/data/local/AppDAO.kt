@@ -29,6 +29,15 @@ interface RecordDAO {
 }
 
 @Dao
+interface DeviceDAO {
+    @Query("SELECT * FROM device ORDER BY id ASC")
+    fun getDeviceId(): Flow<List<DeviceEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDevice(device: DeviceEntity): Long
+}
+
+@Dao
 interface LanguageDAO {
 
     @Query("SELECT * FROM languages ORDER BY language ASC")
