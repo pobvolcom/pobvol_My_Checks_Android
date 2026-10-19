@@ -327,7 +327,7 @@ object PdfExporter {
             settings.includeUnansweredQuestions || hasAnswer
         }
 
-        sortedQuestions.forEach { q ->
+        sortedQuestions.forEachIndexed { qIndex, q ->
             val answerEntity = answersMap[q.id]
             val answerValueRaw = answerEntity?.value ?: context.getString(R.string.pdf_no_answer)
             val answerValue = if (q.type.lowercase() == "checkbox") {
@@ -346,7 +346,8 @@ object PdfExporter {
             val isRightAlignedType =
                 qType in listOf("number", "combobox", "multiselect", "checkbox")
 
-            var blockHeight = 0f
+            val linePadding = if (qIndex > 0) 18f else 0f
+            var blockHeight = linePadding
             val hasTitle = settings.pdfIncludeQuestionTitle
             val hasValue = settings.pdfIncludeAnswerValue
             val hasNotes = settings.pdfIncludeAnswerNotes && !answerEntity?.notes.isNullOrBlank()
@@ -401,14 +402,17 @@ object PdfExporter {
                 }
             }
 
-            if (blockHeight > 0f) {
+            if (blockHeight > linePadding) {
                 if (y + blockHeight > bottomLimit) {
                     startNewPage()
                 }
 
-                // Draw thin divider line between answers/questions
-                canvas.drawLine(startX, y - 4f, endX, y - 4f, dividerPaint)
-                y += 2f
+                // Draw thin divider line between answers/questions (skip for first question since header divider was already drawn)
+                if (qIndex > 0) {
+                    y += 6f
+                    canvas.drawLine(startX, y, endX, y, dividerPaint)
+                    y += 12f
+                }
 
                 paint.textSize = 11f
 
