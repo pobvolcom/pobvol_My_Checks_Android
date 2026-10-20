@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +37,11 @@ class SettingsRepositoryImpl(
         val COMPACT_ANSWER_LAYOUT = booleanPreferencesKey("compact_answer_layout")
         val PDF_FOOTER_TEXT = stringPreferencesKey("pdf_footer_text")
         val AUDIO_FEEDBACK = booleanPreferencesKey("audio_feedback")
+        val FTP_SERVER = stringPreferencesKey("ftp_server")
+        val FTP_PORT = intPreferencesKey("ftp_port")
+        val FTP_USE_TLS = booleanPreferencesKey("ftp_use_tls")
+        val FTP_USER = stringPreferencesKey("ftp_user")
+        val FTP_PASSWORD = stringPreferencesKey("ftp_password")
     }
 
     override val userSettings: Flow<UserSettings> = context.dataStore.data
@@ -77,6 +83,11 @@ class SettingsRepositoryImpl(
             val compactAnswerLayout = preferences[PreferencesKeys.COMPACT_ANSWER_LAYOUT] ?: false
             val pdfFooterText = preferences[PreferencesKeys.PDF_FOOTER_TEXT] ?: ""
             val audioFeedback = preferences[PreferencesKeys.AUDIO_FEEDBACK] ?: false
+            val ftpServer = preferences[PreferencesKeys.FTP_SERVER] ?: ""
+            val ftpPort = preferences[PreferencesKeys.FTP_PORT] ?: 21
+            val ftpUseTls = preferences[PreferencesKeys.FTP_USE_TLS] ?: false
+            val ftpUser = preferences[PreferencesKeys.FTP_USER] ?: ""
+            val ftpPassword = preferences[PreferencesKeys.FTP_PASSWORD] ?: ""
 
             UserSettings(
                 themeMode = themeMode,
@@ -98,6 +109,11 @@ class SettingsRepositoryImpl(
                 compactAnswerLayout = compactAnswerLayout,
                 pdfFooterText = pdfFooterText,
                 audioFeedback = audioFeedback,
+                ftpServer = ftpServer,
+                ftpPort = ftpPort,
+                ftpUseTls = ftpUseTls,
+                ftpUser = ftpUser,
+                ftpPassword = ftpPassword,
             )
         }
 
@@ -220,6 +236,36 @@ class SettingsRepositoryImpl(
     override suspend fun updateAudioFeedback(audioFeedback: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.AUDIO_FEEDBACK] = audioFeedback
+        }
+    }
+
+    override suspend fun updateFtpServer(server: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.FTP_SERVER] = server
+        }
+    }
+
+    override suspend fun updateFtpPort(port: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.FTP_PORT] = port
+        }
+    }
+
+    override suspend fun updateFtpUseTls(useTls: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.FTP_USE_TLS] = useTls
+        }
+    }
+
+    override suspend fun updateFtpUser(user: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.FTP_USER] = user
+        }
+    }
+
+    override suspend fun updateFtpPassword(password: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.FTP_PASSWORD] = password
         }
     }
 }

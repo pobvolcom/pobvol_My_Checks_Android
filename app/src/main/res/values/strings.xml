@@ -218,4 +218,13 @@
     <string name="import_db_dialog_title">Import Database &amp; Overwrite?</string>
     <string name="import_db_dialog_message">Importing a database backup will overwrite all current checklists, questions, and submission logs in the app. Unsaved local changes will be lost. Do you want to proceed?</string>
     <string name="import_db_confirm_button">Import &amp; Overwrite</string>
+    <string name="configure_ftp_settings">Configure FTP Server...</string>
+    <string name="ftp_settings_title">FTP / FTPS Server Settings</string>
+    <string name="ftp_server_label">Server / Host</string>
+    <string name="ftp_port_label">Port</string>
+    <string name="ftp_use_tls_label">FTP over TLS (FTPS)</string>
+    <string name="ftp_user_label">Username</string>
+    <string name="ftp_password_label">Password</string>
+    <string name="data_transfer">Data Transfer</string>
+    <string name="data_transfer_subtitle">Configure FTP server and send inspection data.</string>
 </resources>

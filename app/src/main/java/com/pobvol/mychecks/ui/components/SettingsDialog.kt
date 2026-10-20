@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.CategoryEntity
-import com.pobvol.mychecks.data.local.DeviceEntity
 import com.pobvol.mychecks.data.local.LanguageEntity
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.data.repository.UserSettings
@@ -47,7 +46,6 @@ import com.pobvol.mychecks.ui.theme.mychecksTheme
 @Composable
 fun SettingsDialog(
     userSettings: UserSettings,
-    devices: List<DeviceEntity>,
     languages: List<LanguageEntity>,
     categories: List<CategoryEntity> = emptyList(),
     onThemeModeSelected: (ThemeMode) -> Unit,
@@ -146,25 +144,6 @@ fun SettingsDialog(
                         label = { Text(stringResource(R.string.user_name)) },
                         placeholder = { Text(stringResource(R.string.enter_user_name)) },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-
-                // 3c. Device ID Display
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = stringResource(R.string.device_id_label),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    val deviceId = devices.firstOrNull()?.id ?: "N/A"
-                    OutlinedTextField(
-                        value = deviceId,
-                        onValueChange = {},
-                        readOnly = true,
-                        singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
@@ -303,7 +282,6 @@ fun SettingsDialogPreview() {
                 userName = "John Doe",
                 audioFeedback = true,
             ),
-            devices = listOf(DeviceEntity("device-uuid-1234", "Primary Device")),
             languages = listOf(
                 LanguageEntity("en", "English"),
                 LanguageEntity("de", "Deutsch"),

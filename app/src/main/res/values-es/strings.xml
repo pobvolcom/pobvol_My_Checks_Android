@@ -216,4 +216,13 @@
     <string name="import_db_dialog_title">¿Importar y sobrescribir base de datos?</string>
     <string name="import_db_dialog_message">Al importar una copia de seguridad de la base de datos se sobrescribirán todas las listas, preguntas y registros actuales de la aplicación. Los cambios no guardados se perderán. ¿Desea continuar?</string>
     <string name="import_db_confirm_button">Importar y sobrescribir</string>
+    <string name="configure_ftp_settings">Configurar servidor FTP...</string>
+    <string name="ftp_settings_title">Configuración de servidor FTP / FTPS</string>
+    <string name="ftp_server_label">Servidor / Host</string>
+    <string name="ftp_port_label">Puerto</string>
+    <string name="ftp_use_tls_label">FTP sobre TLS (FTPS)</string>
+    <string name="ftp_user_label">Nombre de usuario</string>
+    <string name="ftp_password_label">Contraseña</string>
+    <string name="data_transfer">Transferencia de datos</string>
+    <string name="data_transfer_subtitle">Configurar servidor FTP y enviar datos de inspección.</string>
 </resources>

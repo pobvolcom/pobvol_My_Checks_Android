@@ -1,26 +1,94 @@
 package com.pobvol.mychecks.util
 
 import android.content.ClipData
-import android.content.ContentUris
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
 import androidx.core.content.FileProvider
+import com.pobvol.mychecks.data.local.AppDatabase
 import com.pobvol.mychecks.data.local.ChecklistAnswerEntity
 import com.pobvol.mychecks.data.local.ChecklistEntity
 import com.pobvol.mychecks.data.local.ChecklistQuestionEntity
 import com.pobvol.mychecks.data.local.ChecklistSubmissionEntity
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.io.File
-import java.io.FileOutputStream
+import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 object SqlExporter {
+
+    fun getDeviceFolder(context: Context): String {
+        val deviceId = try {
+            val db = AppDatabase.getDatabase(context)
+            runBlocking {
+                db.deviceDao().getDeviceId().first().firstOrNull()?.id ?: "device_default"
+            }
+        } catch (_: Exception) {
+            "device_default"
+        }
+        return "pobvolMyChecks/$deviceId"
+    }
+
+    fun getPdfRootDir(context: Context): File {
+        val dir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "pobvolMyChecks"
+        )
+        if (!dir.exists()) dir.mkdirs()
+        return dir
+    }
+
+    fun getDeviceRootDir(context: Context): File {
+        val dir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            getDeviceFolder(context)
+        )
+        if (!dir.exists()) dir.mkdirs()
+        return dir
+    }
+
+    fun getSendDir(context: Context): File {
+        val dir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "${getDeviceFolder(context)}/send"
+        )
+        if (!dir.exists()) dir.mkdirs()
+        return dir
+    }
+
+    fun getReceiveDir(context: Context): File {
+        val dir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "${getDeviceFolder(context)}/receive"
+        )
+        if (!dir.exists()) dir.mkdirs()
+        return dir
+    }
+
+    fun createSha256ChecksumFile(
+        context: Context,
+        targetFileName: String,
+        fileBytes: ByteArray,
+        targetDir: File
+    ) {
+        try {
+            val digest = MessageDigest.getInstance("SHA-256")
+            val hashBytes = digest.digest(fileBytes)
+            val hexString = hashBytes.joinToString("") { "%02x".format(it) }
+            val checksumContent = "$hexString  $targetFileName\n"
+            val checksumFileName = "$targetFileName.sha256"
+
+            if (!targetDir.exists()) targetDir.mkdirs()
+            val checksumFile = File(targetDir, checksumFileName)
+            checksumFile.writeText(checksumContent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     fun exportSubmissionAsSql(
         context: Context,
@@ -30,55 +98,19 @@ object SqlExporter {
         answers: List<ChecklistAnswerEntity>,
     ) {
         val submissionAnswers = answers.filter { it.submissionid == submission.id }
-
         val sqlBuilder = buildSqlString(submission, checklist, questions, submissionAnswers)
         val fileName = "Submission_${submission.id}_Export.sql"
         var fileUri: Uri?
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val resolver = context.contentResolver
-                val relativePath = Environment.DIRECTORY_DOWNLOADS
-                val projection = arrayOf(MediaStore.MediaColumns._ID)
-                val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND ${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
-                val selectionArgs = arrayOf(fileName, "$relativePath/")
+            val sqlBytes = sqlBuilder.toString().toByteArray()
+            val sendDir = getSendDir(context)
+            val file = File(sendDir, fileName)
+            file.writeBytes(sqlBytes)
+            createSha256ChecksumFile(context, fileName, sqlBytes, sendDir)
 
-                resolver.query(
-                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    null
-                )?.use { cursor ->
-                    if (cursor.moveToFirst()) {
-                        val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
-                        val id = cursor.getLong(idColumn)
-                        val existingUri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id)
-                        resolver.delete(existingUri, null, null)
-                    }
-                }
-
-                val contentValues = ContentValues().apply {
-                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                    put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
-                }
-                fileUri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-                if (fileUri != null) {
-                    resolver.openOutputStream(fileUri)?.use { outputStream ->
-                        outputStream.write(sqlBuilder.toString().toByteArray())
-                    }
-                }
-            } else {
-                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                if (!downloadsDir.exists()) downloadsDir.mkdirs()
-                val file = File(downloadsDir, fileName)
-                FileOutputStream(file).use { fos ->
-                    fos.write(sqlBuilder.toString().toByteArray())
-                }
-                val authority = "${context.packageName}.fileprovider"
-                fileUri = FileProvider.getUriForFile(context, authority, file)
-            }
+            val authority = "${context.packageName}.fileprovider"
+            fileUri = FileProvider.getUriForFile(context, authority, file)
 
             if (fileUri != null) {
                 val intent = Intent(Intent.ACTION_SEND).apply {
@@ -111,47 +143,11 @@ object SqlExporter {
         val fileName = "Submission_${submission.id}_Export.sql"
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val resolver = context.contentResolver
-                val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/MyChecks"
-                val projection = arrayOf(MediaStore.MediaColumns._ID)
-                val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND ${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
-                val selectionArgs = arrayOf(fileName, "$relativePath/")
-
-                resolver.query(
-                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    null
-                )?.use { cursor ->
-                    if (cursor.moveToFirst()) {
-                        val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
-                        val id = cursor.getLong(idColumn)
-                        val existingUri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id)
-                        resolver.delete(existingUri, null, null)
-                    }
-                }
-
-                val contentValues = ContentValues().apply {
-                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                    put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
-                }
-                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-                if (uri != null) {
-                    resolver.openOutputStream(uri)?.use { os ->
-                        os.write(sqlBuilder.toString().toByteArray())
-                    }
-                }
-            } else {
-                val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "MyChecks")
-                if (!dir.exists()) dir.mkdirs()
-                val file = File(dir, fileName)
-                FileOutputStream(file).use { fos ->
-                    fos.write(sqlBuilder.toString().toByteArray())
-                }
-            }
+            val sqlBytes = sqlBuilder.toString().toByteArray()
+            val sendDir = getSendDir(context)
+            val file = File(sendDir, fileName)
+            file.writeBytes(sqlBytes)
+            createSha256ChecksumFile(context, fileName, sqlBytes, sendDir)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -229,60 +225,16 @@ object SqlExporter {
         val fileName = "Submission_${submissionId}_Answer_${answerId}_Picture.jpg"
         try {
             val inputStream = context.contentResolver.openInputStream(sourceUri) ?: return null
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val resolver = context.contentResolver
-                val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/MyChecks"
-                val projection = arrayOf(MediaStore.MediaColumns._ID)
-                val selection =
-                    "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND ${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
-                val selectionArgs = arrayOf(fileName, "$relativePath/")
-
-                resolver.query(
-                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    null
-                )?.use { cursor ->
-                    if (cursor.moveToFirst()) {
-                        val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
-                        val id = cursor.getLong(idColumn)
-                        val existingUri = ContentUris.withAppendedId(
-                            MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-                            id
-                        )
-                        resolver.delete(existingUri, null, null)
-                    }
-                }
-
-                val contentValues = ContentValues().apply {
-                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
-                }
-                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-                if (uri != null) {
-                    resolver.openOutputStream(uri)?.use { outputStream ->
-                        inputStream.copyTo(outputStream)
-                    }
-                }
-            } else {
-                val dir = File(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                    "MyChecks"
-                )
-                if (!dir.exists()) dir.mkdirs()
-                val file = File(dir, fileName)
-                FileOutputStream(file).use { fos ->
-                    inputStream.copyTo(fos)
-                }
-            }
-            inputStream.close()
+            val picBytes = inputStream.readBytes()
+            val sendDir = getSendDir(context)
+            val targetFile = File(sendDir, fileName)
+            targetFile.writeBytes(picBytes)
+            createSha256ChecksumFile(context, fileName, picBytes, sendDir)
             return fileName
         } catch (e: Exception) {
             e.printStackTrace()
-            return null
         }
+        return null
     }
 
     fun exportDatabaseCopy(context: Context): Boolean {
@@ -290,52 +242,16 @@ object SqlExporter {
             val dbFile = context.getDatabasePath("mychecksdb.sqlite3")
             if (!dbFile.exists()) return false
 
-            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val timeStamp =
+                SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.getDefault()).format(Date())
             val fileName = "MyChecks_Database_Backup_$timeStamp.sqlite3"
+            val dbBytes = dbFile.readBytes()
+            val rootDir = getPdfRootDir(context)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val resolver = context.contentResolver
-                val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/MyChecks"
-                val projection = arrayOf(MediaStore.MediaColumns._ID)
-                val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND ${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
-                val selectionArgs = arrayOf(fileName, "$relativePath/")
-
-                resolver.query(
-                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    null
-                )?.use { cursor ->
-                    if (cursor.moveToFirst()) {
-                        val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
-                        val id = cursor.getLong(idColumn)
-                        val existingUri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id)
-                        resolver.delete(existingUri, null, null)
-                    }
-                }
-
-                val contentValues = ContentValues().apply {
-                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                    put(MediaStore.MediaColumns.MIME_TYPE, "application/octet-stream")
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
-                }
-                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-                if (uri != null) {
-                    resolver.openOutputStream(uri)?.use { fos ->
-                        dbFile.inputStream().use { fis ->
-                            fis.copyTo(fos)
-                        }
-                    }
-                    return true
-                }
-            } else {
-                val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "MyChecks")
-                if (!dir.exists()) dir.mkdirs()
-                val targetFile = File(dir, fileName)
-                dbFile.copyTo(targetFile, overwrite = true)
-                return true
-            }
+            val targetFile = File(rootDir, fileName)
+            targetFile.writeBytes(dbBytes)
+            createSha256ChecksumFile(context, fileName, dbBytes, rootDir)
+            return true
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -345,15 +261,26 @@ object SqlExporter {
     fun importDatabase(context: Context): Boolean {
         try {
             val dbFile = context.getDatabasePath("mychecksdb.sqlite3")
-            val dir = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                "MyChecks"
-            )
-            if (!dir.exists()) return false
+            val backupFiles = mutableListOf<File>()
 
-            val backupFiles = dir.listFiles { _, name -> name.endsWith(".sqlite3") }
-            val latestBackup = backupFiles?.maxByOrNull { it.lastModified() } ?: return false
+            val downloadsDir =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val pobvolDir = File(downloadsDir, "pobvolMyChecks")
+            if (pobvolDir.exists()) {
+                pobvolDir.walkTopDown().forEach { file ->
+                    if (file.isFile && file.name.endsWith(".sqlite3")) {
+                        backupFiles.add(file)
+                    }
+                }
+            }
+            val oldDir = File(downloadsDir, "MyChecks")
+            if (oldDir.exists()) {
+                oldDir.listFiles { _, name -> name.endsWith(".sqlite3") }?.let {
+                    backupFiles.addAll(it)
+                }
+            }
 
+            val latestBackup = backupFiles.maxByOrNull { it.lastModified() } ?: return false
             latestBackup.copyTo(dbFile, overwrite = true)
             return true
         } catch (e: Exception) {

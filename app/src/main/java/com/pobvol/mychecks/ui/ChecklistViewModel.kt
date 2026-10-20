@@ -144,6 +144,9 @@ class ChecklistViewModel(
     private val _isPdfSettingsVisible = MutableStateFlow(false)
     val isPdfSettingsVisible: StateFlow<Boolean> = _isPdfSettingsVisible.asStateFlow()
 
+    private val _isSendDataVisible = MutableStateFlow(false)
+    val isSendDataVisible: StateFlow<Boolean> = _isSendDataVisible.asStateFlow()
+
     private var questionsJob: Job? = null
 
     private data class DialogState(
@@ -194,6 +197,7 @@ class ChecklistViewModel(
         val categories: List<CategoryEntity>,
         val isVisible: Boolean,
         val isPdfVisible: Boolean,
+        val isSendDataVisible: Boolean,
         val devices: List<DeviceEntity>,
     )
 
@@ -202,23 +206,25 @@ class ChecklistViewModel(
             settingsRepository.userSettings,
             languageRepository.getAllLanguages(),
             categoryRepository.getAllCategories(),
-        ) { settings, languages, categories ->
-            Triple(settings, languages, categories)
+            _isSettingsDialogVisible,
+        ) { settings, languages, categories, isVisible ->
+            Triple(settings, languages, Pair(categories, isVisible))
         },
         combine(
-            _isSettingsDialogVisible,
             _isPdfSettingsVisible,
+            _isSendDataVisible,
             deviceRepository.getDeviceId(),
-        ) { isVisible, isPdfVisible, devices ->
-            Triple(isVisible, isPdfVisible, devices)
+        ) { isPdfVisible, isSendDataVisible, devices ->
+            Triple(isPdfVisible, isSendDataVisible, devices)
         }
     ) { t1, t2 ->
         SettingsState(
             settings = t1.first,
             languages = t1.second,
-            categories = t1.third,
-            isVisible = t2.first,
-            isPdfVisible = t2.second,
+            categories = t1.third.first,
+            isVisible = t1.third.second,
+            isPdfVisible = t2.first,
+            isSendDataVisible = t2.second,
             devices = t2.third,
         )
     }
@@ -328,6 +334,7 @@ class ChecklistViewModel(
             availableLanguages = globalState.settingsState.languages,
             isSettingsDialogVisible = globalState.settingsState.isVisible,
             isPdfSettingsVisible = globalState.settingsState.isPdfVisible,
+            isSendDataVisible = globalState.settingsState.isSendDataVisible,
             categories = globalState.settingsState.categories,
             selectedChecklistToAnswer = dialogState.selectedChecklistToAnswer,
             submissions = filteredSubmissions,
@@ -1018,6 +1025,34 @@ class ChecklistViewModel(
 
     fun updatePdfFooterText(text: String) {
         viewModelScope.launch { settingsRepository.updatePdfFooterText(text) }
+    }
+
+    fun openSendDataScreen() {
+        _isSendDataVisible.value = true
+    }
+
+    fun closeSendDataScreen() {
+        _isSendDataVisible.value = false
+    }
+
+    fun updateFtpServer(server: String) {
+        viewModelScope.launch { settingsRepository.updateFtpServer(server) }
+    }
+
+    fun updateFtpPort(port: Int) {
+        viewModelScope.launch { settingsRepository.updateFtpPort(port) }
+    }
+
+    fun updateFtpUseTls(useTls: Boolean) {
+        viewModelScope.launch { settingsRepository.updateFtpUseTls(useTls) }
+    }
+
+    fun updateFtpUser(user: String) {
+        viewModelScope.launch { settingsRepository.updateFtpUser(user) }
+    }
+
+    fun updateFtpPassword(password: String) {
+        viewModelScope.launch { settingsRepository.updateFtpPassword(password) }
     }
 
     fun userMessageShown() {

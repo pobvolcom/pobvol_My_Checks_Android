@@ -402,7 +402,6 @@ fun ChecklistListScreen(
         if (uiState.isSettingsDialogVisible) {
             SettingsDialog(
                 userSettings = uiState.userSettings,
-                devices = uiState.availableDevices,
                 languages = uiState.availableLanguages,
                 categories = uiState.categories,
                 onThemeModeSelected = onThemeModeSelected,

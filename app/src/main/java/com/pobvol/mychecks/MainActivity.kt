@@ -41,6 +41,7 @@ import com.pobvol.mychecks.ui.screens.ChecklistListScreen
 import com.pobvol.mychecks.ui.screens.ChecklistQuestionsScreen
 import com.pobvol.mychecks.ui.screens.FillChecklistScreen
 import com.pobvol.mychecks.ui.screens.HelpScreen
+import com.pobvol.mychecks.ui.screens.SendDataScreen
 import com.pobvol.mychecks.ui.screens.SplashScreen
 import com.pobvol.mychecks.ui.screens.StartScreen
 import com.pobvol.mychecks.ui.screens.SubmissionDetailScreen
@@ -153,6 +154,17 @@ class MainActivity : AppCompatActivity() {
                         HelpScreen(
                             uiState = uiState,
                             onBackClick = viewModel::closeHelpScreen,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else if (uiState.isSendDataVisible) {
+                        SendDataScreen(
+                            uiState = uiState,
+                            onBackClick = viewModel::closeSendDataScreen,
+                            onFtpServerChanged = viewModel::updateFtpServer,
+                            onFtpPortChanged = viewModel::updateFtpPort,
+                            onFtpUseTlsChanged = viewModel::updateFtpUseTls,
+                            onFtpUserChanged = viewModel::updateFtpUser,
+                            onFtpPasswordChanged = viewModel::updateFtpPassword,
                             modifier = Modifier.fillMaxSize(),
                         )
                     } else if (selectedSubmissionToEdit != null) {
@@ -277,6 +289,7 @@ class MainActivity : AppCompatActivity() {
                             uiState = uiState,
                             onOpenChecklistsClick = viewModel::openChecklistsScreen,
                             onOpenSubmissionsClick = viewModel::openSubmissionsOverview,
+                            onOpenSendDataClick = viewModel::openSendDataScreen,
                             onOpenSettingsClick = viewModel::openSettingsDialog,
                             onOpenHelpClick = viewModel::openHelpScreen,
                             onDismissSettingsDialog = viewModel::dismissSettingsDialog,

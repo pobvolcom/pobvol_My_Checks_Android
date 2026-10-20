@@ -216,4 +216,13 @@
     <string name="import_db_dialog_title">Importer et écraser la base de données ?</string>
     <string name="import_db_dialog_message">"L'importation d'une sauvegarde de base de données écrasera toutes les listes, questions et journaux actuels dans l'application. Les modifications non enregistrées seront perdues. Voulez-vous continuer ?"</string>
     <string name="import_db_confirm_button">Importer et écraser</string>
+    <string name="configure_ftp_settings">Configurer le serveur FTP...</string>
+    <string name="ftp_settings_title">Paramètres du serveur FTP / FTPS</string>
+    <string name="ftp_server_label">Serveur / Hôte</string>
+    <string name="ftp_port_label">Port</string>
+    <string name="ftp_use_tls_label">FTP sur TLS (FTPS)</string>
+    <string name="ftp_user_label">"Nom d'utilisateur"</string>
+    <string name="ftp_password_label">Mot de passe</string>
+    <string name="data_transfer">Transfert de données</string>
+    <string name="data_transfer_subtitle">Configurer le serveur FTP et envoyer les données de contrôle.</string>
 </resources>

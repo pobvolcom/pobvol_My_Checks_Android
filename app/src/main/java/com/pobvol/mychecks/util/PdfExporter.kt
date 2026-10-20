@@ -1,8 +1,6 @@
 package com.pobvol.mychecks.util
 
 import android.content.ClipData
-import android.content.ContentUris
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -13,9 +11,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
-import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistAnswerEntity
@@ -37,12 +33,20 @@ object PdfExporter {
 
     fun getPictureFile(context: Context, imagePath: String?): File? {
         if (imagePath.isNullOrBlank()) return null
-        val dir = File(
+        val sendDir = SqlExporter.getSendDir(context)
+        val file = File(sendDir, imagePath)
+        if (file.exists()) return file
+
+        val rootDir = SqlExporter.getPdfRootDir(context)
+        val rootFile = File(rootDir, imagePath)
+        if (rootFile.exists()) return rootFile
+
+        val oldDir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
             "MyChecks"
         )
-        val file = File(dir, imagePath)
-        if (file.exists()) return file
+        val oldFile = File(oldDir, imagePath)
+        if (oldFile.exists()) return oldFile
 
         val cacheFile = File(context.cacheDir, imagePath)
         if (cacheFile.exists()) return cacheFile
@@ -409,7 +413,7 @@ object PdfExporter {
 
                 // Draw thin divider line between answers/questions (skip for first question since header divider was already drawn)
                 if (qIndex > 0) {
-                    y += 6f
+                    //y += 6f
                     canvas.drawLine(startX, y, endX, y, dividerPaint)
                     y += 12f
                 }
@@ -417,6 +421,8 @@ object PdfExporter {
                 paint.textSize = 11f
 
                 if (isRightAlignedType) {
+
+                    //Print TITLE
                     if (hasTitle) {
                         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                         paint.color = Color.BLACK
@@ -424,6 +430,7 @@ object PdfExporter {
                         canvas.drawText(questionTitle, startX, y, paint)
                     }
 
+                    //Print VALUE(S)
                     if (hasValue) {
                         val valX = startX + 280f
                         if (qType == "multiselect") {
@@ -562,7 +569,7 @@ object PdfExporter {
                     }
                 }
 
-                y += 8f
+                //y += 8f
             }
         }
 
@@ -638,51 +645,20 @@ object PdfExporter {
             answers,
             settings
         )
+        val rootDir = SqlExporter.getPdfRootDir(context)
         val fileName = "Submission_${submission.id}_Report.pdf"
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val resolver = context.contentResolver
-                val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/MyChecks"
-                val projection = arrayOf(MediaStore.MediaColumns._ID)
-                val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND ${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
-                val selectionArgs = arrayOf(fileName, "$relativePath/")
+            val baos = java.io.ByteArrayOutputStream()
+            pdfDocument.writeTo(baos)
+            val pdfBytes = baos.toByteArray()
 
-                resolver.query(
-                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    null
-                )?.use { queryCursor ->
-                    if (queryCursor.moveToFirst()) {
-                        val idColumn = queryCursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
-                        val id = queryCursor.getLong(idColumn)
-                        val existingUri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id)
-                        resolver.delete(existingUri, null, null)
-                    }
-                }
-
-                val contentValues = ContentValues().apply {
-                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                    put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
-                }
-                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-                if (uri != null) {
-                    resolver.openOutputStream(uri)?.use { fos ->
-                        pdfDocument.writeTo(fos)
-                    }
-                }
-            } else {
-                val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "MyChecks")
-                if (!dir.exists()) dir.mkdirs()
-                val file = File(dir, fileName)
-                FileOutputStream(file).use { fos ->
-                    pdfDocument.writeTo(fos)
-                }
-            }
-        } catch (_: Exception) {
+            if (!rootDir.exists()) rootDir.mkdirs()
+            val file = File(rootDir, fileName)
+            file.writeBytes(pdfBytes)
+            SqlExporter.createSha256ChecksumFile(context, fileName, pdfBytes, rootDir)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         pdfDocument.close()
     }

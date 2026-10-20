@@ -75,6 +75,7 @@ fun StartScreen(
     onDismissSettingsDialog: () -> Unit,
     onOpenPdfSettingsClick: () -> Unit = {},
     onDismissPdfSettingsDialog: () -> Unit = {},
+    onOpenSendDataClick: () -> Unit = {},
     onThemeModeSelected: (ThemeMode) -> Unit,
     onLanguageSelected: (String) -> Unit,
     onUserNameChanged: (String) -> Unit,
@@ -279,6 +280,21 @@ fun StartScreen(
                 onClick = onOpenSubmissionsClick,
             )
 
+            // Box 3: Data transfer
+            // erst einmal deaktiv bis geklaert ist, wie der Datenaustausch erfolgen soll
+            // Zur Zeit wird mit Google Drive Syn getestet
+            /*
+            StartOptionBox(
+                title = stringResource(R.string.data_transfer),
+                subtitle = stringResource(R.string.data_transfer_subtitle),
+                icon = Icons.AutoMirrored.Rounded.Send,
+                badgeCount = 0,
+                badgeLabel = "",
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                onClick = onOpenSendDataClick,
+            )*/
+
             Text(
                 text = stringResource(R.string.copyright_text),
                 fontWeight = FontWeight.Normal,
@@ -294,7 +310,6 @@ fun StartScreen(
         if (uiState.isSettingsDialogVisible) {
             SettingsDialog(
                 userSettings = uiState.userSettings,
-                devices = uiState.availableDevices,
                 languages = uiState.availableLanguages,
                 categories = uiState.categories,
                 onThemeModeSelected = onThemeModeSelected,
@@ -380,17 +395,19 @@ fun StartOptionBox(
                     }
                 }
 
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = contentColor.copy(alpha = 0.2f),
-                ) {
-                    Text(
-                        text = "$badgeLabel: $badgeCount ",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = contentColor,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    )
+                if (badgeLabel.isNotBlank()) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = contentColor.copy(alpha = 0.2f),
+                    ) {
+                        Text(
+                            text = "$badgeLabel: $badgeCount ",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = contentColor,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        )
+                    }
                 }
             }
 
