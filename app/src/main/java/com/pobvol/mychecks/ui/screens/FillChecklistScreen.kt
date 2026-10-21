@@ -680,7 +680,11 @@ fun AnswerQuestionItem(
                                         } else {
                                             selectedSet - option
                                         }
-                                        onAnswerChanged(newSet.joinToString(", "))
+                                        val orderedResult =
+                                            optionsList.filter { newSet.contains(it) } + newSet.filter {
+                                                !optionsList.contains(it)
+                                            }
+                                        onAnswerChanged(orderedResult.joinToString(", "))
                                     },
                                 )
                                 Text(

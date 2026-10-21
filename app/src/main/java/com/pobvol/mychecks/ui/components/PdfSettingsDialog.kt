@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +54,7 @@ fun PdfSettingsDialog(
     onPdfIncludeAnswerPictureChanged: (Boolean) -> Unit,
     onPdfCompactAnswerLayoutChanged: (Boolean) -> Unit,
     onPdfFooterTextChanged: (String) -> Unit,
+    onPdfTemplateVersionChanged: (String) -> Unit = {},
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -86,6 +88,34 @@ fun PdfSettingsDialog(
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.back),
+                        )
+                    }
+                }
+
+                // Template Version Selector
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = stringResource(R.string.pdf_template_version_label),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        val isV1 = userSettings.pdfTemplateVersion != "V2"
+                        FilterChip(
+                            selected = isV1,
+                            onClick = { onPdfTemplateVersionChanged("V1") },
+                            label = { Text(stringResource(R.string.pdf_template_v1)) },
+                            modifier = Modifier.weight(1f),
+                        )
+                        FilterChip(
+                            selected = !isV1,
+                            onClick = { onPdfTemplateVersionChanged("V2") },
+                            label = { Text(stringResource(R.string.pdf_template_v2)) },
+                            modifier = Modifier.weight(1f),
                         )
                     }
                 }

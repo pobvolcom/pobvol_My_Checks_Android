@@ -281,6 +281,7 @@ class MainActivity : AppCompatActivity() {
                             onPdfIncludeAnswerPictureChanged = viewModel::updatePdfIncludeAnswerPicture,
                             onPdfCompactAnswerLayoutChanged = viewModel::updatePdfCompactAnswerLayout,
                             onPdfFooterTextChanged = viewModel::updatePdfFooterText,
+                            onPdfTemplateVersionChanged = viewModel::updatePdfTemplateVersion,
                             onAddCategory = viewModel::addCategory,
                             modifier = Modifier.fillMaxSize(),
                         )
@@ -314,6 +315,7 @@ class MainActivity : AppCompatActivity() {
                             onPdfIncludeAnswerPictureChanged = viewModel::updatePdfIncludeAnswerPicture,
                             onPdfCompactAnswerLayoutChanged = viewModel::updatePdfCompactAnswerLayout,
                             onPdfFooterTextChanged = viewModel::updatePdfFooterText,
+                            onPdfTemplateVersionChanged = viewModel::updatePdfTemplateVersion,
                             onAddCategory = viewModel::addCategory,
                             onDeleteCategory = viewModel::deleteCategory,
                             onExportDbClick = {

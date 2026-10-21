@@ -36,6 +36,7 @@ class SettingsRepositoryImpl(
         val PDF_INCLUDE_ANSWER_PICTURE = booleanPreferencesKey("pdf_include_answer_picture")
         val COMPACT_ANSWER_LAYOUT = booleanPreferencesKey("compact_answer_layout")
         val PDF_FOOTER_TEXT = stringPreferencesKey("pdf_footer_text")
+        val PDF_TEMPLATE_VERSION = stringPreferencesKey("pdf_template_version")
         val AUDIO_FEEDBACK = booleanPreferencesKey("audio_feedback")
         val FTP_SERVER = stringPreferencesKey("ftp_server")
         val FTP_PORT = intPreferencesKey("ftp_port")
@@ -82,6 +83,7 @@ class SettingsRepositoryImpl(
                 preferences[PreferencesKeys.PDF_INCLUDE_ANSWER_PICTURE] ?: true
             val compactAnswerLayout = preferences[PreferencesKeys.COMPACT_ANSWER_LAYOUT] ?: false
             val pdfFooterText = preferences[PreferencesKeys.PDF_FOOTER_TEXT] ?: ""
+            val pdfTemplateVersion = preferences[PreferencesKeys.PDF_TEMPLATE_VERSION] ?: "V1"
             val audioFeedback = preferences[PreferencesKeys.AUDIO_FEEDBACK] ?: false
             val ftpServer = preferences[PreferencesKeys.FTP_SERVER] ?: ""
             val ftpPort = preferences[PreferencesKeys.FTP_PORT] ?: 21
@@ -108,6 +110,7 @@ class SettingsRepositoryImpl(
                 pdfIncludeAnswerPicture = pdfIncludeAnswerPicture,
                 compactAnswerLayout = compactAnswerLayout,
                 pdfFooterText = pdfFooterText,
+                pdfTemplateVersion = pdfTemplateVersion,
                 audioFeedback = audioFeedback,
                 ftpServer = ftpServer,
                 ftpPort = ftpPort,
@@ -230,6 +233,12 @@ class SettingsRepositoryImpl(
     override suspend fun updatePdfFooterText(text: String) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.PDF_FOOTER_TEXT] = text
+        }
+    }
+
+    override suspend fun updatePdfTemplateVersion(version: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.PDF_TEMPLATE_VERSION] = version
         }
     }
 

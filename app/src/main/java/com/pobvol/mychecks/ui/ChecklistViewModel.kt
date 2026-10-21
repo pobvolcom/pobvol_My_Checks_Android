@@ -55,8 +55,17 @@ class ChecklistViewModel(
         viewModelScope.launch {
             try {
                 val devices = deviceRepository.getDeviceId().first()
+                val deviceModel = android.os.Build.MODEL ?: "Android Device"
+                val userName = settingsRepository.userSettings.first().userName.ifBlank { "User" }
+                val deviceNotes = "$deviceModel-$userName"
+
                 if (devices.isEmpty()) {
-                    deviceRepository.insertDevice(DeviceEntity(notes = "unique device id"))
+                    deviceRepository.insertDevice(DeviceEntity(notes = deviceNotes))
+                } else {
+                    val existing = devices.first()
+                    if (existing.notes != deviceNotes) {
+                        deviceRepository.insertDevice(existing.copy(notes = deviceNotes))
+                    }
                 }
             } catch (_: Exception) {
             }
@@ -705,9 +714,13 @@ class ChecklistViewModel(
             val allRequiredAnswered = questions.all { q ->
                 !q.required || updatedAnswersMap[q.id]?.value?.isNotBlank() == true
             }
-            val status = if (allRequiredAnswered) "COMPLETED" else "IN_PROGRESS"
+            val finalStatus = if (updatedSubmission.status.equals(
+                    "COMPLETED",
+                    ignoreCase = true
+                ) || allRequiredAnswered
+            ) "COMPLETED" else updatedSubmission.status
 
-            val finalSubmission = updatedSubmission.copy(status = status)
+            val finalSubmission = updatedSubmission.copy(status = finalStatus)
             submissionRepository.updateChecklistSubmission(finalSubmission)
 
             val existingAnswers = answerRepository.getChecklistAnswersListBySubmissionId(finalSubmission.id)
@@ -764,7 +777,7 @@ class ChecklistViewModel(
                 }
             }
 
-            if (status == "COMPLETED") {
+            if (finalSubmission.status.equals("COMPLETED", ignoreCase = true)) {
                 val checklist = repository.getAllChecklists().first().find { it.id == finalSubmission.checklistid }
                 val allAnswers = answerRepository.getAllChecklistAnswers().first()
                 val settings = settingsRepository.userSettings.first()
@@ -958,6 +971,16 @@ class ChecklistViewModel(
     fun updateUserName(userName: String) {
         viewModelScope.launch {
             settingsRepository.updateUserName(userName)
+            try {
+                val devices = deviceRepository.getDeviceId().first()
+                val deviceModel = android.os.Build.MODEL ?: "Android Device"
+                val effectiveUser = userName.ifBlank { "User" }
+                val deviceNotes = "$deviceModel-$effectiveUser"
+                devices.firstOrNull()?.let { device ->
+                    deviceRepository.insertDevice(device.copy(notes = deviceNotes))
+                }
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -1025,6 +1048,10 @@ class ChecklistViewModel(
 
     fun updatePdfFooterText(text: String) {
         viewModelScope.launch { settingsRepository.updatePdfFooterText(text) }
+    }
+
+    fun updatePdfTemplateVersion(version: String) {
+        viewModelScope.launch { settingsRepository.updatePdfTemplateVersion(version) }
     }
 
     fun openSendDataScreen() {

@@ -227,4 +227,10 @@
     <string name="ftp_password_label">Password</string>
     <string name="data_transfer">Data Transfer</string>
     <string name="data_transfer_subtitle">Configure FTP server and send inspection data.</string>
+    <string name="gdrive_sync_title">Google Drive Sync</string>
+    <string name="gdrive_sync_button">Sync with Google Drive</string>
+    <string name="gdrive_sync_info">Synchronize local folder pobvolMyChecks with Google Drive.</string>
+    <string name="pdf_template_version_label">PDF Template Version</string>
+    <string name="pdf_template_v1">PDF Template V1 (Standard Report)</string>
+    <string name="pdf_template_v2">PDF Template V2 (Formal Service Report)</string>
 </resources>

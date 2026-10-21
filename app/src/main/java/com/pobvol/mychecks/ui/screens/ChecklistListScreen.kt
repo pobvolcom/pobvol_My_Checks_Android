@@ -113,6 +113,7 @@ fun ChecklistListScreen(
     onPdfIncludeAnswerPictureChanged: (Boolean) -> Unit = {},
     onPdfCompactAnswerLayoutChanged: (Boolean) -> Unit = {},
     onPdfFooterTextChanged: (String) -> Unit = {},
+    onPdfTemplateVersionChanged: (String) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
     modifier: Modifier = Modifier
@@ -433,6 +434,7 @@ fun ChecklistListScreen(
                 onPdfIncludeAnswerPictureChanged = onPdfIncludeAnswerPictureChanged,
                 onPdfCompactAnswerLayoutChanged = onPdfCompactAnswerLayoutChanged,
                 onPdfFooterTextChanged = onPdfFooterTextChanged,
+                onPdfTemplateVersionChanged = onPdfTemplateVersionChanged,
                 onDismissRequest = onDismissPdfSettingsDialog,
             )
         }

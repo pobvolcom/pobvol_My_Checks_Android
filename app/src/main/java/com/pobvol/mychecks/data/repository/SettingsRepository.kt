@@ -28,6 +28,7 @@ data class UserSettings(
     val compactAnswerLayout: Boolean = false,
     val pdfFooterText: String = "",
     val audioFeedback: Boolean = false,
+    val pdfTemplateVersion: String = "V1",
     val ftpServer: String = "",
     val ftpPort: Int = 21,
     val ftpUseTls: Boolean = false,
@@ -55,6 +56,7 @@ interface SettingsRepository {
     suspend fun updatePdfIncludeAnswerPicture(include: Boolean)
     suspend fun updatePdfCompactAnswerLayout(compact: Boolean)
     suspend fun updatePdfFooterText(text: String)
+    suspend fun updatePdfTemplateVersion(version: String)
     suspend fun updateAudioFeedback(audioFeedback: Boolean)
     suspend fun updateFtpServer(server: String)
     suspend fun updateFtpPort(port: Int)

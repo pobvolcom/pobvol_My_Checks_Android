@@ -225,4 +225,10 @@
     <string name="ftp_password_label">Contraseña</string>
     <string name="data_transfer">Transferencia de datos</string>
     <string name="data_transfer_subtitle">Configurar servidor FTP y enviar datos de inspección.</string>
+    <string name="gdrive_sync_title">Sincronización con Google Drive</string>
+    <string name="gdrive_sync_button">Sincronizar con Google Drive</string>
+    <string name="gdrive_sync_info">Sincronizar carpeta local pobvolMyChecks con Google Drive.</string>
+    <string name="pdf_template_version_label">Versión de plantilla PDF</string>
+    <string name="pdf_template_v1">Plantilla PDF V1 (Informe estándar)</string>
+    <string name="pdf_template_v2">Plantilla PDF V2 (Informe de servicio formal)</string>
 </resources>

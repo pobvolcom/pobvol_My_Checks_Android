@@ -69,6 +69,33 @@ object SqlExporter {
         return dir
     }
 
+    fun getSqlDir(context: Context): File {
+        val dir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "${getDeviceFolder(context)}/sql"
+        )
+        if (!dir.exists()) dir.mkdirs()
+        return dir
+    }
+
+    fun getPdfDir(context: Context): File {
+        val dir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "${getDeviceFolder(context)}/pdf"
+        )
+        if (!dir.exists()) dir.mkdirs()
+        return dir
+    }
+
+    fun getDbBackupDir(context: Context): File {
+        val dir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "${getDeviceFolder(context)}/dbbackup"
+        )
+        if (!dir.exists()) dir.mkdirs()
+        return dir
+    }
+
     fun createSha256ChecksumFile(
         context: Context,
         targetFileName: String,
@@ -98,16 +125,17 @@ object SqlExporter {
         answers: List<ChecklistAnswerEntity>,
     ) {
         val submissionAnswers = answers.filter { it.submissionid == submission.id }
-        val sqlBuilder = buildSqlString(submission, checklist, questions, submissionAnswers)
+        val sqlBuilder =
+            buildSqlString(context, submission, checklist, questions, submissionAnswers)
         val fileName = "Submission_${submission.id}_Export.sql"
         var fileUri: Uri?
 
         try {
             val sqlBytes = sqlBuilder.toString().toByteArray()
-            val sendDir = getSendDir(context)
-            val file = File(sendDir, fileName)
+            val sqlDir = getSqlDir(context)
+            val file = File(sqlDir, fileName)
             file.writeBytes(sqlBytes)
-            createSha256ChecksumFile(context, fileName, sqlBytes, sendDir)
+            createSha256ChecksumFile(context, fileName, sqlBytes, sqlDir)
 
             val authority = "${context.packageName}.fileprovider"
             fileUri = FileProvider.getUriForFile(context, authority, file)
@@ -139,30 +167,49 @@ object SqlExporter {
         answers: List<ChecklistAnswerEntity>,
     ) {
         val submissionAnswers = answers.filter { it.submissionid == submission.id }
-        val sqlBuilder = buildSqlString(submission, checklist, questions, submissionAnswers)
+        val sqlBuilder =
+            buildSqlString(context, submission, checklist, questions, submissionAnswers)
         val fileName = "Submission_${submission.id}_Export.sql"
 
         try {
             val sqlBytes = sqlBuilder.toString().toByteArray()
-            val sendDir = getSendDir(context)
-            val file = File(sendDir, fileName)
+            val sqlDir = getSqlDir(context)
+            val file = File(sqlDir, fileName)
             file.writeBytes(sqlBytes)
-            createSha256ChecksumFile(context, fileName, sqlBytes, sendDir)
+            createSha256ChecksumFile(context, fileName, sqlBytes, sqlDir)
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     private fun buildSqlString(
+        context: Context,
         submission: ChecklistSubmissionEntity,
         checklist: ChecklistEntity?,
         questions: List<ChecklistQuestionEntity>,
         submissionAnswers: List<ChecklistAnswerEntity>,
     ): StringBuilder {
+        val devices = try {
+            val db = AppDatabase.getDatabase(context)
+            runBlocking {
+                db.deviceDao().getDeviceId().first()
+            }
+        } catch (_: Exception) {
+            emptyList()
+        }
+
         return StringBuilder().apply {
             append("-- pobvol Open Checklists SQL Export\n")
             append("-- Submission ID: ${submission.id}\n")
             append("-- Generated at: ${Date()}\n\n")
+
+            if (devices.isNotEmpty()) {
+                append("-- Device\n")
+                devices.forEach { d ->
+                    append("INSERT OR REPLACE INTO `device` (`id`, `notes`) VALUES (\n")
+                    append("  '${d.id}', '${escapeSql(d.notes ?: "")}'\n);\n\n")
+                }
+            }
 
             if (checklist != null) {
                 append("INSERT OR REPLACE INTO `checklists` (`id`, `title`, `language`, `description`, `category`, `icon`, `timestamp`) VALUES (\n")
@@ -229,7 +276,6 @@ object SqlExporter {
             val sendDir = getSendDir(context)
             val targetFile = File(sendDir, fileName)
             targetFile.writeBytes(picBytes)
-            createSha256ChecksumFile(context, fileName, picBytes, sendDir)
             return fileName
         } catch (e: Exception) {
             e.printStackTrace()
@@ -246,11 +292,10 @@ object SqlExporter {
                 SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.getDefault()).format(Date())
             val fileName = "MyChecks_Database_Backup_$timeStamp.sqlite3"
             val dbBytes = dbFile.readBytes()
-            val rootDir = getPdfRootDir(context)
+            val backupDir = getDbBackupDir(context)
 
-            val targetFile = File(rootDir, fileName)
+            val targetFile = File(backupDir, fileName)
             targetFile.writeBytes(dbBytes)
-            createSha256ChecksumFile(context, fileName, dbBytes, rootDir)
             return true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -262,6 +307,13 @@ object SqlExporter {
         try {
             val dbFile = context.getDatabasePath("mychecksdb.sqlite3")
             val backupFiles = mutableListOf<File>()
+
+            val dbBackupDir = getDbBackupDir(context)
+            if (dbBackupDir.exists()) {
+                dbBackupDir.listFiles { _, name -> name.endsWith(".sqlite3") }?.let {
+                    backupFiles.addAll(it)
+                }
+            }
 
             val downloadsDir =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)

@@ -95,6 +95,7 @@ fun StartScreen(
     onPdfIncludeAnswerPictureChanged: (Boolean) -> Unit = {},
     onPdfCompactAnswerLayoutChanged: (Boolean) -> Unit = {},
     onPdfFooterTextChanged: (String) -> Unit = {},
+    onPdfTemplateVersionChanged: (String) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
     onExportDbClick: () -> Unit = {},
@@ -281,8 +282,6 @@ fun StartScreen(
             )
 
             // Box 3: Data transfer
-            // erst einmal deaktiv bis geklaert ist, wie der Datenaustausch erfolgen soll
-            // Zur Zeit wird mit Google Drive Syn getestet
             /*
             StartOptionBox(
                 title = stringResource(R.string.data_transfer),
@@ -341,6 +340,7 @@ fun StartScreen(
                 onPdfIncludeAnswerPictureChanged = onPdfIncludeAnswerPictureChanged,
                 onPdfCompactAnswerLayoutChanged = onPdfCompactAnswerLayoutChanged,
                 onPdfFooterTextChanged = onPdfFooterTextChanged,
+                onPdfTemplateVersionChanged = onPdfTemplateVersionChanged,
                 onDismissRequest = onDismissPdfSettingsDialog,
             )
         }

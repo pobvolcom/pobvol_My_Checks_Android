@@ -225,4 +225,10 @@
     <string name="ftp_password_label">Passwort</string>
     <string name="data_transfer">Datenübertragung</string>
     <string name="data_transfer_subtitle">FTP-Server konfigurieren und Prüfdaten übertragen.</string>
+    <string name="gdrive_sync_title">Google Drive Sync</string>
+    <string name="gdrive_sync_button">Mit Google Drive synchronisieren</string>
+    <string name="gdrive_sync_info">Lokalen Ordner pobvolMyChecks mit Google Drive synchronisieren.</string>
+    <string name="pdf_template_version_label">PDF Template-Version</string>
+    <string name="pdf_template_v1">PDF Template V1 (Standard-Bericht)</string>
+    <string name="pdf_template_v2">PDF Template V2 (Formeller Servicebericht)</string>
 </resources>
