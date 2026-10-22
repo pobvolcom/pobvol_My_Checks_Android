@@ -366,6 +366,8 @@ object PdfExporter {
             )
         }
 
+        // Hier kommt die Trennlinie zwischen Header und erstem Checkpunkt
+
         if (hasHeaderContent) {
             y += 10f
             paint.color = Color.LTGRAY
@@ -411,11 +413,13 @@ object PdfExporter {
             if (hasValue && !isRightAlignedType) {
                 paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                 paint.textSize = 11f
-                val answerContent = if (qType in listOf("nfc", "qr-code", "qrcode")) {
-                    "    $answerValue"
-                } else {
-                    val answerLabel = context.getString(R.string.pdf_answer_label, "").trimEnd()
-                    "    $answerLabel $answerValue"
+                val answerContent =
+                    if (qType in listOf("nfc", "qr-code", "qrcode")) {
+                        "    $answerValue"
+                    } else {
+                        val answerLabel = context.getString(R.string.pdf_answer_label, "").trimEnd()
+                        //"    $answerLabel $answerValue"
+                        "    $answerValue"
                 }
                 leftBlockHeight += calculateMultiLineHeight(
                     answerContent,
