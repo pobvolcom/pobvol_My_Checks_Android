@@ -126,7 +126,7 @@
             &#x1F517;&nbsp;<a href="#_checkpoints" target="_self">Checkpoints / Questions</a><br>
             &#x1F517;&nbsp;<a href="#_executions" target="_self">Performing Inspections & Recording Results</a><br>
             &#x1F517;&nbsp;<a href="#_reports" target="_self">My Logs & PDF and SQL Export</a><br>
-            &#x1F517;&nbsp;<a href="#_data_security" target="_self">Data Security & SQL Export</a><br>
+            &#x1F517;&nbsp;<a href="#_data_security" target="_self">Data Security & Export</a><br>
             &#x1F517;&nbsp;<a href="#_architecture" target="_self">Technology / Architecture</a><br>
             &#x1F517;&nbsp;<a href="#_copyright" target="_self">© Copyright</a><br>
         </p>
@@ -298,9 +298,23 @@
     <a name="_data_security"></a>
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
-        <h2>Data Security & SQL Export</h2>
+        <h2>Data Security & Export</h2>
         <p>
-            All inspection data is securely stored in your local Android SQLite database with foreign key cascades and schema migrations. Additionally, completed reports are exported as SQL.TXT files in <b>Download/MyChecks</b>. Pictures are also stored here.
+            All data is stored on your device. Your personal settings are stored in a secure area of
+            the app (/data/data/com.pobvol.mychecks/shared_prefs). Categories, text modules,
+            checklists, checkpoints/questions, exam data and answers are stored in a local Android
+            SQLite database. This is also located in the secure area of the app
+            (/data/data/com.pobvol.mychecks/databases).<br>
+            <br>
+            <b>Data backup and data export</b>: You can create a backup copy of the database at any
+            time via the start screen (menu item "Back up database)". The app automatically creates
+            PDF and SQL files as soon as a check is completed. Database copies, PDF and SQL files
+            can be found in their download folder, subfolder pobvolMyChecks. In this folder you will
+            find a subfolder with the app device ID. In this subfolder, the exported data is then
+            stored in the dbbackup, pdf and sql folders. You can copy this data to a PC or other
+            device and back it up.<br>
+            <br>
+            <b>The app does not transfer any data to the cloud or to third-party servers.</b>
         </p>
     </div>
 

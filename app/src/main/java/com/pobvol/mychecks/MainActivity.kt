@@ -34,6 +34,7 @@ import com.pobvol.mychecks.data.repository.ChecklistSubmissionRepositoryImpl
 import com.pobvol.mychecks.data.repository.DeviceRepositoryImpl
 import com.pobvol.mychecks.data.repository.LanguageRepositoryImpl
 import com.pobvol.mychecks.data.repository.SettingsRepositoryImpl
+import com.pobvol.mychecks.data.repository.TextBlockRepositoryImpl
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.ui.ChecklistViewModel
 import com.pobvol.mychecks.ui.screens.ChecklistChartScreen
@@ -41,11 +42,12 @@ import com.pobvol.mychecks.ui.screens.ChecklistListScreen
 import com.pobvol.mychecks.ui.screens.ChecklistQuestionsScreen
 import com.pobvol.mychecks.ui.screens.FillChecklistScreen
 import com.pobvol.mychecks.ui.screens.HelpScreen
-import com.pobvol.mychecks.ui.screens.SendDataScreen
+import com.pobvol.mychecks.ui.screens.LicenseScreen
 import com.pobvol.mychecks.ui.screens.SplashScreen
 import com.pobvol.mychecks.ui.screens.StartScreen
 import com.pobvol.mychecks.ui.screens.SubmissionDetailScreen
 import com.pobvol.mychecks.ui.screens.SubmissionsOverviewScreen
+import com.pobvol.mychecks.ui.screens.TextBlocksScreen
 import com.pobvol.mychecks.ui.theme.mychecksTheme
 import com.pobvol.mychecks.util.SqlExporter
 import com.pobvol.mychecks.util.TtsHelper
@@ -96,6 +98,7 @@ class MainActivity : AppCompatActivity() {
         val categoryRepository = CategoryRepositoryImpl(database.categoryDao())
         val submissionRepository = ChecklistSubmissionRepositoryImpl(database.checklistsubmissionDao())
         val answerRepository = ChecklistAnswerRepositoryImpl(database.checklistanswerDao())
+        val textBlockRepository = TextBlockRepositoryImpl(database.textblockDao())
 
         setContent {
             val viewModel: ChecklistViewModel = viewModel(
@@ -108,6 +111,7 @@ class MainActivity : AppCompatActivity() {
                     categoryRepository = categoryRepository,
                     submissionRepository = submissionRepository,
                     answerRepository = answerRepository,
+                    textBlockRepository = textBlockRepository,
                     context = applicationContext,
                 ),
             )
@@ -137,6 +141,14 @@ class MainActivity : AppCompatActivity() {
             mychecksTheme(darkTheme = darkTheme) {
                 if (isSplashVisible) {
                     SplashScreen(onTimeout = { isSplashVisible = false })
+                } else if (!uiState.userSettings.isLicenseAccepted || uiState.isLicenseScreenVisible) {
+                    LicenseScreen(
+                        uiState = uiState,
+                        onAcceptClick = viewModel::acceptLicense,
+                        onLanguageSelected = viewModel::updatePreferredLanguage,
+                        onBackClick = if (uiState.userSettings.isLicenseAccepted) viewModel::closeLicenseScreen else null,
+                        modifier = Modifier.fillMaxSize(),
+                    )
                 } else {
                     val selectedSubmissionToEdit = uiState.selectedSubmissionToEdit
                     val selectedChecklistToAnswer = uiState.selectedChecklistToAnswer
@@ -156,15 +168,21 @@ class MainActivity : AppCompatActivity() {
                             onBackClick = viewModel::closeHelpScreen,
                             modifier = Modifier.fillMaxSize(),
                         )
-                    } else if (uiState.isSendDataVisible) {
-                        SendDataScreen(
+                    } else if (uiState.isTextBlocksVisible) {
+                        TextBlocksScreen(
                             uiState = uiState,
-                            onBackClick = viewModel::closeSendDataScreen,
-                            onFtpServerChanged = viewModel::updateFtpServer,
-                            onFtpPortChanged = viewModel::updateFtpPort,
-                            onFtpUseTlsChanged = viewModel::updateFtpUseTls,
-                            onFtpUserChanged = viewModel::updateFtpUser,
-                            onFtpPasswordChanged = viewModel::updateFtpPassword,
+                            onBackClick = viewModel::closeTextBlocksScreen,
+                            onOpenHelpClick = viewModel::openHelpScreen,
+                            onAddTextBlockClick = viewModel::openAddTextBlockDialog,
+                            onEditTextBlockClick = viewModel::openEditTextBlockDialog,
+                            onDeleteTextBlockClick = viewModel::requestDeleteTextBlockConfirmation,
+                            onMoveTextBlockUp = viewModel::moveTextBlockUp,
+                            onMoveTextBlockDown = viewModel::moveTextBlockDown,
+                            onDismissAddEditDialog = viewModel::dismissAddEditTextBlockDialog,
+                            onSaveTextBlock = viewModel::saveTextBlock,
+                            onDismissDeleteDialog = viewModel::dismissDeleteTextBlockConfirmation,
+                            onConfirmDeleteTextBlock = viewModel::confirmDeleteTextBlock,
+                            onUserMessageShown = viewModel::userMessageShown,
                             modifier = Modifier.fillMaxSize(),
                         )
                     } else if (selectedSubmissionToEdit != null) {
@@ -189,6 +207,24 @@ class MainActivity : AppCompatActivity() {
                             onClearChecklistFilter = viewModel::clearChecklistSubmissionsFilter,
                             onBackClick = viewModel::closeSubmissionsOverview,
                             onOpenHelpClick = viewModel::openHelpScreen,
+                            onOpenPdfSettingsClick = viewModel::openPdfSettings,
+                            onDismissPdfSettingsDialog = viewModel::closePdfSettings,
+                            onPdfHeaderTitleChanged = viewModel::updatePdfHeaderTitle,
+                            onPdfIncludeChecklistTitleChanged = viewModel::updatePdfIncludeChecklistTitle,
+                            onPdfIncludeDateChanged = viewModel::updatePdfIncludeDate,
+                            onPdfIncludeInspectorChanged = viewModel::updatePdfIncludeInspector,
+                            onPdfIncludeStatusChanged = viewModel::updatePdfIncludeStatus,
+                            onPdfIncludeNotesChanged = viewModel::updatePdfIncludeNotes,
+                            onPdfIncludeTimestampChanged = viewModel::updatePdfIncludeTimestamp,
+                            onPdfIncludePageNumberChanged = viewModel::updatePdfIncludePageNumber,
+                            onPdfIncludeUnansweredQuestionsChanged = viewModel::updatePdfIncludeUnansweredQuestions,
+                            onPdfIncludeQuestionTitleChanged = viewModel::updatePdfIncludeQuestionTitle,
+                            onPdfIncludeAnswerValueChanged = viewModel::updatePdfIncludeAnswerValue,
+                            onPdfIncludeAnswerNotesChanged = viewModel::updatePdfIncludeAnswerNotes,
+                            onPdfIncludeAnswerPictureChanged = viewModel::updatePdfIncludeAnswerPicture,
+                            onPdfCompactAnswerLayoutChanged = viewModel::updatePdfCompactAnswerLayout,
+                            onPdfFooterTextChanged = viewModel::updatePdfFooterText,
+                            onPdfTemplateVersionChanged = viewModel::updatePdfTemplateVersion,
                             onExportPdfClick = { submission ->
                                 viewModel.exportSubmissionPdf(this, submission)
                             },
@@ -290,7 +326,8 @@ class MainActivity : AppCompatActivity() {
                             uiState = uiState,
                             onOpenChecklistsClick = viewModel::openChecklistsScreen,
                             onOpenSubmissionsClick = viewModel::openSubmissionsOverview,
-                            onOpenSendDataClick = viewModel::openSendDataScreen,
+                            onOpenTextBlocksClick = viewModel::openTextBlocksScreen,
+                            onOpenLicenseClick = viewModel::openLicenseScreen,
                             onOpenSettingsClick = viewModel::openSettingsDialog,
                             onOpenHelpClick = viewModel::openHelpScreen,
                             onDismissSettingsDialog = viewModel::dismissSettingsDialog,

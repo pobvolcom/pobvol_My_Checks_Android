@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.HelpCenter
+import androidx.compose.material.icons.automirrored.rounded.Note
 import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material.icons.rounded.CameraAlt
 import androidx.compose.material.icons.rounded.Cancel
@@ -40,7 +41,10 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -79,6 +83,7 @@ import coil.compose.AsyncImage
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistEntity
 import com.pobvol.mychecks.data.local.ChecklistQuestionEntity
+import com.pobvol.mychecks.data.local.TextBlockEntity
 import com.pobvol.mychecks.ui.AnswerInput
 import com.pobvol.mychecks.ui.ChecklistUiState
 import com.pobvol.mychecks.ui.components.QrCodeScannerDialog
@@ -486,6 +491,7 @@ fun FillChecklistScreen(
                         },
                         isActiveNfcTarget = (activeNfcQuestionId == question.id),
                         onActivateNfcScan = { activeNfcQuestionId = question.id },
+                        textBlocks = uiState.textBlocks,
                     )
                 }
             }
@@ -575,6 +581,7 @@ fun AnswerQuestionItem(
     onImageChanged: (String?) -> Unit = {},
     isActiveNfcTarget: Boolean = false,
     onActivateNfcScan: () -> Unit = {},
+    textBlocks: List<TextBlockEntity> = emptyList(),
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -783,10 +790,58 @@ fun AnswerQuestionItem(
                 }
 
                 else -> { // text
+                    var answerTextBlockMenuExpanded by remember { mutableStateOf(false) }
+
                     OutlinedTextField(
                         value = currentAnswer,
                         onValueChange = onAnswerChanged,
                         label = { Text(stringResource(R.string.enter_response)) },
+                        trailingIcon = {
+                            if (textBlocks.isNotEmpty()) {
+                                Box {
+                                    IconButton(onClick = { answerTextBlockMenuExpanded = true }) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Rounded.Note,
+                                            contentDescription = stringResource(R.string.text_blocks),
+                                            tint = MaterialTheme.colorScheme.primary,
+                                        )
+                                    }
+                                    DropdownMenu(
+                                        expanded = answerTextBlockMenuExpanded,
+                                        onDismissRequest = { answerTextBlockMenuExpanded = false },
+                                    ) {
+                                        textBlocks.forEachIndexed { index, block ->
+                                            if (index > 0) {
+                                                HorizontalDivider(
+                                                    modifier = Modifier.padding(
+                                                        horizontal = 8.dp,
+                                                        vertical = 4.dp
+                                                    ),
+                                                    color = MaterialTheme.colorScheme.outlineVariant,
+                                                )
+                                            }
+                                            DropdownMenuItem(
+                                                text = {
+                                                    Text(
+                                                        text = block.text,
+                                                        maxLines = 3,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                    )
+                                                },
+                                                onClick = {
+                                                    answerTextBlockMenuExpanded = false
+                                                    val updatedAnswer =
+                                                        if (currentAnswer.isBlank()) block.text else "$currentAnswer\n${block.text}"
+                                                    onAnswerChanged(updatedAnswer)
+                                                },
+                                                modifier = Modifier.padding(vertical = 4.dp),
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         singleLine = false,
                         maxLines = 3,
                         shape = RoundedCornerShape(12.dp),
@@ -797,10 +852,58 @@ fun AnswerQuestionItem(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            var textBlockMenuExpanded by remember { mutableStateOf(false) }
+
             OutlinedTextField(
                 value = currentNotes,
                 onValueChange = onNotesChanged,
                 label = { Text(stringResource(R.string.answer_notes_optional)) },
+                trailingIcon = {
+                    if (textBlocks.isNotEmpty()) {
+                        Box {
+                            IconButton(onClick = { textBlockMenuExpanded = true }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Rounded.Note,
+                                    contentDescription = stringResource(R.string.text_blocks),
+                                    tint = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = textBlockMenuExpanded,
+                                onDismissRequest = { textBlockMenuExpanded = false },
+                            ) {
+                                textBlocks.forEachIndexed { index, block ->
+                                    if (index > 0) {
+                                        HorizontalDivider(
+                                            modifier = Modifier.padding(
+                                                horizontal = 8.dp,
+                                                vertical = 4.dp
+                                            ),
+                                            color = MaterialTheme.colorScheme.outlineVariant,
+                                        )
+                                    }
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                text = block.text,
+                                                maxLines = 3,
+                                                overflow = TextOverflow.Ellipsis,
+                                                style = MaterialTheme.typography.bodyMedium,
+                                            )
+                                        },
+                                        onClick = {
+                                            textBlockMenuExpanded = false
+                                            val updatedNotes =
+                                                if (currentNotes.isBlank()) block.text else "$currentNotes\n${block.text}"
+                                            onNotesChanged(updatedNotes)
+                                        },
+                                        modifier = Modifier.padding(vertical = 4.dp),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                },
                 minLines = 1,
                 maxLines = 3,
                 shape = RoundedCornerShape(12.dp),

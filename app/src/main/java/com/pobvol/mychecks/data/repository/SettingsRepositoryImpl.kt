@@ -43,6 +43,7 @@ class SettingsRepositoryImpl(
         val FTP_USE_TLS = booleanPreferencesKey("ftp_use_tls")
         val FTP_USER = stringPreferencesKey("ftp_user")
         val FTP_PASSWORD = stringPreferencesKey("ftp_password")
+        val IS_LICENSE_ACCEPTED = booleanPreferencesKey("is_license_accepted")
     }
 
     override val userSettings: Flow<UserSettings> = context.dataStore.data
@@ -90,6 +91,7 @@ class SettingsRepositoryImpl(
             val ftpUseTls = preferences[PreferencesKeys.FTP_USE_TLS] ?: false
             val ftpUser = preferences[PreferencesKeys.FTP_USER] ?: ""
             val ftpPassword = preferences[PreferencesKeys.FTP_PASSWORD] ?: ""
+            val isLicenseAccepted = preferences[PreferencesKeys.IS_LICENSE_ACCEPTED] ?: false
 
             UserSettings(
                 themeMode = themeMode,
@@ -117,6 +119,7 @@ class SettingsRepositoryImpl(
                 ftpUseTls = ftpUseTls,
                 ftpUser = ftpUser,
                 ftpPassword = ftpPassword,
+                isLicenseAccepted = isLicenseAccepted,
             )
         }
 
@@ -275,6 +278,12 @@ class SettingsRepositoryImpl(
     override suspend fun updateFtpPassword(password: String) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.FTP_PASSWORD] = password
+        }
+    }
+
+    override suspend fun acceptLicense() {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.IS_LICENSE_ACCEPTED] = true
         }
     }
 }

@@ -62,6 +62,16 @@ data class AnswerTypeEntity(
     val title: String
 )
 
+@Entity(
+    tableName = "text_blocks",
+)
+data class TextBlockEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val sortno: Int = 0,
+    val text: String
+)
+
 /*
 table: categories
 HEALTH      Health

@@ -66,6 +66,26 @@ interface AnswerTypeDAO {
 }
 
 @Dao
+interface TextBlockDAO {
+
+    @Query("SELECT * FROM text_blocks ORDER BY sortno ASC")
+    fun getAllTextBlocks(): Flow<List<TextBlockEntity>>
+
+    @Query("SELECT * FROM text_blocks WHERE id = :id")
+    suspend fun getTextBlockById(id: Int): TextBlockEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTextBlock(textblock: TextBlockEntity): Long
+
+    @Update
+    suspend fun updateTextBlock(textblock: TextBlockEntity)
+
+    @Delete
+    suspend fun deleteTextBlock(textblock: TextBlockEntity)
+
+}
+
+@Dao
 interface CategoryDAO {
 
     @Query("SELECT * FROM categories ORDER BY category ASC")

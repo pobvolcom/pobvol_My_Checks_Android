@@ -34,6 +34,7 @@ data class UserSettings(
     val ftpUseTls: Boolean = false,
     val ftpUser: String = "",
     val ftpPassword: String = "",
+    val isLicenseAccepted: Boolean = false,
 )
 
 interface SettingsRepository {
@@ -63,4 +64,5 @@ interface SettingsRepository {
     suspend fun updateFtpUseTls(useTls: Boolean)
     suspend fun updateFtpUser(user: String)
     suspend fun updateFtpPassword(password: String)
+    suspend fun acceptLicense()
 }

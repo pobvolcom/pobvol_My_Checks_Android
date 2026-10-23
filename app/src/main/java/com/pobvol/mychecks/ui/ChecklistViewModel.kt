@@ -13,6 +13,7 @@ import com.pobvol.mychecks.data.local.ChecklistQuestionEntity
 import com.pobvol.mychecks.data.local.ChecklistSubmissionEntity
 import com.pobvol.mychecks.data.local.DeviceEntity
 import com.pobvol.mychecks.data.local.LanguageEntity
+import com.pobvol.mychecks.data.local.TextBlockEntity
 import com.pobvol.mychecks.data.repository.CategoryRepository
 import com.pobvol.mychecks.data.repository.ChecklistAnswerRepository
 import com.pobvol.mychecks.data.repository.ChecklistQuestionRepository
@@ -21,6 +22,7 @@ import com.pobvol.mychecks.data.repository.ChecklistSubmissionRepository
 import com.pobvol.mychecks.data.repository.DeviceRepository
 import com.pobvol.mychecks.data.repository.LanguageRepository
 import com.pobvol.mychecks.data.repository.SettingsRepository
+import com.pobvol.mychecks.data.repository.TextBlockRepository
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.data.repository.UserSettings
 import com.pobvol.mychecks.util.PdfExporter
@@ -35,6 +37,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -48,6 +51,7 @@ class ChecklistViewModel(
     private val categoryRepository: CategoryRepository,
     private val submissionRepository: ChecklistSubmissionRepository,
     private val answerRepository: ChecklistAnswerRepository,
+    private val textBlockRepository: TextBlockRepository,
     private val context: Context,
 ) : ViewModel() {
 
@@ -153,8 +157,28 @@ class ChecklistViewModel(
     private val _isPdfSettingsVisible = MutableStateFlow(false)
     val isPdfSettingsVisible: StateFlow<Boolean> = _isPdfSettingsVisible.asStateFlow()
 
-    private val _isSendDataVisible = MutableStateFlow(false)
-    val isSendDataVisible: StateFlow<Boolean> = _isSendDataVisible.asStateFlow()
+    private val _isLicenseScreenVisible = MutableStateFlow(false)
+    val isLicenseScreenVisible: StateFlow<Boolean> = _isLicenseScreenVisible.asStateFlow()
+
+    private val _isTextBlocksVisible = MutableStateFlow(false)
+    val isTextBlocksVisible: StateFlow<Boolean> = _isTextBlocksVisible.asStateFlow()
+
+    private val _isAddEditTextBlockDialogVisible = MutableStateFlow(false)
+    val isAddEditTextBlockDialogVisible: StateFlow<Boolean> =
+        _isAddEditTextBlockDialogVisible.asStateFlow()
+
+    private val _textBlockToEdit = MutableStateFlow<TextBlockEntity?>(null)
+    val textBlockToEdit: StateFlow<TextBlockEntity?> = _textBlockToEdit.asStateFlow()
+
+    private val _textBlockToDelete = MutableStateFlow<TextBlockEntity?>(null)
+    val textBlockToDelete: StateFlow<TextBlockEntity?> = _textBlockToDelete.asStateFlow()
+
+    val textBlocks: StateFlow<List<TextBlockEntity>> = textBlockRepository.getAllTextBlocks()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     private var questionsJob: Job? = null
 
@@ -206,7 +230,6 @@ class ChecklistViewModel(
         val categories: List<CategoryEntity>,
         val isVisible: Boolean,
         val isPdfVisible: Boolean,
-        val isSendDataVisible: Boolean,
         val devices: List<DeviceEntity>,
     )
 
@@ -221,10 +244,9 @@ class ChecklistViewModel(
         },
         combine(
             _isPdfSettingsVisible,
-            _isSendDataVisible,
             deviceRepository.getDeviceId(),
-        ) { isPdfVisible, isSendDataVisible, devices ->
-            Triple(isPdfVisible, isSendDataVisible, devices)
+        ) { isPdfVisible, devices ->
+            Pair(isPdfVisible, devices)
         }
     ) { t1, t2 ->
         SettingsState(
@@ -233,8 +255,7 @@ class ChecklistViewModel(
             categories = t1.third.first,
             isVisible = t1.third.second,
             isPdfVisible = t2.first,
-            isSendDataVisible = t2.second,
-            devices = t2.third,
+            devices = t2.second,
         )
     }
 
@@ -267,6 +288,7 @@ class ChecklistViewModel(
         val submissionState: SubmissionState,
         val isHelpVisible: Boolean,
         val isChecklistHelpVisible: Boolean,
+        val isLicenseScreenVisible: Boolean,
         val selectedSubmissionStatus: String?,
     )
 
@@ -275,9 +297,47 @@ class ChecklistViewModel(
         _submissionState,
         _isHelpVisible,
         _isChecklistHelpVisible,
+        _isLicenseScreenVisible,
         _selectedSubmissionStatus,
-    ) { settings, submissions, isHelpVisible, isChecklistHelpVisible, selectedStatus ->
-        GlobalState(settings, submissions, isHelpVisible, isChecklistHelpVisible, selectedStatus)
+    ) { flows ->
+        val settings = flows[0] as SettingsState
+        val submissions = flows[1] as SubmissionState
+        val isHelpVisible = flows[2] as Boolean
+        val isChecklistHelpVisible = flows[3] as Boolean
+        val isLicenseScreenVisible = flows[4] as Boolean
+        val selectedStatus = flows[5] as String?
+        GlobalState(
+            settings,
+            submissions,
+            isHelpVisible,
+            isChecklistHelpVisible,
+            isLicenseScreenVisible,
+            selectedStatus
+        )
+    }
+
+    private data class TextBlockState(
+        val isVisible: Boolean,
+        val isAddEditVisible: Boolean,
+        val textBlockToEdit: TextBlockEntity?,
+        val textBlockToDelete: TextBlockEntity?,
+        val textBlocks: List<TextBlockEntity>,
+    )
+
+    private val _textBlockState = combine(
+        _isTextBlocksVisible,
+        _isAddEditTextBlockDialogVisible,
+        _textBlockToEdit,
+        _textBlockToDelete,
+        textBlocks,
+    ) { isVisible, isAddEditVisible, textBlockToEdit, textBlockToDelete, textBlocks ->
+        TextBlockState(
+            isVisible = isVisible,
+            isAddEditVisible = isAddEditVisible,
+            textBlockToEdit = textBlockToEdit,
+            textBlockToDelete = textBlockToDelete,
+            textBlocks = textBlocks,
+        )
     }
 
     val uiState: StateFlow<ChecklistUiState> = combine(
@@ -286,7 +346,14 @@ class ChecklistViewModel(
         _selectedCategory,
         _dialogState,
         _globalState,
-    ) { checklists, query, category, dialogState, globalState ->
+        _textBlockState,
+    ) { flows ->
+        val checklists = flows[0] as List<ChecklistEntity>
+        val query = flows[1] as String
+        val category = flows[2] as String?
+        val dialogState = flows[3] as DialogState
+        val globalState = flows[4] as GlobalState
+        val textBlockState = flows[5] as TextBlockState
         val selectedStatus = globalState.selectedSubmissionStatus
         val preferredLang = globalState.settingsState.settings.preferredLanguage
         val checklistsInLang = checklists.filter { it.language.equals(preferredLang, ignoreCase = true) }
@@ -343,7 +410,6 @@ class ChecklistViewModel(
             availableLanguages = globalState.settingsState.languages,
             isSettingsDialogVisible = globalState.settingsState.isVisible,
             isPdfSettingsVisible = globalState.settingsState.isPdfVisible,
-            isSendDataVisible = globalState.settingsState.isSendDataVisible,
             categories = globalState.settingsState.categories,
             selectedChecklistToAnswer = dialogState.selectedChecklistToAnswer,
             submissions = filteredSubmissions,
@@ -357,8 +423,14 @@ class ChecklistViewModel(
             scannedNfcTag = _scannedNfcTag.value,
             selectedChecklistForSubmissions = selectedChecklistSub,
             selectedChecklistForChart = _selectedChecklistForChart.value,
+            textBlocks = textBlockState.textBlocks,
+            isTextBlocksVisible = textBlockState.isVisible,
+            isAddEditTextBlockDialogVisible = textBlockState.isAddEditVisible,
+            textBlockToEdit = textBlockState.textBlockToEdit,
+            textBlockToDelete = textBlockState.textBlockToDelete,
             isHelpVisible = globalState.isHelpVisible,
             isChecklistHelpVisible = globalState.isChecklistHelpVisible,
+            isLicenseScreenVisible = globalState.isLicenseScreenVisible,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -1054,12 +1126,19 @@ class ChecklistViewModel(
         viewModelScope.launch { settingsRepository.updatePdfTemplateVersion(version) }
     }
 
-    fun openSendDataScreen() {
-        _isSendDataVisible.value = true
+    fun openLicenseScreen() {
+        _isLicenseScreenVisible.value = true
     }
 
-    fun closeSendDataScreen() {
-        _isSendDataVisible.value = false
+    fun closeLicenseScreen() {
+        _isLicenseScreenVisible.value = false
+    }
+
+    fun acceptLicense() {
+        viewModelScope.launch {
+            settingsRepository.acceptLicense()
+        }
+        closeLicenseScreen()
     }
 
     fun updateFtpServer(server: String) {
@@ -1086,6 +1165,97 @@ class ChecklistViewModel(
         _userMessage.value = null
     }
 
+    fun openTextBlocksScreen() {
+        _isTextBlocksVisible.value = true
+    }
+
+    fun closeTextBlocksScreen() {
+        _isTextBlocksVisible.value = false
+    }
+
+    fun openAddTextBlockDialog() {
+        _textBlockToEdit.value = null
+        _isAddEditTextBlockDialogVisible.value = true
+    }
+
+    fun openEditTextBlockDialog(textBlock: TextBlockEntity) {
+        _textBlockToEdit.value = textBlock
+        _isAddEditTextBlockDialogVisible.value = true
+    }
+
+    fun dismissAddEditTextBlockDialog() {
+        _textBlockToEdit.value = null
+        _isAddEditTextBlockDialogVisible.value = false
+    }
+
+    fun saveTextBlock(text: String, sortno: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val editing = _textBlockToEdit.value
+            if (editing != null) {
+                textBlockRepository.updateTextBlock(editing.copy(text = text, sortno = sortno))
+            } else {
+                val currentList = textBlocks.value
+                val nextSortno =
+                    if (currentList.isNotEmpty()) (currentList.maxOf { it.sortno } + 1) else 1
+                textBlockRepository.insertTextBlock(
+                    TextBlockEntity(
+                        text = text,
+                        sortno = nextSortno
+                    )
+                )
+            }
+            withContext(Dispatchers.Main) {
+                dismissAddEditTextBlockDialog()
+                _userMessage.value = context.getString(R.string.success)
+            }
+        }
+    }
+
+    fun requestDeleteTextBlockConfirmation(textBlock: TextBlockEntity) {
+        _textBlockToDelete.value = textBlock
+    }
+
+    fun dismissDeleteTextBlockConfirmation() {
+        _textBlockToDelete.value = null
+    }
+
+    fun confirmDeleteTextBlock() {
+        val target = _textBlockToDelete.value ?: return
+        viewModelScope.launch(Dispatchers.IO) {
+            textBlockRepository.deleteTextBlock(target)
+            withContext(Dispatchers.Main) {
+                dismissDeleteTextBlockConfirmation()
+                _userMessage.value = context.getString(R.string.success)
+            }
+        }
+    }
+
+    fun moveTextBlockUp(textBlock: TextBlockEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val list = textBlocks.value.sortedBy { it.sortno }
+            val index = list.indexOfFirst { it.id == textBlock.id }
+            if (index > 0) {
+                val prev = list[index - 1]
+                val tempSort = textBlock.sortno
+                textBlockRepository.updateTextBlock(textBlock.copy(sortno = prev.sortno))
+                textBlockRepository.updateTextBlock(prev.copy(sortno = tempSort))
+            }
+        }
+    }
+
+    fun moveTextBlockDown(textBlock: TextBlockEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val list = textBlocks.value.sortedBy { it.sortno }
+            val index = list.indexOfFirst { it.id == textBlock.id }
+            if (index in 0 until list.size - 1) {
+                val next = list[index + 1]
+                val tempSort = textBlock.sortno
+                textBlockRepository.updateTextBlock(textBlock.copy(sortno = next.sortno))
+                textBlockRepository.updateTextBlock(next.copy(sortno = tempSort))
+            }
+        }
+    }
+
     companion object {
         fun Factory(
             repository: ChecklistRepository,
@@ -1096,6 +1266,7 @@ class ChecklistViewModel(
             categoryRepository: CategoryRepository,
             submissionRepository: ChecklistSubmissionRepository,
             answerRepository: ChecklistAnswerRepository,
+            textBlockRepository: TextBlockRepository,
             context: Context,
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
@@ -1110,6 +1281,7 @@ class ChecklistViewModel(
                         categoryRepository,
                         submissionRepository,
                         answerRepository,
+                        textBlockRepository,
                         context,
                     ) as T
                 }

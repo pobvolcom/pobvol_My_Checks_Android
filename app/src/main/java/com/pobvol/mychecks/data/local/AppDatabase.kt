@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
@@ -13,12 +14,13 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         LanguageEntity::class,
         CategoryEntity::class,
         AnswerTypeEntity::class,
+        TextBlockEntity::class,
         ChecklistEntity::class,
         ChecklistQuestionEntity::class,
         ChecklistSubmissionEntity::class,
         ChecklistAnswerEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -27,6 +29,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun recordDao(): RecordDAO
     abstract fun languageDao(): LanguageDAO
     abstract fun answertypeDao(): AnswerTypeDAO
+
+    abstract fun textblockDao(): TextBlockDAO
     abstract fun categoryDao(): CategoryDAO
     abstract fun checklistDao(): ChecklistDAO
     abstract fun checklistquestionDao(): ChecklistQuestionDAO
@@ -37,133 +41,27 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        /*
-        val MIGRATION_6_7 = object : Migration(6, 7) {
+        val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("""
-                    CREATE TABLE IF NOT EXISTS `checklist_questions_new` (
-                        `id` TEXT PRIMARY KEY NOT NULL,
-                        `checklistid` TEXT NOT NULL,
+                    CREATE TABLE IF NOT EXISTS `text_blocks` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                         `sortno` INTEGER NOT NULL,
-                        `title` TEXT NOT NULL,
-                        `description` TEXT,
-                        `type` TEXT NOT NULL,
-                        `options` TEXT,
-                        `required` INTEGER NOT NULL,
-                        `timestamp` INTEGER NOT NULL,
-                        FOREIGN KEY(`checklistid`) REFERENCES `checklists`(`id`) ON DELETE CASCADE
+                        `text` TEXT NOT NULL
                     )
                 """)
-                db.execSQL("""
-                    INSERT INTO `checklist_questions_new` (`id`, `checklistid`, `sortno`, `title`, `description`, `type`, `options`, `required`, `timestamp`)
-                    SELECT `id`, `checklistid`, `sortno`, `title`, `description`, `type`, `options`, `required`, `timestamp`
-                    FROM `checklist_questions`
-                """)
-                db.execSQL("DROP TABLE `checklist_questions`")
-                db.execSQL("ALTER TABLE `checklist_questions_new` RENAME TO `checklist_questions`")
+                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (1, 1, 'Wir haben keine Mängel gefunden. Einer Nutzung stehen keine Bedenken entgegen. Sie bekommen die neue Prüfplakette.')")
+                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (2, 2, 'Wir haben Mängel beseitigt. Einer Nutzung stehen keine Bedenken entgegen. Sie bekommen die neue Prüfplakette.')")
+                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (3, 3, 'Wir haben wenige kleine Mängel gefunden. Einer Nutzung stehen keine Bedenken entgegen. Sie bekommen die neue Prüfplakette. Gekennzeichnete Mängel sollten jedoch zeitnah beseitigt werden!')")
+                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (4, 4, 'Wegen erheblichen Sicherheitsmängeln stehen einer Nutzung Bedenken entgegen! Sie erhalten daher keine Plakette.')")
+                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (5, 5, 'Wegen gefährlichen Sicherheitsmängeln, die eine direkte und unmittelbare Gefährdung darstellen oder die Umwelt beeinträchtigen, stehen einer Nutzung Bedenken entgegen! Sie erhalten daher keine Plakette.')")
+                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (6, 6, 'We did not find any defects. There are no objections to its use. You will receive the new inspection sticker.')")
+                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (7, 7, 'We eliminated any defects found. There are no objections to its use. You will receive the new inspection sticker.')")
+                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (8, 8, 'We found a few small defects. There are no objections to its use. You will receive the new inspection sticker. However, marked defects should be eliminated promptly!')")
+                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (9, 9, 'Due to considerable safety deficiencies, there are concerns about its use! Therefore, you will not receive a sticker.')")
+                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (10, 10, 'Due to dangerous safety deficiencies that pose a direct and immediate hazard or affect the environment, there are concerns about its use! Therefore, you will not receive a sticker.')")
             }
         }
-        */
-
-        /*
-        val MIGRATION_7_8 = object : Migration(7, 8) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_categories_category` ON `categories` (`category`)")
-            }
-        }*/
-
-        /*
-        val MIGRATION_8_9 = object : Migration(8, 9) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_answer_types_type` ON `answer_types` (`type`)")
-            }
-        }*/
-
-        /*
-        val MIGRATION_9_10 = object : Migration(9, 10) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("INSERT OR IGNORE INTO answer_types (type, title) VALUES ('nfc', 'NFC')")
-            }
-        }*/
-
-        /*
-        val MIGRATION_10_11 = object : Migration(10, 11) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("CREATE INDEX IF NOT EXISTS `index_checklist_questions_checklistid` ON `checklist_questions` (`checklistid`)")
-
-                db.execSQL("""
-                    CREATE TABLE IF NOT EXISTS `checklist_submissions_new` (
-                        `id` TEXT PRIMARY KEY NOT NULL,
-                        `checklistid` TEXT NOT NULL,
-                        `status` TEXT NOT NULL,
-                        `inspector` TEXT,
-                        `notes` TEXT,
-                        `date` TEXT NOT NULL,
-                        `timestamp` INTEGER NOT NULL,
-                        FOREIGN KEY(`checklistid`) REFERENCES `checklists`(`id`) ON DELETE CASCADE
-                    )
-                """)
-                db.execSQL("""
-                    INSERT INTO `checklist_submissions_new` (`id`, `checklistid`, `status`, `inspector`, `notes`, `date`, `timestamp`)
-                    SELECT `id`, `checklistid`, `status`, `inspector`, `notes`, `date`, `timestamp`
-                    FROM `checklist_submissions`
-                """)
-                db.execSQL("DROP TABLE `checklist_submissions`")
-                db.execSQL("ALTER TABLE `checklist_submissions_new` RENAME TO `checklist_submissions`")
-                db.execSQL("CREATE INDEX IF NOT EXISTS `index_checklist_submissions_checklistid` ON `checklist_submissions` (`checklistid`)")
-
-                db.execSQL("""
-                    CREATE TABLE IF NOT EXISTS `checklist_answers_new` (
-                        `id` TEXT PRIMARY KEY NOT NULL,
-                        `submissionid` TEXT NOT NULL,
-                        `questionid` TEXT NOT NULL,
-                        `value` TEXT NOT NULL,
-                        `timestamp` INTEGER NOT NULL,
-                        FOREIGN KEY(`submissionid`) REFERENCES `checklist_submissions`(`id`) ON DELETE CASCADE,
-                        FOREIGN KEY(`questionid`) REFERENCES `checklist_questions`(`id`) ON DELETE CASCADE
-                    )
-                """)
-                db.execSQL("""
-                    INSERT INTO `checklist_answers_new` (`id`, `submissionid`, `questionid`, `value`, `timestamp`)
-                    SELECT `id`, `submissionid`, `questionid`, `value`, `timestamp`
-                    FROM `checklist_answers`
-                """)
-                db.execSQL("DROP TABLE `checklist_answers`")
-                db.execSQL("ALTER TABLE `checklist_answers_new` RENAME TO `checklist_answers`")
-                db.execSQL("CREATE INDEX IF NOT EXISTS `index_checklist_answers_submissionid` ON `checklist_answers` (`submissionid`)")
-                db.execSQL("CREATE INDEX IF NOT EXISTS `index_checklist_answers_questionid` ON `checklist_answers` (`questionid`)")
-            }
-        }*/
-
-        /*
-        val MIGRATION_11_12 = object : Migration(11, 12) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("INSERT OR IGNORE INTO answer_types (type, title) VALUES ('qr-code', 'QR-Code')")
-            }
-        }*/
-
-        /*
-        val MIGRATION_12_13 = object : Migration(12, 13) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("ALTER TABLE `checklist_answers` ADD COLUMN `notes` TEXT")
-            }
-        }*/
-
-        /*
-        val MIGRATION_13_14 = object : Migration(13, 14) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("ALTER TABLE `checklist_questions` ADD COLUMN `minValue` REAL DEFAULT NULL")
-                db.execSQL("ALTER TABLE `checklist_questions` ADD COLUMN `maxValue` REAL DEFAULT NULL")
-            }
-        }*/
-
-        /*
-        val MIGRATION_14_15 = object : Migration(14, 15) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("ALTER TABLE `checklist_answers` ADD COLUMN `imagePath` TEXT")
-            }
-        }*/
-
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -173,23 +71,13 @@ abstract class AppDatabase : RoomDatabase() {
                     "mychecksdb.sqlite3",
                 )
                     .addMigrations(
-                        //MIGRATION_6_7,
-                        //MIGRATION_7_8,
-                        //MIGRATION_8_9,
-                        //MIGRATION_9_10,
-                        //MIGRATION_10_11,
-                        //MIGRATION_11_12,
-                        //MIGRATION_12_13,
-                        //MIGRATION_13_14,
-                        //MIGRATION_14_15
+                        MIGRATION_1_2,
                     )
                     .fallbackToDestructiveMigration(true)
                     .addCallback(
                         object : Callback() {
                             override fun onCreate(db: SupportSQLiteDatabase) {
                                 super.onCreate(db)
-
-                                // db.execSQL("INSERT OR IGNORE INTO device (notes) VALUES ('unique device id')")
 
                                 db.execSQL("INSERT OR IGNORE INTO languages (language, title) VALUES ('de', 'Deutsch')")
                                 db.execSQL("INSERT OR IGNORE INTO languages (language, title) VALUES ('en', 'English')")
@@ -233,12 +121,23 @@ abstract class AppDatabase : RoomDatabase() {
                                 db.execSQL("INSERT OR IGNORE INTO `checklist_submissions` (`id`, `checklistid`, `status`, `inspector`, `notes`, `date`, `timestamp`) VALUES ('submission2-2','checklist-2','COMPLETED', 'Dummy', '', '11.10.2026', 1791566533405)")
                                 db.execSQL("INSERT OR IGNORE INTO `checklist_submissions` (`id`, `checklistid`, `status`, `inspector`, `notes`, `date`, `timestamp`) VALUES ('submission2-3','checklist-2','COMPLETED', 'Dummy', '', '12.10.2026', 1791566533405)")
 
-                                db.execSQL("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer1-1', 'submission2-1', 'question2-1', '120', '', '', 1791566533405)")
-                                db.execSQL("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer1-2', 'submission2-1', 'question2-2', '80', '', '', 1791566533405)")
-                                db.execSQL("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer2-1', 'submission2-2', 'question2-1', '125', '', '', 1791566533405)")
-                                db.execSQL("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer2-2', 'submission2-2', 'question2-2', '85', '', '', 1791566533405)")
-                                db.execSQL("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer3-1', 'submission2-3', 'question2-1', '130', '', '', 1791566533405)")
-                                db.execSQL("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer3-2', 'submission2-3', 'question2-2', '90', '', '', 1791566533405)")
+                                db.execSQL("INSERT OR IGNORE INTO`checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer1-1', 'submission2-1', 'question2-1', '120', '', '', 1791566533405)")
+                                db.execSQL("INSERT OR IGNORE INTO`checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer1-2', 'submission2-1', 'question2-2', '80', '', '', 1791566533405)")
+                                db.execSQL("INSERT OR IGNORE INTO`checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer2-1', 'submission2-2', 'question2-1', '125', '', '', 1791566533405)")
+                                db.execSQL("INSERT OR IGNORE INTO`checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer2-2', 'submission2-2', 'question2-2', '85', '', '', 1791566533405)")
+                                db.execSQL("INSERT OR IGNORE INTO`checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer3-1', 'submission2-3', 'question2-1', '130', '', '', 1791566533405)")
+                                db.execSQL("INSERT OR IGNORE INTO`checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES ('answer3-2', 'submission2-3', 'question2-2', '90', '', '', 1791566533405)")
+
+                                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (1, 1, 'Wir haben keine Mängel gefunden. Einer Nutzung stehen keine Bedenken entgegen. Sie bekommen die neue Prüfplakette.')")
+                                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (2, 2, 'Wir haben Mängel beseitigt. Einer Nutzung stehen keine Bedenken entgegen. Sie bekommen die neue Prüfplakette.')")
+                                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (3, 3, 'Wir haben wenige kleine Mängel gefunden. Einer Nutzung stehen keine Bedenken entgegen. Sie bekommen die neue Prüfplakette. Gekennzeichnete Mängel sollten jedoch zeitnah beseitigt werden!')")
+                                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (4, 4, 'Wegen erheblichen Sicherheitsmängeln stehen einer Nutzung Bedenken entgegen! Sie erhalten daher keine Plakette.')")
+                                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (5, 5, 'Wegen gefährlichen Sicherheitsmängeln, die eine direkte und unmittelbare Gefährdung darstellen oder die Umwelt beeinträchtigen, stehen einer Nutzung Bedenken entgegen! Sie erhalten daher keine Plakette.')")
+                                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (6, 6, 'We did not find any defects. There are no objections to its use. You will receive the new inspection sticker.')")
+                                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (7, 7, 'We eliminated any defects found. There are no objections to its use. You will receive the new inspection sticker.')")
+                                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (8, 8, 'We found a few small defects. There are no objections to its use. You will receive the new inspection sticker. However, marked defects should be eliminated promptly!')")
+                                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (9, 9, 'Due to considerable safety deficiencies, there are concerns about its use! Therefore, you will not receive a sticker.')")
+                                db.execSQL("INSERT OR IGNORE INTO text_blocks (`id`, `sortno`, `text`) VALUES (10, 10, 'Due to dangerous safety deficiencies that pose a direct and immediate hazard or affect the environment, there are concerns about its use! Therefore, you will not receive a sticker.')")
 
                             }
                         },

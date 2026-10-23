@@ -233,4 +233,33 @@
     <string name="pdf_template_version_label">PDF Template Version</string>
     <string name="pdf_template_v1">PDF Template V1 (Standard Report)</string>
     <string name="pdf_template_v2">PDF Template V2 (Formal Service Report)</string>
+    <string name="text_blocks">Text Blocks</string>
+    <string name="add_text_block">Add Text Block</string>
+    <string name="edit_text_block">Edit Text Block</string>
+    <string name="delete_text_block">Delete Text Block</string>
+    <string name="text_block_content">Text Content</string>
+    <string name="delete_text_block_confirmation">Are you sure you want to delete this text block?</string>
+    <string name="no_text_blocks_recorded">No text blocks recorded yet.</string>
+    <string name="success">Success</string>
+    <string name="menu_text_blocks">My Text Blocks</string>
+    <string name="license_agreement">License Agreement</string>
+    <string name="menu_license">License Agreement</string>
+    <string name="accept_license">Accept &amp; Agree</string>
+    <string name="license_text_content">Thank you for installing **pobvol My Checks**. The app is Free Software and is delivered as open source. The app was developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash. The source code was published via GitHub.\n
+        \n
+        1. LICENSE GRANT \n
+        You can download, install, operate, modify, and redistribute the app under the terms of the GNU General Public License v3. See https://www.gnu.org/licenses/gpl-3.0\n
+        \n
+        2. COPYRIGHT \n
+        Copyright © 2026 Volker Pobloth, pobvol Software Services\n
+        \n
+        3. PRIVACY \n
+        All data is stored on your device in a secure area of the app (/data/data/com.pobvol.mychecks). The app does not transfer data to the cloud or to third-party servers.\n
+        \n
+        4. BACKUP \n
+        You can create a backup copy of the database at any time from the home screen. The app automatically creates PDF and SQL files as soon as a checklist has been completely filled out. Database copies, PDF and SQL files can be found in its download folder. You can copy and back up this data to a PC or other device. The app does not transfer any data to the cloud or servers.\n
+        \n
+        5. DISCLAIMER \n
+        The App is provided in the hope that it will be useful, but WITHOUT WARRANTY OF ANY KIND; even without the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. The Developer is not liable for any loss of data or erroneous logs.\n \n 6. CONSENT\n By clicking [Accept &amp; Agree], you confirm that you have read, understood and accepted these Terms.
+    </string>
 </resources>

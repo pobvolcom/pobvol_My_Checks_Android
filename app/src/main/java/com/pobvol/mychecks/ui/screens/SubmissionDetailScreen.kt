@@ -481,6 +481,7 @@ fun SubmissionDetailScreen(
                         },
                         isActiveNfcTarget = (activeNfcQuestionId == question.id),
                         onActivateNfcScan = { activeNfcQuestionId = question.id },
+                        textBlocks = uiState.textBlocks,
                     )
                 }
             }

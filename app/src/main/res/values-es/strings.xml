@@ -231,4 +231,33 @@
     <string name="pdf_template_version_label">Versión de plantilla PDF</string>
     <string name="pdf_template_v1">Plantilla PDF V1 (Informe estándar)</string>
     <string name="pdf_template_v2">Plantilla PDF V2 (Informe de servicio formal)</string>
+    <string name="text_blocks">Bloques de texto</string>
+    <string name="add_text_block">Añadir bloque de texto</string>
+    <string name="edit_text_block">Editar bloque de texto</string>
+    <string name="delete_text_block">Eliminar bloque de texto</string>
+    <string name="text_block_content">Contenido de texto</string>
+    <string name="delete_text_block_confirmation">¿Seguro que deseas eliminar este bloque de texto?</string>
+    <string name="no_text_blocks_recorded">No hay bloques de texto registrados.</string>
+    <string name="success">Éxito</string>
+    <string name="menu_text_blocks">Mis bloques de texto</string>
+    <string name="license_agreement">Acuerdo de licencia</string>
+    <string name="menu_license">Acuerdo de licencia</string>
+    <string name="accept_license">Aceptar y acordar</string>
+    <string name="license_text_content">Gracias por instalar **pobvol My Checks**. La app es software libre y se ofrece de código abierto. La app fue desarrollada con Google Android Studio y Gemini 3.5 Flash Lite y Gemini 3.6 Flash. El código fuente se publicó a través de GitHub.\n
+        \n
+        1. CONCESIÓN DE LICENCIA \n
+        Puedes descargar, instalar, operar, modificar y redistribuir la aplicación bajo los términos de la Licencia Pública General GNU v3. Ver https://www.gnu.org/licenses/gpl-3.0\n
+        \n
+        2. DERECHOS DE AUTOR \n
+        Copyright © 2026 Volker Pobloth, pobvol Software Services\n
+        \n
+        3. PRIVACIDAD \n
+        Todos los datos se almacenan en tu dispositivo en una zona segura de la app (/data/data/com.pobvol.mychecks). La app no transfiere datos a la nube ni a servidores de terceros.\n
+        \n
+        4. REFUERZO \n
+        Puedes crear una copia de seguridad de la base de datos en cualquier momento desde la pantalla de inicio. La app crea automáticamente archivos PDF y SQL tan pronto como se ha completado completamente la lista de comprobación. Copias de bases de datos, archivos PDF y SQL se pueden encontrar en su carpeta de descargas. Puedes copiar y hacer copias de seguridad de estos datos a un PC u otro dispositivo. La app no transfiere ningún dato a la nube ni a servidores de terceros.\n
+        \n
+        5. AVISO LEGAL \n
+        La aplicación se proporciona con la esperanza de que sea útil, pero SIN NINGUNA GARANTÍA DE NINGÚN TIPO; incluso sin la garantía implícita de COMERCIALIZACIÓN o IDONEIDAD PARA UN PROPÓSITO PARTICULAR. El desarrollador no se hace responsable de ninguna pérdida de datos ni registros erróneos.\n \n 6. CONSENTIMIENTO\n Al hacer clic en [Aceptar y Aceptar], confirmas que has leído, entendido y aceptado estos Términos.
+    </string>
 </resources>

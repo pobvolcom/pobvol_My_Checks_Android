@@ -52,7 +52,7 @@ fun SettingsDialog(
     onLanguageSelected: (String) -> Unit,
     onUserNameChanged: (String) -> Unit,
     onAudioFeedbackChanged: (Boolean) -> Unit,
-    onOpenPdfSettingsClick: () -> Unit,
+    onOpenPdfSettingsClick: () -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
     onDismissRequest: () -> Unit,
@@ -164,15 +164,6 @@ fun SettingsDialog(
                         checked = userSettings.audioFeedback,
                         onCheckedChange = onAudioFeedbackChanged,
                     )
-                }
-
-                // 4. PDF Report Designer Button
-                Button(
-                    onClick = onOpenPdfSettingsClick,
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(stringResource(R.string.configure_pdf_settings))
                 }
 
                 // 5. Database Backup Button (SQLite)

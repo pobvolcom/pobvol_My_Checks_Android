@@ -28,6 +28,7 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.PictureAsPdf
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ButtonDefaults
@@ -63,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistSubmissionEntity
 import com.pobvol.mychecks.ui.ChecklistUiState
+import com.pobvol.mychecks.ui.components.PdfSettingsDialog
 import com.pobvol.mychecks.ui.theme.mychecksTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -77,6 +79,24 @@ fun SubmissionsOverviewScreen(
     onClearChecklistFilter: () -> Unit = {},
     onBackClick: () -> Unit,
     onOpenHelpClick: () -> Unit = {},
+    onOpenPdfSettingsClick: () -> Unit = {},
+    onDismissPdfSettingsDialog: () -> Unit = {},
+    onPdfHeaderTitleChanged: (String) -> Unit = {},
+    onPdfIncludeChecklistTitleChanged: (Boolean) -> Unit = {},
+    onPdfIncludeDateChanged: (Boolean) -> Unit = {},
+    onPdfIncludeInspectorChanged: (Boolean) -> Unit = {},
+    onPdfIncludeStatusChanged: (Boolean) -> Unit = {},
+    onPdfIncludeNotesChanged: (Boolean) -> Unit = {},
+    onPdfIncludeTimestampChanged: (Boolean) -> Unit = {},
+    onPdfIncludePageNumberChanged: (Boolean) -> Unit = {},
+    onPdfIncludeUnansweredQuestionsChanged: (Boolean) -> Unit = {},
+    onPdfIncludeQuestionTitleChanged: (Boolean) -> Unit = {},
+    onPdfIncludeAnswerValueChanged: (Boolean) -> Unit = {},
+    onPdfIncludeAnswerNotesChanged: (Boolean) -> Unit = {},
+    onPdfIncludeAnswerPictureChanged: (Boolean) -> Unit = {},
+    onPdfCompactAnswerLayoutChanged: (Boolean) -> Unit = {},
+    onPdfFooterTextChanged: (String) -> Unit = {},
+    onPdfTemplateVersionChanged: (String) -> Unit = {},
     onExportPdfClick: (ChecklistSubmissionEntity) -> Unit = {},
     onExportSqlClick: (ChecklistSubmissionEntity) -> Unit = {},
     onEditSubmissionClick: (ChecklistSubmissionEntity) -> Unit,
@@ -127,6 +147,12 @@ fun SubmissionsOverviewScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.Help,
                             contentDescription = stringResource(R.string.help),
+                        )
+                    }
+                    IconButton(onClick = onOpenPdfSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Rounded.Settings,
+                            contentDescription = stringResource(R.string.configure_pdf_settings),
                         )
                     }
                     IconButton(
@@ -301,6 +327,29 @@ fun SubmissionsOverviewScreen(
                 submission = uiState.submissionToDelete,
                 onDismiss = onDismissDeleteSubmissionDialog,
                 onConfirmDelete = onConfirmDeleteSubmission,
+            )
+        }
+
+        if (uiState.isPdfSettingsVisible) {
+            PdfSettingsDialog(
+                userSettings = uiState.userSettings,
+                onPdfHeaderTitleChanged = onPdfHeaderTitleChanged,
+                onPdfIncludeChecklistTitleChanged = onPdfIncludeChecklistTitleChanged,
+                onPdfIncludeDateChanged = onPdfIncludeDateChanged,
+                onPdfIncludeInspectorChanged = onPdfIncludeInspectorChanged,
+                onPdfIncludeStatusChanged = onPdfIncludeStatusChanged,
+                onPdfIncludeNotesChanged = onPdfIncludeNotesChanged,
+                onPdfIncludeTimestampChanged = onPdfIncludeTimestampChanged,
+                onPdfIncludePageNumberChanged = onPdfIncludePageNumberChanged,
+                onPdfIncludeUnansweredQuestionsChanged = onPdfIncludeUnansweredQuestionsChanged,
+                onPdfIncludeQuestionTitleChanged = onPdfIncludeQuestionTitleChanged,
+                onPdfIncludeAnswerValueChanged = onPdfIncludeAnswerValueChanged,
+                onPdfIncludeAnswerNotesChanged = onPdfIncludeAnswerNotesChanged,
+                onPdfIncludeAnswerPictureChanged = onPdfIncludeAnswerPictureChanged,
+                onPdfCompactAnswerLayoutChanged = onPdfCompactAnswerLayoutChanged,
+                onPdfFooterTextChanged = onPdfFooterTextChanged,
+                onPdfTemplateVersionChanged = onPdfTemplateVersionChanged,
+                onDismissRequest = onDismissPdfSettingsDialog,
             )
         }
     }

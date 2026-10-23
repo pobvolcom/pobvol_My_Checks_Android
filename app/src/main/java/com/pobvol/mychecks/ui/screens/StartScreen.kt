@@ -75,7 +75,8 @@ fun StartScreen(
     onDismissSettingsDialog: () -> Unit,
     onOpenPdfSettingsClick: () -> Unit = {},
     onDismissPdfSettingsDialog: () -> Unit = {},
-    onOpenSendDataClick: () -> Unit = {},
+    onOpenTextBlocksClick: () -> Unit = {},
+    onOpenLicenseClick: () -> Unit = {},
     onThemeModeSelected: (ThemeMode) -> Unit,
     onLanguageSelected: (String) -> Unit,
     onUserNameChanged: (String) -> Unit,
@@ -175,6 +176,20 @@ fun StartScreen(
                         expanded = menuExpanded,
                         onDismissRequest = { menuExpanded = false },
                     ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_license)) },
+                            onClick = {
+                                menuExpanded = false
+                                onOpenLicenseClick()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_text_blocks)) },
+                            onClick = {
+                                menuExpanded = false
+                                onOpenTextBlocksClick()
+                            }
+                        )
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.menu_create_db_copy)) },
                             onClick = {

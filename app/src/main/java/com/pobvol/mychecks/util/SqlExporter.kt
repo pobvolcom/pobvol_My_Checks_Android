@@ -273,9 +273,18 @@ object SqlExporter {
         try {
             val inputStream = context.contentResolver.openInputStream(sourceUri) ?: return null
             val picBytes = inputStream.readBytes()
-            val sendDir = getSendDir(context)
-            val targetFile = File(sendDir, fileName)
+
+            // 1. Always save internal copy in app internal storage (context.filesDir/pictures)
+            val internalDir = File(context.filesDir, "pictures")
+            if (!internalDir.exists()) internalDir.mkdirs()
+            val internalFile = File(internalDir, fileName)
+            internalFile.writeBytes(picBytes)
+
+            // 2. Save export copy in /download/pobvolMyChecks/<deviceid>/sql for cloud sync app
+            val sqlDir = getSqlDir(context)
+            val targetFile = File(sqlDir, fileName)
             targetFile.writeBytes(picBytes)
+
             return fileName
         } catch (e: Exception) {
             e.printStackTrace()

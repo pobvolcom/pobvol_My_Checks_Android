@@ -7,6 +7,7 @@ import com.pobvol.mychecks.data.local.ChecklistQuestionEntity
 import com.pobvol.mychecks.data.local.ChecklistSubmissionEntity
 import com.pobvol.mychecks.data.local.DeviceEntity
 import com.pobvol.mychecks.data.local.LanguageEntity
+import com.pobvol.mychecks.data.local.TextBlockEntity
 import com.pobvol.mychecks.data.repository.UserSettings
 
 data class ChecklistUiState(
@@ -27,9 +28,9 @@ data class ChecklistUiState(
     val availableDevices: List<DeviceEntity> = emptyList(),
     val isSettingsDialogVisible: Boolean = false,
     val isPdfSettingsVisible: Boolean = false,
-    val isSendDataVisible: Boolean = false,
     val isHelpVisible: Boolean = false,
     val isChecklistHelpVisible: Boolean = false,
+    val isLicenseScreenVisible: Boolean = false,
     val categories: List<CategoryEntity> = emptyList(),
     val selectedChecklistToAnswer: ChecklistEntity? = null,
     val submissions: List<ChecklistSubmissionEntity> = emptyList(),
@@ -43,6 +44,11 @@ data class ChecklistUiState(
     val scannedNfcTag: String? = null,
     val selectedChecklistForSubmissions: ChecklistEntity? = null,
     val selectedChecklistForChart: ChecklistEntity? = null,
+    val textBlocks: List<TextBlockEntity> = emptyList(),
+    val isTextBlocksVisible: Boolean = false,
+    val isAddEditTextBlockDialogVisible: Boolean = false,
+    val textBlockToEdit: TextBlockEntity? = null,
+    val textBlockToDelete: TextBlockEntity? = null,
 )
 
 data class AnswerInput(
