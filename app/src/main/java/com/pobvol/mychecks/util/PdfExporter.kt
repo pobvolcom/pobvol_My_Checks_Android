@@ -17,6 +17,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
+import androidx.core.graphics.toColorInt
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistAnswerEntity
 import com.pobvol.mychecks.data.local.ChecklistEntity
@@ -230,25 +231,14 @@ object PdfExporter {
         answers: List<ChecklistAnswerEntity>,
         settings: UserSettings = UserSettings(),
     ): PdfDocument {
-        return if (settings.pdfTemplateVersion == "V2") {
-            createSubmissionPdfDocumentV2(
-                context,
-                submission,
-                checklist,
-                questions,
-                answers,
-                settings
-            )
-        } else {
-            createSubmissionPdfDocumentV1(
-                context,
-                submission,
-                checklist,
-                questions,
-                answers,
-                settings
-            )
-        }
+        return createSubmissionPdfDocumentV1(
+            context,
+            submission,
+            checklist,
+            questions,
+            answers,
+            settings
+        )
     }
 
     private fun createSubmissionPdfDocumentV1(
@@ -313,6 +303,77 @@ object PdfExporter {
             page = pdfDocument.startPage(pageInfo)
             canvas = page.canvas
             y = 50f
+
+            if (settings.pdfHeaderTitle.isNotBlank()) {
+                //hasHeaderContent = true
+                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                paint.textSize = 16f
+                paint.color = Color.BLACK
+                canvas.drawText(settings.pdfHeaderTitle, startX, y, paint)
+                y += 24f
+            }
+
+            // print Checklist title & Status
+            val headerTitleParts = mutableListOf<String>()
+            if (checklist != null) {
+                headerTitleParts.add(checklist.title)
+            }
+            if (settings.pdfIncludeStatus) {
+                val translatedStatus = when (submission.status.uppercase()) {
+                    "COMPLETED" -> context.getString(R.string.status_completed)
+                    "IN_PROGRESS" -> context.getString(R.string.status_in_progress)
+                    "PENDING" -> context.getString(R.string.status_pending)
+                    else -> submission.status
+                }
+                headerTitleParts.add("(" + translatedStatus + ")")
+            }
+
+            if (settings.pdfIncludeChecklistTitle && headerTitleParts.isNotEmpty()) {
+                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                paint.textSize = 14f
+                paint.color = Color.BLACK
+                canvas.drawText(headerTitleParts.joinToString(" "), startX, y, paint)
+                y += 20f
+            }
+
+            // Questions section
+            y += 10f
+            if (y + 100f > bottomLimit) {
+                startNewPage()
+                y += 10f
+            }
+
+            val blueBgPaint = Paint().apply {
+                color = "#82CFFD".toColorInt()
+                style = Paint.Style.FILL
+                isAntiAlias = true
+            }
+
+            val greenLinePaint = Paint().apply {
+                color = Color.parseColor("#008000")
+                strokeWidth = 3f
+                isAntiAlias = true
+            }
+
+            val tableHeaderRect = RectF(startX, y, endX, y + 20f)
+            canvas.drawRect(tableHeaderRect, blueBgPaint)
+
+            paint.textSize = 10f
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            paint.color = Color.BLACK
+            canvas.drawText(context.getString(R.string.pdf_pos), startX + 6f, y + 14f, paint)
+            canvas.drawText(
+                context.getString(R.string.pdf_checkpoint),
+                startX + 40f,
+                y + 14f,
+                paint
+            )
+            paint.textAlign = Paint.Align.RIGHT
+            canvas.drawText(context.getString(R.string.pdf_status), endX - 12f, y + 14f, paint)
+            paint.textAlign = Paint.Align.LEFT
+
+            y += 24f
+
         }
 
         // Inspection Header Details (Page 1)
@@ -326,25 +387,10 @@ object PdfExporter {
             y += 24f
         }
 
-        if (settings.pdfIncludeChecklistTitle && checklist != null) {
-            hasHeaderContent = true
-            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            paint.textSize = 14f
-            paint.color = Color.BLACK
-            canvas.drawText(checklist.title, startX, y, paint)
-            y += 20f
-        }
-
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        paint.textSize = 11f
-        paint.color = Color.DKGRAY
-
-        val headerParts = mutableListOf<String>()
-        if (settings.pdfIncludeDate) {
-            headerParts.add(context.getString(R.string.pdf_date_label, submission.date))
-        }
-        if (settings.pdfIncludeInspector && !submission.inspector.isNullOrBlank()) {
-            headerParts.add(context.getString(R.string.pdf_inspector_label, submission.inspector))
+        // print Checklist title & Status
+        val headerTitleParts = mutableListOf<String>()
+        if (checklist != null) {
+            headerTitleParts.add(checklist.title)
         }
         if (settings.pdfIncludeStatus) {
             val translatedStatus = when (submission.status.uppercase()) {
@@ -353,14 +399,22 @@ object PdfExporter {
                 "PENDING" -> context.getString(R.string.status_pending)
                 else -> submission.status
             }
-            headerParts.add(context.getString(R.string.pdf_status_label, translatedStatus))
+            headerTitleParts.add("(" + translatedStatus + ")")
         }
 
-        if (headerParts.isNotEmpty()) {
+        if (settings.pdfIncludeChecklistTitle && headerTitleParts.isNotEmpty()) {
             hasHeaderContent = true
-            canvas.drawText(headerParts.joinToString("  •  "), startX, y, paint)
-            y += 18f
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            paint.textSize = 14f
+            paint.color = Color.BLACK
+            canvas.drawText(headerTitleParts.joinToString(" "), startX, y, paint)
+            y += 20f
         }
+
+        // print Notes
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        paint.textSize = 11f
+        paint.color = Color.DKGRAY
 
         if (settings.pdfIncludeNotes && !submission.notes.isNullOrBlank()) {
             hasHeaderContent = true
@@ -377,24 +431,50 @@ object PdfExporter {
             )
         }
 
-        // Hier kommt die Trennlinie zwischen Header und erstem Checkpunkt
-
-        if (hasHeaderContent) {
+        //----------------------------------------------------------------------
+        // Questions section
+        y += 10f
+        if (y + 100f > bottomLimit) {
+            startNewPage()
             y += 10f
-            paint.color = Color.LTGRAY
-            canvas.drawLine(startX, y, endX, y, paint)
-            y += 20f
         }
 
-        // Questions Section
-        val sortedQuestions = questions.sortedWith(compareBy({ it.sortno }, { it.id })).filter { q ->
-            val answerEntity = answersMap[q.id]
-            val hasAnswer =
-                !answerEntity?.value.isNullOrBlank() || !answerEntity?.imagePath.isNullOrBlank()
-            settings.includeUnansweredQuestions || hasAnswer
+        val blueBgPaint = Paint().apply {
+            color = "#82CFFD".toColorInt()
+            style = Paint.Style.FILL
+            isAntiAlias = true
         }
+
+        val greenLinePaint = Paint().apply {
+            color = Color.parseColor("#008000")
+            strokeWidth = 3f
+            isAntiAlias = true
+        }
+
+        val tableHeaderRect = RectF(startX, y, endX, y + 20f)
+        canvas.drawRect(tableHeaderRect, blueBgPaint)
+
+        paint.textSize = 10f
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        paint.color = Color.BLACK
+        canvas.drawText(context.getString(R.string.pdf_pos), startX + 6f, y + 14f, paint)
+        canvas.drawText(context.getString(R.string.pdf_checkpoint), startX + 40f, y + 14f, paint)
+        paint.textAlign = Paint.Align.RIGHT
+        canvas.drawText(context.getString(R.string.pdf_status), endX - 12f, y + 14f, paint)
+        paint.textAlign = Paint.Align.LEFT
+
+        y += 24f
+
+        val sortedQuestions =
+            questions.sortedWith(compareBy({ it.sortno }, { it.id })).filter { q ->
+                val answerEntity = answersMap[q.id]
+                val hasAnswer =
+                    !answerEntity?.value.isNullOrBlank() || !answerEntity?.imagePath.isNullOrBlank()
+                settings.includeUnansweredQuestions || hasAnswer
+            }
 
         sortedQuestions.forEachIndexed { qIndex, q ->
+
             val answerEntity = answersMap[q.id]
             val answerValueRaw = answerEntity?.value ?: context.getString(R.string.pdf_no_answer)
             val answerValue = if (q.type.lowercase() == "checkbox") {
@@ -409,14 +489,14 @@ object PdfExporter {
                 answerValueRaw
             }
 
-            val qType = q.type.lowercase()
-            val isRightAlignedType =
-                qType in listOf("number", "combobox", "multiselect", "checkbox")
-
             val linePadding = if (qIndex > 0) 6f else 0f
             val hasTitle = settings.pdfIncludeQuestionTitle
             val hasValue = settings.pdfIncludeAnswerValue
             val hasNotes = settings.pdfIncludeAnswerNotes && !answerEntity?.notes.isNullOrBlank()
+            val qType = q.type.lowercase()
+            val isRightAlignedType =
+                qType in listOf("number", "combobox", "multiselect", "checkbox")
+
 
             // Calculate Left Block Height (Title + Left Answer + Notes + Picture)
             var leftBlockHeight = 0f
@@ -432,7 +512,7 @@ object PdfExporter {
                     16f
                 )
             }
-            if (hasNotes && answerEntity.notes != null) {
+            if (hasNotes) {
                 paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
                 paint.textSize = 10f
                 leftBlockHeight += calculateMultiLineHeight(
@@ -482,26 +562,33 @@ object PdfExporter {
                     startNewPage()
                 }
 
-                // Draw thin divider line between answers/questions (skip for first question since header divider was already drawn)
-                if (qIndex > 0) {
-                    canvas.drawLine(startX, y, endX, y, dividerPaint)
-                    y += 6f
-                }
-
-                paint.textSize = 11f
                 val startY = y
                 var leftY = startY
                 var rightY = startY
 
+
+                //canvas.drawLine(endX - 2f, y - 4f, endX - 2f, y + blockHeight - 6f, greenLinePaint)
+
+                // print POS
+                paint.textSize = 10f
+                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                paint.textAlign = Paint.Align.LEFT
+                canvas.drawText("${qIndex + 1}", 46f, y + 10f, paint)
+
+
                 // LEFT BLOCK RENDERING (Title -> Left Answer -> Notes -> Picture)
+
+                // TITLE
                 if (hasTitle) {
                     paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                    paint.textAlign = Paint.Align.LEFT
                     paint.color = Color.BLACK
-                    val questionTitle = truncateText(paint, q.title, 260f)
-                    canvas.drawText(questionTitle, startX, leftY, paint)
-                    leftY += 14f
+                    val titleStr = truncateText(paint, q.title, 320f)
+                    canvas.drawText(titleStr, startX + 40f, y + 10f, paint)
+                    leftY = y + 24f
                 }
 
+                // TEXT VALUE must be printed below of the title
                 if (hasValue && !isRightAlignedType) {
                     paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                     paint.color = Color.BLACK
@@ -509,41 +596,43 @@ object PdfExporter {
                     leftY = drawMultiLineText(
                         canvas = canvas,
                         text = answerContent,
-                        startX = startX,
+                        startX = startX + 40f,
                         startY = leftY,
                         paint = paint,
-                        maxWidth = endX - startX,
+                        maxWidth = 320f,
                         lineHeight = 16f,
                         bottomLimit = bottomLimit,
                         onPageOverflow = { startNewPage() }
                     )
                 }
 
-                if (hasNotes && answerEntity.notes != null) {
-                    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+                // NOTES must be printed below of question & text answers
+                if (hasNotes) {
                     paint.textSize = 10f
+                    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
                     paint.color = Color.DKGRAY
                     val notesContent = "    ${answerEntity.notes}"
                     leftY = drawMultiLineText(
                         canvas = canvas,
                         text = notesContent,
-                        startX = startX,
+                        startX = startX + 40f,
                         startY = leftY,
                         paint = paint,
-                        maxWidth = endX - startX,
+                        maxWidth = 320f,
                         lineHeight = 14f,
                         bottomLimit = bottomLimit,
                         onPageOverflow = { startNewPage() }
                     )
                 }
 
+                // PICTURES must be printed below of notes
                 if (picBitmap != null && picHeight > 0f) {
                     try {
                         val targetWidth = minOf(picBitmap.width.toFloat(), 240f)
                         val targetHeight =
                             (picBitmap.height.toFloat() / picBitmap.width.toFloat()) * targetWidth
                         val destRect = RectF(
-                            startX + 20f,
+                            startX + 40f,
                             leftY,
                             startX + 20f + targetWidth,
                             leftY + targetHeight
@@ -554,7 +643,7 @@ object PdfExporter {
                             isDither = true
                         }
                         canvas.drawBitmap(picBitmap, null, destRect, bitmapPaint)
-                        leftY += targetHeight + 8f
+                        leftY += targetHeight + 10f
                     } catch (e: Exception) {
                         e.printStackTrace()
                     } finally {
@@ -563,6 +652,18 @@ object PdfExporter {
                 }
 
                 // RIGHT BLOCK RENDERING (Right-aligned values / multiselect options)
+
+                // print "✓" instead of true, yes, ja, ok, completed,...
+                val statusDisplay = if (answerValue.lowercase() in listOf(
+                        "true",
+                        "yes",
+                        "ja",
+                        "ok",
+                        "completed"
+                    )
+                ) "✓" else answerValue
+
+
                 if (hasValue && isRightAlignedType) {
                     val valX = startX + 280f
                     if (qType == "multiselect") {
@@ -573,6 +674,7 @@ object PdfExporter {
                             canvas.drawText(answerValue, valX, rightY, paint)
                             rightY += 16f
                         } else {
+                            rightY += 10f
                             optionsSelected.forEachIndexed { optIndex, optVal ->
                                 val optY = rightY + (optIndex * 16f)
                                 val cleanedOpt = cleanOptionText(optVal)
@@ -592,26 +694,29 @@ object PdfExporter {
                                         style = Paint.Style.FILL
                                     }
                                     val textWidth = paint.measureText(cleanedOpt)
+                                    paint.textAlign = Paint.Align.RIGHT
                                     canvas.drawRect(
-                                        valX - 4f,
+                                        endX - 12f - textWidth - 4f,
                                         optY - 11f,
-                                        valX + textWidth + 4f,
+                                        endX - 12f + 4f,
                                         optY + 4f,
                                         bgPaint
                                     )
+                                    paint.textAlign = Paint.Align.LEFT
+
                                 }
 
-                                canvas.drawText(cleanedOpt, valX, optY, paint)
+                                paint.textAlign = Paint.Align.RIGHT
+                                canvas.drawText(cleanedOpt, endX - 12f, optY, paint)
+                                paint.textAlign = Paint.Align.LEFT
+
                             }
                             rightY += optionsSelected.size * 16f
                         }
                     } else {
-                        val cleanedVal =
-                            if (qType == "combobox") cleanOptionText(answerValue) else answerValue
-                        val highlightColor = if (qType == "combobox") getComboboxHighlightColor(
-                            q.options,
-                            answerValue
-                        ) else HighlightColor.NONE
+                        val cleanedVal = cleanOptionText(statusDisplay)
+                        val highlightColor = getComboboxHighlightColor(q.options, answerValue)
+                        //) else HighlightColor.NONE
 
                         paint.typeface = Typeface.create(
                             Typeface.DEFAULT,
@@ -630,348 +735,74 @@ object PdfExporter {
                                 style = Paint.Style.FILL
                             }
                             val textWidth = paint.measureText(cleanedVal)
+                            paint.textAlign = Paint.Align.RIGHT
                             canvas.drawRect(
-                                valX - 4f,
-                                rightY - 11f,
-                                valX + textWidth + 4f,
-                                rightY + 4f,
+                                endX - 12f - textWidth - 4f,
+                                rightY + 10 - 11f,
+                                endX - 12f + 4f,
+                                rightY + 10 + 4f,
                                 bgPaint
                             )
+                            paint.textAlign = Paint.Align.LEFT
+
                         }
 
-                        canvas.drawText(cleanedVal, valX, rightY, paint)
+                        //canvas.drawText(cleanedVal, valX, rightY, paint)
+                        paint.textAlign = Paint.Align.RIGHT
+                        canvas.drawText(cleanedVal, endX - 12f, y + 10f, paint)
+                        paint.textAlign = Paint.Align.LEFT
                         rightY += 16f
                     }
                 }
 
-                y = maxOf(leftY, rightY) + 4f
+                // print a line after position is printed
+                y = maxOf(leftY, rightY) - 6f
+                canvas.drawLine(startX, y, endX, y, dividerPaint)
+                y += 6f
             }
         }
+        //------------------------------------------------------------------
 
+        //Print Date and Inspector Signature
+        if (settings.pdfIncludeDate || settings.pdfIncludeInspector) {
+            y += 40f
+            if (y + 40 > bottomLimit) {
+                startNewPage()
+                y += 40f
+            }
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+            paint.textAlign = Paint.Align.LEFT
+            paint.color = Color.DKGRAY
+            //----------------------------------------------
+            //print Date
+            paint.textSize = 11f
+            val footerX = 40f
+            canvas.drawText(submission.date, footerX, y + 10f, paint)
+            //print line
+            canvas.drawLine(footerX, y + 16, footerX + 160f, y + 16, dividerPaint)
+            //print label Date
+            paint.textSize = 8f
+            canvas.drawText(context.getString(R.string.date), footerX, y + 26f, paint)
+            //----------------------------------------------
+            //print Inspector
+            paint.textSize = 11f
+            canvas.drawLine(footerX + 220f, y + 16, footerX + 380f, y + 16, dividerPaint)
+            paint.textSize = 8f
+            canvas.drawText(
+                context.getString(R.string.inspector) + ": " + submission.inspector,
+                footerX + 220f,
+                y + 26f,
+                paint
+            )
+            y += 40f
+        }
+        //----------------------------------------------
+        // print Footer
         drawFooter()
         pdfDocument.finishPage(page)
         return pdfDocument
     }
 
-    private fun createSubmissionPdfDocumentV2(
-        context: Context,
-        submission: ChecklistSubmissionEntity,
-        checklist: ChecklistEntity?,
-        questions: List<ChecklistQuestionEntity>,
-        answers: List<ChecklistAnswerEntity>,
-        settings: UserSettings = UserSettings(),
-    ): PdfDocument {
-        val answersMap =
-            answers.filter { it.submissionid == submission.id }.associateBy { it.questionid }
-        val pdfDocument = PdfDocument()
-
-        val pageWidth = 595
-        val pageHeight = 842
-        val startX = 40f
-        val endX = 555f
-        val bottomLimit = 770f
-
-        var pageNum = 1
-        var pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNum).create()
-        var page = pdfDocument.startPage(pageInfo)
-        var canvas: Canvas = page.canvas
-
-        val paint = Paint().apply {
-            isAntiAlias = true
-            color = Color.BLACK
-        }
-
-        val blueBgPaint = Paint().apply {
-            color = Color.parseColor("#82CFFD")
-            style = Paint.Style.FILL
-            isAntiAlias = true
-        }
-
-        val greenLinePaint = Paint().apply {
-            color = Color.parseColor("#008000")
-            strokeWidth = 3f
-            isAntiAlias = true
-        }
-
-        val dividerPaint = Paint().apply {
-            color = Color.LTGRAY
-            strokeWidth = 0.5f
-        }
-
-        fun drawPobvolLogo(x: Float, y: Float) {
-            val bgRect = RectF(x, y, x + 80f, y + 24f)
-            val pillPaint = Paint().apply {
-                color = Color.parseColor("#CADBFB")
-                style = Paint.Style.FILL
-                isAntiAlias = true
-            }
-            canvas.drawRoundRect(bgRect, 12f, 12f, pillPaint)
-            val logoTextPaint = Paint().apply {
-                color = Color.parseColor("#2D2D2D")
-                textSize = 14f
-                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-                isAntiAlias = true
-                textAlign = Paint.Align.CENTER
-            }
-            canvas.drawText("pobvol", x + 40f, y + 17f, logoTextPaint)
-        }
-
-        fun startNewPageV2() {
-            paint.textSize = 9f
-            paint.color = Color.GRAY
-            paint.textAlign = Paint.Align.RIGHT
-            canvas.drawText("Seite -$pageNum-", endX, bottomLimit + 20f, paint)
-            paint.textAlign = Paint.Align.LEFT
-
-            pdfDocument.finishPage(page)
-            pageNum++
-            pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNum).create()
-            page = pdfDocument.startPage(pageInfo)
-            canvas = page.canvas
-
-            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            paint.textSize = 10f
-            paint.color = Color.BLACK
-            canvas.drawText("Servicebericht V6", startX, 45f, paint)
-            canvas.drawText(checklist?.category?.ifBlank { "UVV-Prüfung" } ?: "UVV-Prüfung",
-                startX,
-                57f,
-                paint)
-            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-            canvas.drawText(checklist?.title ?: "Inspection Report", startX, 69f, paint)
-
-            drawPobvolLogo(endX - 80f, 40f)
-
-            canvas.drawLine(startX, 85f, endX, 85f, dividerPaint)
-        }
-
-        // Running Page Header for Page 1
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        paint.textSize = 10f
-        paint.color = Color.BLACK
-        canvas.drawText("Servicebericht V6", startX, 45f, paint)
-        canvas.drawText(checklist?.category?.ifBlank { "UVV-Prüfung" } ?: "UVV-Prüfung",
-            startX,
-            57f,
-            paint)
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        canvas.drawText(checklist?.title ?: "Inspection Report", startX, 69f, paint)
-
-        drawPobvolLogo(endX - 80f, 40f)
-        canvas.drawLine(startX, 85f, endX, 85f, dividerPaint)
-
-        var y = 100f
-        val inspectorName = submission.inspector?.ifBlank { null } ?: "Kundendienst"
-
-        // "Ihr Inventar" Summary Box
-        paint.textSize = 12f
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        paint.color = Color.BLACK
-        canvas.drawText("Ihr Inventar", startX, y, paint)
-
-        y += 10f
-        val invBoxHeight = 85f
-        val invRect = RectF(startX, y, endX, y + invBoxHeight)
-        canvas.drawRect(invRect, blueBgPaint)
-
-        var invY = y + 16f
-        val c1 = startX + 10f
-        val c2 = startX + 100f
-        val c3 = startX + 260f
-        val c4 = startX + 380f
-
-        fun drawInvRow(l1: String, v1: String, l2: String, v2: String) {
-            paint.textSize = 9f
-            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            paint.color = Color.BLACK
-            canvas.drawText(l1, c1, invY, paint)
-            canvas.drawText(v1, c2, invY, paint)
-            if (l2.isNotBlank()) {
-                canvas.drawText(l2, c3, invY, paint)
-                canvas.drawText(v2, c4, invY, paint)
-            }
-            invY += 14f
-        }
-
-        drawInvRow("Hersteller", "Eine", "Unsere Inventar-Nr.", "02")
-        drawInvRow(
-            "Bezeichnung",
-            checklist?.title ?: "Schöne Leiter",
-            "Ihre Inventar-Nr.",
-            "KdInv-123"
-        )
-        drawInvRow("Gerätetyp", "Leiter", "Nächste Prüfung", "Jun 2026")
-        drawInvRow("Gerätenummer", "SNR-123", "", "")
-
-        y += invBoxHeight + 25f
-
-        paint.textSize = 12f
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText("Plakette erhalten", startX, y, paint)
-
-        val badgeCircleX = endX - 40f
-        val badgeCircleY = y + 10f
-        val badgePaint = Paint().apply {
-            color = Color.parseColor("#E0E000")
-            style = Paint.Style.FILL
-            isAntiAlias = true
-        }
-        canvas.drawCircle(badgeCircleX, badgeCircleY, 24f, badgePaint)
-        paint.textSize = 8f
-        paint.textAlign = Paint.Align.CENTER
-        canvas.drawText("06/26", badgeCircleX, badgeCircleY - 4f, paint)
-        canvas.drawText("UVV", badgeCircleX, badgeCircleY + 6f, paint)
-        paint.textAlign = Paint.Align.LEFT
-
-        y += 18f
-        paint.textSize = 9f
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        val badgeInfo =
-            "Wir haben wenige kleine Mängel gefunden. Einer Nutzung stehen keine Bedenken entgegen. Sie bekommen die neue Prüfplakette. Gekennzeichnete Mängel sollten jedoch zeitnah beseitigt werden!"
-        y = drawMultiLineText(
-            canvas = canvas,
-            text = badgeInfo,
-            startX = startX,
-            startY = y,
-            paint = paint,
-            maxWidth = endX - startX - 80f,
-            lineHeight = 13f,
-            bottomLimit = bottomLimit,
-            onPageOverflow = { startNewPageV2() }
-        )
-
-        y += 12f
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText("Sicherheitsrelevante Kommentare:", startX, y, paint)
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        val notesStr = submission.notes?.ifBlank { "Keine" } ?: "Keine"
-        canvas.drawText(notesStr, startX + 170f, y, paint)
-
-        y += 40f
-        canvas.drawLine(startX, y, startX + 160f, y, dividerPaint)
-        canvas.drawLine(startX + 220f, y, startX + 380f, y, dividerPaint)
-        paint.textSize = 8f
-        canvas.drawText("Ort, Datum", startX, y + 10f, paint)
-        canvas.drawText("$inspectorName, Techniker", startX + 220f, y + 10f, paint)
-
-        // CHECKPOINTS TABLE ("Angaben zum Servicevorgang")
-        y += 35f
-        if (y + 100f > bottomLimit) {
-            startNewPageV2()
-            y = 100f
-        }
-
-        val tableHeaderRect = RectF(startX, y, endX, y + 20f)
-        canvas.drawRect(tableHeaderRect, blueBgPaint)
-
-        paint.textSize = 10f
-        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        paint.color = Color.BLACK
-        canvas.drawText("Pos", startX + 6f, y + 14f, paint)
-        canvas.drawText("Checkpunkt", startX + 60f, y + 14f, paint)
-        paint.textAlign = Paint.Align.RIGHT
-        canvas.drawText("Status", endX - 12f, y + 14f, paint)
-        paint.textAlign = Paint.Align.LEFT
-
-        y += 24f
-
-        val sortedQuestions =
-            questions.sortedWith(compareBy({ it.sortno }, { it.id })).filter { q ->
-                val answerEntity = answersMap[q.id]
-                val hasAnswer =
-                    !answerEntity?.value.isNullOrBlank() || !answerEntity?.imagePath.isNullOrBlank()
-                settings.includeUnansweredQuestions || hasAnswer
-            }
-
-        sortedQuestions.forEachIndexed { qIndex, q ->
-            val answerEntity = answersMap[q.id]
-            val answerValue = answerEntity?.value ?: context.getString(R.string.pdf_no_answer)
-
-            var rowHeight = 20f
-            if (!answerEntity?.notes.isNullOrBlank()) rowHeight += 14f
-
-            var picBitmap: Bitmap? = null
-            var picHeight = 0f
-            if (settings.pdfIncludeAnswerPicture && !answerEntity?.imagePath.isNullOrBlank()) {
-                val picFile = getPictureFile(context, answerEntity.imagePath)
-                if (picFile != null && picFile.exists()) {
-                    try {
-                        picBitmap = BitmapFactory.decodeFile(picFile.absolutePath)
-                        if (picBitmap != null) {
-                            val targetWidth = minOf(picBitmap.width.toFloat(), 120f)
-                            picHeight =
-                                (picBitmap.height.toFloat() / picBitmap.width.toFloat()) * targetWidth
-                            rowHeight += picHeight + 6f
-                        }
-                    } catch (_: Exception) {
-                    }
-                }
-            }
-
-            if (y + rowHeight > bottomLimit) {
-                startNewPageV2()
-                y = 100f
-            }
-
-            canvas.drawLine(endX - 2f, y - 4f, endX - 2f, y + rowHeight - 6f, greenLinePaint)
-
-            paint.textSize = 9f
-            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            canvas.drawText("${qIndex + 1}", startX + 6f, y + 10f, paint)
-
-            val titleStr = truncateText(paint, q.title, 320f)
-            canvas.drawText(titleStr, startX + 60f, y + 10f, paint)
-
-            val statusDisplay = if (answerValue.lowercase() in listOf(
-                    "true",
-                    "yes",
-                    "ja",
-                    "ok",
-                    "completed"
-                )
-            ) "✓" else answerValue
-            paint.textAlign = Paint.Align.RIGHT
-            canvas.drawText(statusDisplay, endX - 12f, y + 10f, paint)
-            paint.textAlign = Paint.Align.LEFT
-
-            var subY = y + 22f
-
-            if (!answerEntity?.notes.isNullOrBlank()) {
-                paint.textSize = 8f
-                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
-                paint.color = Color.DKGRAY
-                canvas.drawText("    ${answerEntity.notes}", startX + 60f, subY, paint)
-                subY += 14f
-            }
-
-            if (picBitmap != null && picHeight > 0f) {
-                try {
-                    val targetWidth = minOf(picBitmap.width.toFloat(), 120f)
-                    val destRect =
-                        RectF(startX + 60f, subY, startX + 60f + targetWidth, subY + picHeight)
-                    val bitmapPaint = Paint().apply { isAntiAlias = true; isFilterBitmap = true }
-                    canvas.drawBitmap(picBitmap, null, destRect, bitmapPaint)
-                    subY += picHeight + 6f
-                } catch (_: Exception) {
-                } finally {
-                    picBitmap.recycle()
-                }
-            }
-
-            y = maxOf(y + rowHeight, subY)
-            canvas.drawLine(startX, y, endX, y, dividerPaint)
-            y += 6f
-        }
-
-        paint.textSize = 9f
-        paint.color = Color.GRAY
-        paint.textAlign = Paint.Align.RIGHT
-        canvas.drawText("Seite -$pageNum-", endX, bottomLimit + 20f, paint)
-        paint.textAlign = Paint.Align.LEFT
-
-        pdfDocument.finishPage(page)
-        return pdfDocument
-    }
 
     fun generateAndOpenSubmissionPdf(
         context: Context,
@@ -982,27 +813,27 @@ object PdfExporter {
         settings: UserSettings = UserSettings(),
     ) {
         val pdfFileName = "Submission_${submission.id}_Report.pdf"
-        val pdfDir = SqlExporter.getPdfDir(context)
-        var pdfFile = File(pdfDir, pdfFileName)
 
-        if (!pdfFile.exists()) {
-            savePdfToMyChecks(context, submission, checklist, questions, answers, settings)
-            pdfFile = File(pdfDir, pdfFileName)
-        }
+        // 1. Ensure copy is saved in /download/pobvolMyChecks/<deviceid>/pdf
+        savePdfToMyChecks(context, submission, checklist, questions, answers, settings)
 
-        if (!pdfFile.exists()) {
-            pdfFile = File(context.cacheDir, pdfFileName)
-            val pdfDocument = createSubmissionPdfDocument(
-                context,
-                submission,
-                checklist,
-                questions,
-                answers,
-                settings
-            )
+        // 2. Generate/render into context.cacheDir so external PDF viewer apps can read it via FileProvider without URI permission crashes
+        val pdfFile = File(context.cacheDir, pdfFileName)
+        val pdfDocument = createSubmissionPdfDocument(
+            context,
+            submission,
+            checklist,
+            questions,
+            answers,
+            settings
+        )
+        try {
             val fos = FileOutputStream(pdfFile)
             pdfDocument.writeTo(fos)
             fos.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
             pdfDocument.close()
         }
 

@@ -260,4 +260,8 @@
         5. AVISO LEGAL \n
         La aplicación se proporciona con la esperanza de que sea útil, pero SIN NINGUNA GARANTÍA DE NINGÚN TIPO; incluso sin la garantía implícita de COMERCIALIZACIÓN o IDONEIDAD PARA UN PROPÓSITO PARTICULAR. El desarrollador no se hace responsable de ninguna pérdida de datos ni registros erróneos.\n \n 6. CONSENTIMIENTO\n Al hacer clic en [Aceptar y Aceptar], confirmas que has leído, entendido y aceptado estos Términos.
     </string>
+    <string name="pdf_pos">Pos</string>
+    <string name="pdf_checkpoint">Checkpoint/Frage</string>
+    <string name="pdf_status">Ergebnis</string>
+
 </resources>

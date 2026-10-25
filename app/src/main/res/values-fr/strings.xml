@@ -263,4 +263,8 @@ L'application est fournie dans l'espoir qu'elle soit utile, mais SANS AUCUNE GAR
 6. CONSENTEMENT
 En cliquant sur « Accepter et Accepter », vous confirmez avoir lu, compris et accepté ces Conditions.
 "</string>
+    <string name="pdf_pos">Pos</string>
+    <string name="pdf_checkpoint">Checkpoint/Frage</string>
+    <string name="pdf_status">Ergebnis</string>
+
 </resources>

@@ -108,7 +108,7 @@
     <string name="enter_simulate_qr">Eingabe des QR-Codes simulieren</string>
     <string name="simulate_qr_scan">QR-Scan simulieren</string>
     <string name="use_code">Code verwenden</string>
-    <string name="enter_user_name">Prüfer</string>
+    <string name="enter_user_name">Benutzername eingeben</string>
     <string name="delete_category_desc">Kategorie löschen</string>
     <string name="move_question_up">Frage nach oben</string>
     <string name="move_question_down">Frage nach unten</string>
@@ -189,7 +189,7 @@
     <string name="configure_pdf_settings">PDF-Bericht Layout anpassen...</string>
     <string name="checklist_analytics">Checklisten-Analyse</string>
     <string name="submissions_per_day">Protokolle pro Tag</string>
-    <string name="pdf_date_label">Prüfdatum: %1$s</string>
+    <string name="pdf_date_label">Datum: %1$s</string>
     <string name="pdf_inspector_label">Prüfer: %1$s</string>
     <string name="pdf_status_label">Status: %1$s</string>
     <string name="pdf_notes_label">Notizen: %1$s</string>
@@ -221,7 +221,7 @@
     <string name="ftp_server_label">Server / Host</string>
     <string name="ftp_port_label">Port</string>
     <string name="ftp_use_tls_label">FTP über TLS (FTPS)</string>
-    <string name="ftp_user_label">Benutzername</string>
+    <string name="ftp_user_label">FTP-Benutzer</string>
     <string name="ftp_password_label">Passwort</string>
     <string name="data_transfer">Datenübertragung</string>
     <string name="data_transfer_subtitle">FTP-Server konfigurieren und Prüfdaten übertragen.</string>
@@ -263,4 +263,7 @@ Die App wird in der Hoffnung, dass sie nützlich sein wird, aber OHNE JEGLICHE G
 6. ZUSTIMMUNG
 Durch Klicken auf [Akzeptieren &amp; Zustimmen] bestätigen Sie, dass Sie diese Bedingungen gelesen, verstanden und akzeptiert haben.
     "</string>
+    <string name="pdf_pos">Pos</string>
+    <string name="pdf_checkpoint">Checkpoint/Frage</string>
+    <string name="pdf_status">Ergebnis</string>
 </resources>

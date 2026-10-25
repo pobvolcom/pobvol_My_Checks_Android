@@ -262,4 +262,7 @@
         5. DISCLAIMER \n
         The App is provided in the hope that it will be useful, but WITHOUT WARRANTY OF ANY KIND; even without the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. The Developer is not liable for any loss of data or erroneous logs.\n \n 6. CONSENT\n By clicking [Accept &amp; Agree], you confirm that you have read, understood and accepted these Terms.
     </string>
+    <string name="pdf_pos">Pos</string>
+    <string name="pdf_checkpoint">Checkpoint/Question</string>
+    <string name="pdf_status">Result</string>
 </resources>
