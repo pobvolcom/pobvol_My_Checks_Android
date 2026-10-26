@@ -340,9 +340,6 @@ pobvol Software Services
         - </b>Prüfdatum</b>: Das Datum wurde mit dem aktuellen Datum vorbelegt (zur Zeit fest
         dd.MM.yyyyy). Sie können dieses ändern.<br>
         <br>
-        - </b>Status</b>: Der Status wurde mit "in Bearbeitung" vorbelegt. Zur Zeit können Sie den
-        Status noch ändern. Das wird aber abgestellt.<br>
-        <br>
         - </b>Notizen</b>: Wenn Sie mögen, können Sie zusätzliche Angaben zur Prüfung in den Notizen
         eintragen. Nutzen Sie diese Möglichkeit, da die Notizen in der Protokollübersicht angezeigt
         werden. Das erleichtert Ihnen das Auffinden einer Prüfung.<br>
@@ -364,14 +361,23 @@ pobvol Software Services
         wurden die Daten in das Antwortfeld übernommen. Bitte beachten Sie, dass die App dazu
         Kamera-Berechtigungen benötigt.<br>
         <br>
+        - </b>Bild hinzufügen</b>: Tippen Sie auf das Icon "Bild aufnehmen" oder das Icon "Bild
+        hochladen", um ein Foto zu einer Antwort hinzuzufügen.
+        Bilder werden in dem abgesicherten App-Ordner (/data/data/com.pobvol.mychecks) gespeichert.
+        Legen Sie über die Icons "S", "M", "L" fest, in welcher Größe ein Bild im PDF-Dokument
+        ausgegeben werden soll.
+        S steht für eine Breite von 100px, M für eine Breite von 200px und L für eine Breite von
+        300px.
+        Das können Sie pro Bild / Antwort individuell festlegen.<br>
+        <br>
         - <b>PDF- und SQL-Dateien</b>: PDF- und SQL-Dateien werden für vollständig ausgefüllte
-        Checklisten automatisch erstellt, sobald alle
-        erforderlichen Daten erfasst wurden.
+        Checklisten automatisch erstellt, sobald alle erforderlichen Daten erfasst wurden.
         Der Status wird automatisch auf "Abgeschlossen" gesetzt.
         Eine PDF-Datei wird in dem Ordner <b>Download/pobvolMyChecks/pdf</b> gespeichert.
         Eine SQL-Datei wird in dem Ordner <b>Download/pobvolMyChecks/sql</b> gespeichert.
-        Für jede SQL-Dateien wird zusätzlich eine Datei mit der entsprechenden Checksumme
-        gespeichert.
+        Für jede SQL-Datei wird zusätzlich eine Datei mit der entsprechenden Checksumme in dem
+        sql-Ordner gespeichert.
+        Wurden Bilder hinzugefügt, werden diese ebenfalls in den sql-Ordner kopiert.
     </p>
 </div>
 
@@ -388,7 +394,9 @@ pobvol Software Services
         <b>Einstellungen</b>: Klicken Sie auf das Zahnrad-Symbol (⚙), öffnet sich der Dialog
         "PDF-Berichts-Designer".
         Passen Sie das Layout der PDF-Berichte (Kopfzeile, Fußzeile, Seitenumbrüche, Datums- und
-        Statusanzeige) an.<br>
+        Statusanzeige) an.
+        Für Bilder können Sie Ihre Werte für S, M, L an Ihre Wünsche anpassen.
+        Standardmäßig wird 100px für S, 200px für M und 300px für L verwendet.<br>
         <br>
         <b>Protokolle suchen</b>: Tippen Sie auf das Suchsymbol (🔍) in der oberen Leiste, um
         Protokolle nach Datum, Titel oder Notizen zu finden.<br>

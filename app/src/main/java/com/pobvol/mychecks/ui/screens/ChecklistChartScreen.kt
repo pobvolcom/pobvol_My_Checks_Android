@@ -297,7 +297,7 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>, isDarkTheme: Boolean) {
                         if (isDarkTheme) android.graphics.Color.WHITE else android.graphics.Color.BLACK
                     val textPaint = android.graphics.Paint().apply {
                         color = labelColor
-                        textSize = 32f
+                        textSize = 30f
                         isAntiAlias = true
                         textAlign = android.graphics.Paint.Align.CENTER
                     }
@@ -405,7 +405,7 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
                     ) else android.graphics.Color.BLACK
                     val textPaint = android.graphics.Paint().apply {
                         color = labelColor
-                        textSize = 32f
+                        textSize = 30f
                         isAntiAlias = true
                         textAlign = android.graphics.Paint.Align.CENTER
                     }
@@ -532,13 +532,13 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme:
 
                     val textPaint1 = android.graphics.Paint().apply {
                         color = labelColor1
-                        textSize = 32f
+                        textSize = 30f
                         isAntiAlias = true
                         textAlign = android.graphics.Paint.Align.CENTER
                     }
                     val textPaint2 = android.graphics.Paint().apply {
                         color = labelColor2
-                        textSize = 32f
+                        textSize = 30f
                         isAntiAlias = true
                         textAlign = android.graphics.Paint.Align.CENTER
                     }

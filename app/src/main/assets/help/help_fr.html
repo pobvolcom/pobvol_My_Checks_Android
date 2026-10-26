@@ -349,12 +349,24 @@
             s'est bien passé, Les données ont été transférées dans le champ de réponse. Veuillez
             noter que l'application Autorisations de caméra requises.<br>
             <br>
+            - <b>Ajouter une image</b>: Appuyez sur l'icône « Prendre une image » ou « Télécharger
+            l'image » pour ajouter une photo à une réponse.
+            Les images sont stockées dans le dossier sécurisé de l'application
+            (/data/data/com.pobvol.mychecks).
+            Utilisez les icônes « S », « M », « L » pour spécifier la taille dans laquelle une image
+            doit être produite dans le document PDF.
+            S représente une largeur de 100px, M une largeur de 200px et L une largeur de 300px.
+            Vous pouvez définir cela individuellement pour chaque image / réponse.<br>
+            <br>
             - <b>Fichiers PDF et SQL</b>: Les fichiers PDF et SQL sont automatiquement créés pour
             les listes de contrôle entièrement complétées dès que tous des données ont été
-            collectées. Le statut est automatiquement réglé sur « Terminé ». Un fichier PDF sera
-            enregistré dans le dossier Download/pobvolMyChecks/pdf. Un fichier SQL est stocké dans
-            le dossier Download/pobvolMyChecks/sql. Pour chaque fichier SQL, un fichier
-            supplémentaire avec la somme de contrôle correspondante est stocké.<br>
+            collectées. Le statut est automatiquement réglé sur « Terminé ».
+            Un fichier PDF sera enregistré dans le dossier Download/pobvolMyChecks/pdf.
+            Un fichier SQL est stocké dans le dossier Download/pobvolMyChecks/sql.
+            Pour chaque fichier SQL, un fichier supplémentaire avec la somme de contrôle
+            correspondante est stocké dans le dossier sql.
+            Si des images ont été ajoutées, elles sont également copiées dans le dossier sql.
+            <br>
         </p>
     </div>
 
@@ -371,7 +383,9 @@
             <br>
             <b>Paramètres</b>: Si vous cliquez sur l'icône d'engrenage (⚙), la boîte de dialogue «
             PDF Report Designer » s'ouvre. Personnalisez la mise en page des rapports PDF (en-tête,
-            pied de page, les saut de page, l'affichage de la date et du statut).<br>
+            pied de page, les saut de page, l'affichage de la date et du statut).
+            Pour les images, vous pouvez ajuster vos valeurs pour S, M, L selon vos préférences.
+            Par défaut, 100px est utilisé pour S, 200px pour M, et 300px pour L.<br>
             <br>
             <b>Recherche de journaux</b>: Appuyez sur l'icône de recherche (🔍) dans la barre
             supérieure pour Trouvez les procès-verbaux par date, titre ou notes.<br> <br>

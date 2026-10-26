@@ -346,12 +346,24 @@
             datos se han transferido al campo de respuesta. Ten en cuenta que la aplicación Se
             requieren permisos de cámara.<br>
             <br>
+            - <b>Añadir imagen</b>: Toque el icono "Tomar imagen" o el icono de "Subir imagen" para
+            añadir una foto a una respuesta.
+            Las imágenes se almacenan en la carpeta segura de la app
+            (/data/data/com.pobvol.mychecks).
+            Utiliza los iconos "S", "M", "L" para especificar el tamaño en el que debe generarse una
+            imagen en el documento PDF.
+            S representa un ancho de 100px, M un ancho de 200px y L un ancho de 300px.
+            Puedes configurarlo individualmente para cada imagen o respuesta.<br>
+            <br
             - <b>Archivos PDF y SQL</b>: Los archivos PDF y SQL se crean automáticamente para listas
             de verificación completamente completadas tan pronto como todos se recopilaron datos. El
-            estado se establece automáticamente como "Completado". Un archivo PDF se guardará en la
-            carpeta Download/pobvolMyChecks/pdf. Un archivo SQL se almacena en la carpeta
-            Download/pobvolMyChecks/sql. Para cada archivo SQL, se almacena un archivo adicional con
-            la suma de comprobación correspondiente.<br>
+            estado se establece automáticamente como "Completado".
+            Un archivo PDF se guardará en la carpeta Download/pobvolMyChecks/pdf.
+            Un archivo SQL se almacena en la carpeta Download/pobvolMyChecks/sql.
+            Para cada archivo SQL, se almacena un archivo adicional con la suma de comprobación
+            correspondiente en la carpeta SQL.
+            Si se han añadido imágenes, también se copian a la carpeta sql.
+            <br>
         </p>
     </div>
 
@@ -368,7 +380,9 @@
             <br>
             <b>Configuración</b>: Si haces clic en el icono de engranaje (⚙), se abre el cuadro de
             diálogo "PDF Report Designer". Personalizar el diseño de los informes PDF (cabecera, pie
-            de página, saltos de página, visualización de fecha y estado). <br>
+            de página, saltos de página, visualización de fecha y estado).
+            Para las imágenes, puedes ajustar tus valores para S, M, L a tu gusto.
+            Por defecto, 100px se usa para S, 200px para M y 300px para L. <br>
             <br>
             <b>Encontrar registros</b>: Toca el icono de búsqueda (🔍) en la barra superior para
             Encuentra actas por fecha, título o notas. <br>

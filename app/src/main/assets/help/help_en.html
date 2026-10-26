@@ -318,11 +318,23 @@
             been transferred to the answer field. Please note that the app Camera permissions
             required.<br>
             <br>
+            - <b>Add Image</b>: Tap the "Take Image" icon or the "Upload Image" icon to add a photo
+            to a reply.
+            Images are stored in the secure app folder (/data/data/com.pobvol.mychecks).
+            Use the icons "S", "M", "L" to specify the size in which an image should be output in
+            the PDF document.
+            S stands for a width of 100px, M for a width of 200px and L for a width of 300px.
+            You can set this individually for each image / answer.<br>
+            <br>
             - <b>PDF and SQL files</b>: PDF and SQL files are automatically created for fully
-            completed checklists as soon as all data were collected. The status is automatically set
-            to "Completed". A PDF file will be saved in the Download/pobvolMyChecks/pdf folder. An
-            SQL file is stored in the Download/pobvolMyChecks/sql folder. For each SQL file, an
-            additional file with the corresponding checksum is stored.<br>
+            completed checklists as soon as all data were collected.
+            The status is automatically set to "Completed".
+            A PDF file will be saved in the Download/pobvolMyChecks/pdf folder.
+            An SQL file is stored in the Download/pobvolMyChecks/sql folder.
+            For each SQL file, an additional file with the corresponding checksum is stored in the
+            sql folder.
+            If images have been added, they are also copied to the sql folder.
+            <br>
         </p>
     </div>
 
@@ -338,7 +350,9 @@
             <br>
             <b>Settings</b>: If you click on the gear icon (⚙), the "PDF Report Designer" dialog
             opens. Customize the layout of the PDF reports (header, footer, page breaks, date and
-            status display).<br>
+            status display).
+            For images, you can adjust your values for S, M, L to your liking.
+            By default, 100px is used for S, 200px for M, and 300px for L.<br>
             <br>
             <b>Find logs</b>: Tap the search icon (🔍) in the top bar to Find minutes by date, title
             or notes.<br>
