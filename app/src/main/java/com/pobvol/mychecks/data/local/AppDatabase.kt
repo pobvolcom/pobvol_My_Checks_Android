@@ -20,7 +20,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         ChecklistSubmissionEntity::class,
         ChecklistAnswerEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -63,6 +63,12 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `checklist_answers` ADD COLUMN `pictureSize` TEXT NOT NULL DEFAULT 'medium'")
+            }
+        }
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -72,6 +78,7 @@ abstract class AppDatabase : RoomDatabase() {
                 )
                     .addMigrations(
                         MIGRATION_1_2,
+                        MIGRATION_2_3,
                     )
                     .fallbackToDestructiveMigration(true)
                     .addCallback(

@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.pobvol.mychecks.R
@@ -55,6 +56,9 @@ fun PdfSettingsDialog(
     onPdfCompactAnswerLayoutChanged: (Boolean) -> Unit,
     onPdfFooterTextChanged: (String) -> Unit,
     onPdfTemplateVersionChanged: (String) -> Unit = {},
+    onPdfPictureSizeSmallChanged: (Int) -> Unit = {},
+    onPdfPictureSizeMediumChanged: (Int) -> Unit = {},
+    onPdfPictureSizeLargeChanged: (Int) -> Unit = {},
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -93,7 +97,7 @@ fun PdfSettingsDialog(
                 }
 
                 // Template Version Selector
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                /*Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         text = stringResource(R.string.pdf_template_version_label),
                         style = MaterialTheme.typography.titleMedium,
@@ -115,6 +119,73 @@ fun PdfSettingsDialog(
                             selected = !isV1,
                             onClick = { onPdfTemplateVersionChanged("V2") },
                             label = { Text(stringResource(R.string.pdf_template_v2)) },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }*/
+
+                // Picture Size Selector (<Number input> for S, M, L)
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = stringResource(R.string.pdf_picture_size_label),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        var smallText by remember(userSettings.pdfPictureSizeSmall) {
+                            mutableStateOf(
+                                userSettings.pdfPictureSizeSmall.toString()
+                            )
+                        }
+                        var mediumText by remember(userSettings.pdfPictureSizeMedium) {
+                            mutableStateOf(
+                                userSettings.pdfPictureSizeMedium.toString()
+                            )
+                        }
+                        var largeText by remember(userSettings.pdfPictureSizeLarge) {
+                            mutableStateOf(
+                                userSettings.pdfPictureSizeLarge.toString()
+                            )
+                        }
+
+                        OutlinedTextField(
+                            value = smallText,
+                            onValueChange = { newVal ->
+                                smallText = newVal
+                                newVal.toIntOrNull()?.let { onPdfPictureSizeSmallChanged(it) }
+                            },
+                            label = { Text(stringResource(R.string.pdf_picture_size_s_label)) },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f),
+                        )
+                        OutlinedTextField(
+                            value = mediumText,
+                            onValueChange = { newVal ->
+                                mediumText = newVal
+                                newVal.toIntOrNull()?.let { onPdfPictureSizeMediumChanged(it) }
+                            },
+                            label = { Text(stringResource(R.string.pdf_picture_size_m_label)) },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f),
+                        )
+                        OutlinedTextField(
+                            value = largeText,
+                            onValueChange = { newVal ->
+                                largeText = newVal
+                                newVal.toIntOrNull()?.let { onPdfPictureSizeLargeChanged(it) }
+                            },
+                            label = { Text(stringResource(R.string.pdf_picture_size_l_label)) },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.weight(1f),
                         )
                     }

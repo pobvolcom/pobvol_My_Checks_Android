@@ -225,6 +225,9 @@ class MainActivity : AppCompatActivity() {
                             onPdfCompactAnswerLayoutChanged = viewModel::updatePdfCompactAnswerLayout,
                             onPdfFooterTextChanged = viewModel::updatePdfFooterText,
                             onPdfTemplateVersionChanged = viewModel::updatePdfTemplateVersion,
+                            onPdfPictureSizeSmallChanged = viewModel::updatePdfPictureSizeSmall,
+                            onPdfPictureSizeMediumChanged = viewModel::updatePdfPictureSizeMedium,
+                            onPdfPictureSizeLargeChanged = viewModel::updatePdfPictureSizeLarge,
                             onExportPdfClick = { submission ->
                                 viewModel.exportSubmissionPdf(this, submission)
                             },
@@ -318,6 +321,9 @@ class MainActivity : AppCompatActivity() {
                             onPdfCompactAnswerLayoutChanged = viewModel::updatePdfCompactAnswerLayout,
                             onPdfFooterTextChanged = viewModel::updatePdfFooterText,
                             onPdfTemplateVersionChanged = viewModel::updatePdfTemplateVersion,
+                            onPdfPictureSizeSmallChanged = viewModel::updatePdfPictureSizeSmall,
+                            onPdfPictureSizeMediumChanged = viewModel::updatePdfPictureSizeMedium,
+                            onPdfPictureSizeLargeChanged = viewModel::updatePdfPictureSizeLarge,
                             onAddCategory = viewModel::addCategory,
                             modifier = Modifier.fillMaxSize(),
                         )
@@ -353,6 +359,9 @@ class MainActivity : AppCompatActivity() {
                             onPdfCompactAnswerLayoutChanged = viewModel::updatePdfCompactAnswerLayout,
                             onPdfFooterTextChanged = viewModel::updatePdfFooterText,
                             onPdfTemplateVersionChanged = viewModel::updatePdfTemplateVersion,
+                            onPdfPictureSizeSmallChanged = viewModel::updatePdfPictureSizeSmall,
+                            onPdfPictureSizeMediumChanged = viewModel::updatePdfPictureSizeMedium,
+                            onPdfPictureSizeLargeChanged = viewModel::updatePdfPictureSizeLarge,
                             onAddCategory = viewModel::addCategory,
                             onDeleteCategory = viewModel::deleteCategory,
                             onExportDbClick = {

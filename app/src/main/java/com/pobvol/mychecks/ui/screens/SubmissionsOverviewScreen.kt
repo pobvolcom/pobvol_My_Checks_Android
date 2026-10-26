@@ -97,6 +97,9 @@ fun SubmissionsOverviewScreen(
     onPdfCompactAnswerLayoutChanged: (Boolean) -> Unit = {},
     onPdfFooterTextChanged: (String) -> Unit = {},
     onPdfTemplateVersionChanged: (String) -> Unit = {},
+    onPdfPictureSizeSmallChanged: (Int) -> Unit = {},
+    onPdfPictureSizeMediumChanged: (Int) -> Unit = {},
+    onPdfPictureSizeLargeChanged: (Int) -> Unit = {},
     onExportPdfClick: (ChecklistSubmissionEntity) -> Unit = {},
     onExportSqlClick: (ChecklistSubmissionEntity) -> Unit = {},
     onEditSubmissionClick: (ChecklistSubmissionEntity) -> Unit,
@@ -349,6 +352,9 @@ fun SubmissionsOverviewScreen(
                 onPdfCompactAnswerLayoutChanged = onPdfCompactAnswerLayoutChanged,
                 onPdfFooterTextChanged = onPdfFooterTextChanged,
                 onPdfTemplateVersionChanged = onPdfTemplateVersionChanged,
+                onPdfPictureSizeSmallChanged = onPdfPictureSizeSmallChanged,
+                onPdfPictureSizeMediumChanged = onPdfPictureSizeMediumChanged,
+                onPdfPictureSizeLargeChanged = onPdfPictureSizeLargeChanged,
                 onDismissRequest = onDismissPdfSettingsDialog,
             )
         }

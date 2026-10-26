@@ -55,6 +55,7 @@ data class AnswerInput(
     val value: String = "",
     val notes: String? = null,
     val imageUri: String? = null,
-    val imagePath: String? = null
+    val imagePath: String? = null,
+    val pictureSize: String = "medium"
 )
 

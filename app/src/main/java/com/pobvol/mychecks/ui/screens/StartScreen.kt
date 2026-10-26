@@ -97,6 +97,9 @@ fun StartScreen(
     onPdfCompactAnswerLayoutChanged: (Boolean) -> Unit = {},
     onPdfFooterTextChanged: (String) -> Unit = {},
     onPdfTemplateVersionChanged: (String) -> Unit = {},
+    onPdfPictureSizeSmallChanged: (Int) -> Unit = {},
+    onPdfPictureSizeMediumChanged: (Int) -> Unit = {},
+    onPdfPictureSizeLargeChanged: (Int) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
     onExportDbClick: () -> Unit = {},
@@ -356,6 +359,9 @@ fun StartScreen(
                 onPdfCompactAnswerLayoutChanged = onPdfCompactAnswerLayoutChanged,
                 onPdfFooterTextChanged = onPdfFooterTextChanged,
                 onPdfTemplateVersionChanged = onPdfTemplateVersionChanged,
+                onPdfPictureSizeSmallChanged = onPdfPictureSizeSmallChanged,
+                onPdfPictureSizeMediumChanged = onPdfPictureSizeMediumChanged,
+                onPdfPictureSizeLargeChanged = onPdfPictureSizeLargeChanged,
                 onDismissRequest = onDismissPdfSettingsDialog,
             )
         }

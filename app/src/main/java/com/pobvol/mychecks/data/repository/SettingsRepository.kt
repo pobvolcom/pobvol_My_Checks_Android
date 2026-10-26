@@ -35,6 +35,11 @@ data class UserSettings(
     val ftpUser: String = "",
     val ftpPassword: String = "",
     val isLicenseAccepted: Boolean = false,
+    val pictureSize: String = "medium",
+    val pdfPictureSize: String = "medium",
+    val pdfPictureSizeSmall: Int = 100,
+    val pdfPictureSizeMedium: Int = 200,
+    val pdfPictureSizeLarge: Int = 300,
 )
 
 interface SettingsRepository {
@@ -65,4 +70,9 @@ interface SettingsRepository {
     suspend fun updateFtpUser(user: String)
     suspend fun updateFtpPassword(password: String)
     suspend fun acceptLicense()
+    suspend fun updatePictureSize(size: String)
+    suspend fun updatePdfPictureSize(size: String)
+    suspend fun updatePdfPictureSizeSmall(size: Int)
+    suspend fun updatePdfPictureSizeMedium(size: Int)
+    suspend fun updatePdfPictureSizeLarge(size: Int)
 }

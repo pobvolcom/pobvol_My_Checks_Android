@@ -251,20 +251,24 @@ Vous pouvez télécharger, installer, utiliser, modifier et redistribuer l'appli
 2. DROITS D'AUTEUR
 Copyright © 2026 Volker Pobloth, pobvol Software Services
 
-3. VIE PRIVÉE
-Toutes les données sont stockées sur votre appareil dans une zone sécurisée de l'application (/data/data/com.pobvol.mychecks). L'application ne transfère pas de données vers le cloud ni vers des serveurs tiers.
+3. VIE PRIVÉE / RENFORTS
+Toutes les données sont stockées sur votre appareil dans une zone sécurisée de l'application (/data/data/com.pobvol.mychecks). Vous pouvez créer une copie de sauvegarde de la base de données à tout moment depuis l'écran d'accueil. L'application crée automatiquement des fichiers PDF et SQL dès qu'une liste de contrôle a été entièrement remplie. Des copies de bases de données, des fichiers PDF et SQL sont disponibles dans son dossier de téléchargement. Vous pouvez copier et sauvegarder ces données sur un PC ou un autre appareil. L'application ne transfère aucune donnée vers le cloud ni vers des serveurs tiers.
 
-4. RENFORTS
-Vous pouvez créer une copie de sauvegarde de la base de données à tout moment depuis l'écran d'accueil. L'application crée automatiquement des fichiers PDF et SQL dès qu'une liste de contrôle a été entièrement remplie. Des copies de bases de données, des fichiers PDF et SQL sont disponibles dans son dossier de téléchargement. Vous pouvez copier et sauvegarder ces données sur un PC ou un autre appareil. L'application ne transfère aucune donnée vers le cloud ni vers des serveurs tiers.
-
-5. AVERTISSEMENT
+4. AVERTISSEMENT
 L'application est fournie dans l'espoir qu'elle soit utile, mais SANS AUCUNE GARANTIE ; même sans la garantie implicite de MARCHANDABILITÉ ou ADÉQUATION À UN USAGE PARTICULIER. Le développeur n'est pas responsable de toute perte de données ou de journaux erronés.
 
-6. CONSENTEMENT
+5. CONSENTEMENT
 En cliquant sur « Accepter et Accepter », vous confirmez avoir lu, compris et accepté ces Conditions.
 "</string>
     <string name="pdf_pos">Pos</string>
     <string name="pdf_checkpoint">Checkpoint/Frage</string>
     <string name="pdf_status">Ergebnis</string>
+    <string name="pdf_picture_size_label">Taille d\'image dans le PDF</string>
+    <string name="pdf_picture_size_small">Petit (100px)</string>
+    <string name="pdf_picture_size_medium">Moyen (200px)</string>
+    <string name="pdf_picture_size_large">Grand (300px)</string>
+    <string name="pdf_picture_size_s_label">Taille S (px)</string>
+    <string name="pdf_picture_size_m_label">Taille M (px)</string>
+    <string name="pdf_picture_size_l_label">Taille L (px)</string>
 
 </resources>

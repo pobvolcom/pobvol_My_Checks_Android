@@ -86,28 +86,26 @@
         .contentflex {
             display: flex;
             flex-flow: row nowrap;
-            height: auto;
+            height: auto
             margin-bottom: 10px;
-            padding-bottom:10px;
-
+            padding-bottom: 10px;
             max-width: 100%; /* Maximum width */
             margin-left: auto;
             margin-right: auto;
             padding-right: 15px;
             overflow-x: scroll;
-
             background: white;
             border-radius: 25px;
             line-height: 1.2;
-
             /*align-items: center;*/
-
-            }
+        }
         .contentflex > div {
             background-color: whitesmoke;
-            margin-right:20px;
+            margin-right:25px;
             padding:15px;
-            min-width: 175px;
+            height: auto;
+            min-width: 33%;
+            text-align: center;
             border: 1px solid grey;
             border-radius: 25px;
             box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
@@ -135,13 +133,12 @@ pobvol Software Services
     <p style="font-size:normal;font-weight: normal;text-align: left;">
         &#x1F517;&nbsp;<a href="#_screenshots" target="_self">Screenshots</a><br>
         &#x1F517;&nbsp;<a href="#_dashboard" target="_self">Dashboard & Navigation</a><br>
-        &#x1F517;&nbsp;<a href="#_settings" target="_self">Einstellungen & Anpassungen</a><br>
+        &#x1F517;&nbsp;<a href="#_settings" target="_self">Einstellungen</a><br>
         &#x1F517;&nbsp;<a href="#_checklists" target="_self">Meine Checklisten</a><br>
         &#x1F517;&nbsp;<a href="#_checkpoints" target="_self">Checkpunkte/Fragen</a><br>
         &#x1F517;&nbsp;<a href="#_executions" target="_self">Prüfungen durchführen und Ergebnisse
         erfassen</a><br>
-        &#x1F517;&nbsp;<a href="#_reports" target="_self">Meine Protokolle & PDF und
-        SQL-Export</a><br>
+        &#x1F517;&nbsp;<a href="#_reports" target="_self">Meine Protokolle</a><br>
         &#x1F517;&nbsp;<a href="#_data_security" target="_self">Datensicherheit</a><br>
         &#x1F517;&nbsp;<a href="#_architecture" target="_self">Technik / Architektur</a><br>
         &#x1F517;&nbsp;<a href="#_copyright" target="_self">Lizenz und Copyright</a><br>
@@ -155,35 +152,27 @@ pobvol Software Services
     <h2>Screenshots</h2>
     <div class="contentflex">
         <div>
-            Dashboard
             <img alt="Dashboard" src="./images/dashboard.png" width=100%>
         </div>
         <div>
-            Meine Checklisten
             <img alt="My Checklists" src="./images/my-checklists.png" width=100%>
         </div>
         <div>
-            Checkliste bearbeiten
             <img alt="Edit Checklist" src="./images/edit-checklist.png" width=100%>
         </div>
         <div>
-            Checkpunkte/Fragen
             <img alt="Checkpoints/Questions" src="./images/checkpoints-questions.png" width=100%>
         </div>
         <div>
-            Meine Protokolle
             <img alt="My Logs" src="./images/my-logs.png" width=100%>
         </div>
         <div>
-            PDF-Report
             <img alt="PDF-Report" src="./images/pdf-report.png" width=100%>
         </div>
         <div>
-            PDF-Report Designer
             <img alt="PDF-Report Designer" src="./images/pdf-report-designer.png" width=100%>
         </div>
         <div>
-            Charts
             <img alt="Charts" src="./images/charts.png" width=100%>
         </div>
     </div>
@@ -197,6 +186,9 @@ pobvol Software Services
     <p>
         Das Dashboard ist Ihr Startpunkt. Navigieren Sie mit den Karten zu Ihren Checklisten und
         Protokollen und greifen Sie über die obere Leiste auf Einstellungen und Hilfe zu.
+        Über das Menü-Icon in der linken oberen Ecke können Sie die Lizenzvereinbarung einsehen,
+        eigene Textblöcke verwalten, die Datenbank sichern, Sicherungen der Datenbank wieder
+        importieren und die App beenden.
     </p>
 </div>
 
@@ -204,18 +196,14 @@ pobvol Software Services
 <a name="_settings"></a>
 <div class="card">
     <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
-    <h2>Einstellungen & Anpassungen</h2>
+    <h2>Einstellungen</h2>
     <p>
-        Mit einem Klick auf das Zahnrad-Symbol (⚙) rufen Sie die Einstellungen auf. Es öffnet sich
-        der Dialog "Allgemeine Einstellungen".<br>
-        <br>
-        Passen Sie zuerst das Erscheinungsbild, die bevorzugte Sprache und die Kategorien an Ihre
-        Bedürfnisse an. Tragen Sie dann Ihren Namen in das Feld Prüfer ein. Ihr Name wird in die
-        Prüfberichte übernommen und ausgegeben.<br>
-        <br>
-        Wenn Sie auf den Button "PDF-Bericht Layout anpassen" klicken, öffnet sich der Dialog
-        "PDF-Berichts-Designer". Passen Sie das Layout der PDF-Berichte (Kopfzeile, Fußzeile,
-        Seitenumbrüche, Datums- und Statusanzeige) an.
+        Klicken Sie im Dashboard auf das Zahnrad-Symbol (⚙). Es öffnet sich der Dialog "Allgemeine
+        Einstellungen".
+        Passen Sie das Erscheinungsbild, die bevorzugte Sprache und die Kategorien an Ihre
+        Bedürfnisse an.
+        Tragen Sie Ihren Namen in das Feld Prüfer ein. Ihr Name wird damit in die Protokolle
+        übernommen und im PDF ausgegeben.
     </p>
 </div>
 
@@ -258,14 +246,17 @@ pobvol Software Services
         <b>Prüfung hinzufügen</b>: Mit einem Klick auf eine Checklistenkarte starten Sie die
         Erfassung einer Prüfung. Es öffnet sich das Formular "Checkliste ausfüllen".<br>
         <br>
+        <b>Chart anzeigen</b>: Tippen Sie in einer Checklistenkarte auf das Chart-Symbol (📋), öffnet
+        sich der Chart-Bildschirm. Dieser zeigt in einem ersten Chart, wieviele Prüfberichte pro Tag
+        erfasst wurden.
+        Enthält die Checkliste eine Nummernfrage, zeigt ein zweites Chart die Kurve für den ersten
+        Nummernwert.
+        Enthält die Checkliste zwei Nummernfragen, zeigt ein drittes Chart die Kurve für die ersten
+        beiden Nummernwerte.<br>
+        <br>
         <b>Prüfungsprotokolle anzeigen</b>: Tippen Sie in einer Checklistenkarte auf das
         Protokoll-Symbol (📋), öffnet sich der Bildschirm "Meine Protokolle". Dieser listet die
-        Protokolle für die gewählte Checkliste.<br>
-        <br>
-        <b>Chart anzeigen</b>: Tippen Sie in einer Checklistenkarte auf das Chart-Symbol (📋), öffnet
-        sich der Chart-Bildschirm. Dieser zeigt in einem Chart, wieviele Prüfberichte pro Tag
-        erfasst wurden. Sind Nummernfragen vorhanden, zeigt ein zusätzliches Chart die Kurve für die
-        ersten beiden Werte.
+        Protokolle für die gewählte Checkliste.
     </p>
 </div>
 
@@ -371,7 +362,16 @@ pobvol Software Services
         - </b>QR-Codes</b>: Für QR-Code-Fragen tippen Sie auf den Button "QR-Code scannen". Damit
         öffnet sich der Kamerascanner und Sie können den Code aufnehmen. Wenn alles geklappt hat,
         wurden die Daten in das Antwortfeld übernommen. Bitte beachten Sie, dass die App dazu
-        Kamera-Berechtigungen benötigt.
+        Kamera-Berechtigungen benötigt.<br>
+        <br>
+        - <b>PDF- und SQL-Dateien</b>: PDF- und SQL-Dateien werden für vollständig ausgefüllte
+        Checklisten automatisch erstellt, sobald alle
+        erforderlichen Daten erfasst wurden.
+        Der Status wird automatisch auf "Abgeschlossen" gesetzt.
+        Eine PDF-Datei wird in dem Ordner <b>Download/pobvolMyChecks/pdf</b> gespeichert.
+        Eine SQL-Datei wird in dem Ordner <b>Download/pobvolMyChecks/sql</b> gespeichert.
+        Für jede SQL-Dateien wird zusätzlich eine Datei mit der entsprechenden Checksumme
+        gespeichert.
     </p>
 </div>
 
@@ -379,11 +379,16 @@ pobvol Software Services
 <a name="_reports"></a>
 <div class="card">
     <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
-    <h2>Meine Protokolle & PDF und SQL-Export</h2>
+    <h2>Meine Protokolle</h2>
     <p>
         Klicken Sie im Dashboard auf die Karte "Meine Protokolle" und öffnen Sie damit den
         entsprechenden Bildschirm. Sehen Sie aufgezeichnete Protokolle an, filtern Sie die Liste,
         bearbeiten Sie Ihre Antworten und erstellen Sie sofort Ihren DIN A4 PDF-Bericht.<br>
+        <br>
+        <b>Einstellungen</b>: Klicken Sie auf das Zahnrad-Symbol (⚙), öffnet sich der Dialog
+        "PDF-Berichts-Designer".
+        Passen Sie das Layout der PDF-Berichte (Kopfzeile, Fußzeile, Seitenumbrüche, Datums- und
+        Statusanzeige) an.<br>
         <br>
         <b>Protokolle suchen</b>: Tippen Sie auf das Suchsymbol (🔍) in der oberen Leiste, um
         Protokolle nach Datum, Titel oder Notizen zu finden.<br>
@@ -398,13 +403,9 @@ pobvol Software Services
         ein Fenster, in welchem Sie die Löschung bestätigen müssen. Das Löschen eines Protokolls
         löscht alle zugehörigen Antworten.<br>
         <br>
-        <b>PDF anzeigen</b>: Protokolle können direkt als professionelle A4-PDFs exportiert und
-        geteilt werden. Tippen Sie in einer Karte auf das PDF-Symbol, öffnet sich ein PDF-Viewer und
-        zeigt das erzeugte PDF an. Dieses können Sie dann drucken oder teilen.<br><br>
-        PDF-Reports werden für vollständig ausgefüllte Checklisten automatisch erstellt, sobald alle
-        erforderlichen Daten erfasst wurden und alle erforderlichen Fragen beantwortet wurden. Der
-        Status wird automatisch auf "Abgeschlossen" gesetzt und eine PDF-Datei auf dem Gerät in dem
-        Ordner <b>Downloads/MyChecks</b> gespeichert. Der Dateiname wird automatisch generiert <b>Submission_Prüfnummer_Report.pdf</b>.
+        <b>PDF anzeigen</b>: Tippen Sie in einer Karte auf das PDF-Symbol, öffnet sich ein
+        PDF-Viewer und
+        zeigt das erzeugte PDF an. Dieses können Sie dann drucken oder teilen.<br>
     </p>
 </div>
 
@@ -414,7 +415,7 @@ pobvol Software Services
     <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
     <h2>Datensicherheit</h2>
     <p>
-        Alle Daten werden auf Ihrem Gerät gespeichert. Ihre persönlichen Einstellungen liegen in
+        Daten werden nur auf Ihrem Gerät gespeichert. Ihre persönlichen Einstellungen liegen in
         einem abgesicherten Bereich der App (/data/data/com.pobvol.mychecks/shared_prefs).
         Kategorien, Textbausteine, Checklisten, Checkpunkte/Fragen, Prüfungsdaten und Antworten
         werden in einer lokalen Android SQLite-Datenbank gespeichert. Auch diese liegt in dem
@@ -424,12 +425,11 @@ pobvol Software Services
         (Menüpunkt "Datenbank sichern)" eine Sicherungskopie der Datenbank erstellen. PDF- und
         SQL-Dateien erstellt die App automatisch, sobald eine Prüfung abgeschlossen ist.
         Datenbankkopien, PDF- und SQL-Dateien finden Sie in ihrem <b>Download</b>-Folder,
-        Unterordner pobvolMyChecks. In diesem Ordner finden Sie einen Unterordner mit der
-        App-Geräte-Id. In diesem Unterordner liegen die exportierten Daten dann in den Ordnern <b>dbbackup</b>,
-        <b>pdf</b> und <b>sql</b>. Sie können diese Daten auf einen PC oder ein anderes Gerät
-        kopieren und sichern. <br>
+        Unterordner pobvolMyChecks. In diesem Unterordner liegen die exportierten Daten dann in den
+        Ordnern <b>dbbackup</b>, <b>pdf</b> und <b>sql</b>.
+        Sie können diese Daten auf einen PC oder ein anderes Gerät kopieren und sichern. <br>
         <br>
-        <b>Die App überträgt keine Daten in die Cloud oder auf fremde Server.</b>
+        <b>Die App selbst überträgt keine Daten in die Cloud oder auf fremde Server.</b>
     </p>
 </div>
 
@@ -462,12 +462,13 @@ pobvol Software Services
     <p>
         Die App <b>pobvol My Checks</b> ist <a href="https://de.wikipedia.org/wiki/Freie_Software"
                                                rel="nofollow" target="_blank">Freie Software</a>☯
-        und wird quelloffen ausgeliefert. Der Sourcecode wurde über <a
+        und wird quelloffen ausgeliefert. Der Sourcecode wird über <a
             href="https://github.com/pobvolcom/pobvol_My_Checks_Android" rel="nofollow"
             target="_blank">GitHub</a>☯ veröffentlicht. Sie können die App unter den Bedingungen der
         <a href="https://www.gnu.org/licenses/gpl-3.0" rel="nofollow" target="_blank">GNU General
             Public License v3</a>☯ herunterladen, installieren, betreiben, modifizieren und weiter
-        verteilen. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com.
+        verteilen. Copyright © 2026 Volker Pobloth, pobvol Software Services. Alle Rechte
+        vorbehalten.
         Entwickelt mit Google Android Studio und Gemini 3.5 Flash Lite and Gemini 3.6 Flash<br>
         <br>
         Die App wird in der Hoffnung, dass sie nützlich sein wird, aber OHNE JEGLICHE GEWÄHRLEISTUNG

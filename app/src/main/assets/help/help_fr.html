@@ -76,30 +76,26 @@
         .contentflex {
             display: flex;
             flex-flow: row nowrap;
-
-            height: auto;
+            height: auto
             margin-bottom: 10px;
-            padding-bottom:10px;
-
+            padding-bottom: 10px;
             max-width: 100%; /* Maximum width */
             margin-left: auto;
             margin-right: auto;
             padding-right: 15px;
-            overflow-x: scroll;  
-
+            overflow-x: scroll;
             background: white;
             border-radius: 25px;
             line-height: 1.2;
-
             /*align-items: center;*/
-
-            }
+        }
         .contentflex > div {
             background-color: whitesmoke;
-            margin-right:20px;
+            margin-right:25px;
             padding:15px;
-            min-width: 175px; 
-            max-height: 425px;
+            height: auto;
+            min-width: 33%;
+            text-align: center;
             border: 1px solid grey;
             border-radius: 25px;
             box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
@@ -121,12 +117,12 @@
         <p style="font-size:normal;font-weight: normal;text-align: left;">
             &#x1F517;&nbsp;<a href="#_screenshots" target="_self">Captures d'écran</a><br>
             &#x1F517;&nbsp;<a href="#_dashboard" target="_self">Tableau de bord & Navigation</a><br>
-            &#x1F517;&nbsp;<a href="#_settings" target="_self">Paramètres & Personnalisation</a><br>
+            &#x1F517;&nbsp;<a href="#_settings" target="_self">Paramètres</a><br>
             &#x1F517;&nbsp;<a href="#_checklists" target="_self">Mes Listes de Contrôle</a><br>
             &#x1F517;&nbsp;<a href="#_checkpoints" target="_self">Points de contrôle / Questions</a><br>
             &#x1F517;&nbsp;<a href="#_executions" target="_self">Effectuer des Inspections</a><br>
-            &#x1F517;&nbsp;<a href="#_reports" target="_self">Mes Journaux & Export PDF / SQL</a><br>
-            &#x1F517;&nbsp;<a href="#_data_security" target="_self">Sécurité des données & Export SQL</a><br>
+            &#x1F517;&nbsp;<a href="#_reports" target="_self">Mes Journaux</a><br>
+            &#x1F517;&nbsp;<a href="#_data_security" target="_self">Sécurité des données</a><br>
             &#x1F517;&nbsp;<a href="#_architecture" target="_self">Technologie / Architecture</a><br>
             &#x1F517;&nbsp;<a href="#_copyright" target="_self">© Copyright</a><br>
         </p>
@@ -139,35 +135,27 @@
         <h2>Screenshots</h2>
         <div class="contentflex">
             <div>
-                Dashboard
                 <img width=100% src="./images/dashboard.png" alt="Dashboard">
             </div>
             <div>
-                Meine Checklisten
                 <img width=100% src="./images/my-checklists.png" alt="My Checklists">
             </div>
             <div>
-                Checkliste bearbeiten
                 <img width=100% src="./images/edit-checklist.png" alt="Edit Checklist">
             </div>
             <div>
-                Checkpunkte/Fragen
                 <img width=100% src="./images/checkpoints-questions.png" alt="Checkpoints/Questions">
             </div>
             <div>
-                Meine Protokolle
                 <img width=100% src="./images/my-logs.png" alt="My Logs">
             </div>
             <div>
-                PDF-Report
                 <img width=100% src="./images/pdf-report.png" alt="PDF-Report">
             </div>
             <div>
-                PDF-Report Designer
                 <img width=100% src="./images/pdf-report-designer.png" alt="PDF-Report Designer">
             </div>
             <div>
-                Charts
                 <img width=100% src="./images/charts.png" alt="Charts">
             </div>
         </div>
@@ -179,20 +167,24 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Tableau de bord & Navigation</h2>
         <p>
-            Le tableau de bord est votre point de départ. Utilisez les cartes pour naviguer vers vos listes et journaux.
+            Le tableau de bord est votre point de départ. Utilisez les cartes pour accéder à vos
+            listes de contrôle et Journaux et accédent aux paramètres et à l'aide depuis la barre du
+            haut. Via l'icône du menu en haut à gauche, vous pouvez consulter le contrat de licence,
+            gérer vos propres blocs de texte, sauvegarder la base de données, importer à nouveau des
+            sauvegardes de la base de données et fermer l'application.
         </p>
     </div>
 
     <hr>
     <a name="_settings"></a>
     <div class="card">
-        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p><h2>Paramètres & Personnalisation</h2>
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>Paramètres</h2>
         <p>
-            Appuyez sur l'icône d'engrenage (⚙) pour ouvrir les paramètres. La boîte de dialogue "Paramètres généraux" s'ouvre.<br>
-            <br>
-            Personnalisez l'apparence, la langue et les catégories. Entrez votre nom dans le champ Inspecteur pour qu'il soit inclus dans les rapports.<br>
-            <br>
-            Appuyez sur le bouton "Personnaliser la mise en page du rapport PDF" pour ouvrir le "Concepteur de rapports PDF".
+            Dans le tableau de bord, cliquez sur l'icône d'engrenage (⚙). La boîte de dialogue «
+            Paramètres généraux » s'ouvrira. Personnalisez l'apparence, la langue préférée et les
+            catégories selon vos besoins. Entrez votre nom dans le champ examinateur. Votre nom sera
+            ensuite transféré dans le procès-verbal et sera produit dans le PDF.
         </p>
     </div>
 
@@ -201,19 +193,52 @@
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p><h2>Mes Listes de Contrôle</h2>
         <p>
-            Appuyez sur la carte "Mes Listes de Contrôle" sur le tableau de bord.<br>
+            Cliquez sur la carte « Mes listes de contrôle » dans le tableau de bord et ouvrez le
+            écran correspondant. <br>
             <br>
-            <b>Ajouter une liste</b>: Créez rapidement de nouvelles listes avec le bouton **`+`**.<br>
+            <b>Ajouter une liste de contrôle</b>: Vous pouvez créer de nouvelles listes assez
+            rapidement. Cliquez Il suffit de cliquer sur le bouton **'+'** en bas à droite. Le
+            dialogue s'ouvrira « Ajouter une liste de contrôle ». Dans le champ Titre, saisissez un
+            nom pour votre nouvelle liste, Attribuez une catégorie et, si vous le souhaitez, entrez
+            une courte description. Avec Le bouton « Ajouter » enregistrera vos entrées et créera
+            votre nouvelle liste de contrôle et affiché dans la vue d'ensemble.<br>
             <br>
-            <b>Rechercher & Filtrer</b>: Utilisez l'icône de recherche (🔍) ou filtrez par catégorie.<br>
+            <b>Trouver des listes de contrôle</b>: Appuyez sur l'icône de recherche (🔍) dans la
+            barre supérieure pour Trouvez des listes de contrôle par titre, description ou
+            catégorie. <br>
             <br>
-            <b>Éditer / Supprimer</b>: Utilisez les icônes d'édition (✏️) ou de suppression (🗑️).<br>
+            <b>Filtrez les listes de contrôle par catégorie</b>: Filtrez la liste en cliquant sur un
+            Catégorie (Santé, UVV, etc.). Cliquer sur Tous supprime à nouveau le filtre. <br>
             <br>
-            <b>Commencer l'inspection</b>: Appuyez sur une carte de liste pour démarrer une nouvelle inspection.<br>
+            <b>Modifier une liste de contrôle</b>: Dans une carte de checklist, appuyez sur l'icône
+            Modifier (), ✏️ la fenêtre « Modifier la liste de contrôle » s'ouvre. Ici, vous pouvez
+            sélectionner le titre, le Personnalisez la catégorie et la description.<br>
             <br>
-            <b>Voir les journaux</b>: Appuyez sur l'icône de journal (📋) pour afficher les journaux.<br>
+            <b>Points de contrôle/Questions</b>: Dans une carte de checklist, appuyez sur l'icône de
+            la question (💬), l'écran « Points de contrôle/Questions » s'ouvre. Ici, vous gérez les
+            points de contrôle et Questions pour la liste de contrôle sélectionnée. Vous pouvez
+            découvrir comment faire cela un peu plus bas dans le chapitre [Points de
+            contrôle/Questions]. <br>
             <br>
-            <b>Voir les graphiques</b>: Appuyez sur l'icône de graphique (📋) pour afficher les analyses.
+            <b>Liste de contrôle Supprimer</b>: Dans une carte de liste, appuyez sur l'icône
+            supprimer (🗑️), Une fenêtre s'ouvre dans laquelle vous devez confirmer la suppression.
+            Suppression d'un La liste de contrôle supprime automatiquement les questions associées.
+            Veuillez noter : Listes de contrôle, à qui ont déjà eu un journal enregistré, ne peuvent
+            pas être supprimés.<br>
+            <br>
+            <b>Ajouter un examen</b>: Cliquez sur une fiche de checklist pour commencer la
+            Enregistrement d'un examen. Le formulaire « Remplir la liste de contrôle » s'ouvre. <br>
+            <br>
+            <b>Afficher le graphique</b>: Dans une carte checklist, appuyez sur l'icône du graphique
+            (📋), s'ouvre l'écran du graphique. Cela montre dans un premier tableau combien de
+            rapports de tests ont été enregistrés par jour. Si la liste contient une question sur le
+            nombre, un second graphique montre la courbe pour la première valeur du nombre. Si la
+            liste contient deux questions de nombres, un troisième graphique montre la courbe pour
+            les deux premières valeurs de nombres. <br>
+            <br>
+            <b>Consultez les journaux d'examen</b>: Dans une carte de checklist, appuyez sur la
+            Icône de journal (📋), l'écran « Mes journaux » s'ouvre. Celle-ci liste les Protocoles
+            pour la liste de contrôle sélectionnée.<br>
         </p>
     </div>
 
@@ -223,21 +248,61 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Points de contrôle / Questions</h2>
         <p>
-            Gérez les points de contrôle et questions. Types de réponses pris en charge : Texte, Nombre, Case à cocher, Boîte combinée (Combobox), Sélection multiple (Multiselect), NFC et Code QR.<br>
+            Sur cet écran, vous gérez les points de contrôle/questions d'une liste de contrôle. Pour
+            cela, Prend en charge les types de réponses suivants : texte, numéro, case à cocher,
+            liste de choix simple, Liste de sélection multiple, NFC et code QR. <br>
             <br>
-            - <b>Texte</b>: Saisie de texte flexible<br>
+            - Texte : Entrée de texte flexible <br>
             <br>
-            - <b>Nombre</b>: Saisie de valeurs numériques avec limites min/max optionnelles.<br>
+            - Numéro : Entrée de valeurs numériques. Vous pouvez définir un minimum et un Valeur
+            maximale. Celles-ci ne doivent donc pas être sous-estimées ou dépassées lors de
+            l'entrée.<br>
             <br>
-            - <b>Case à cocher</b>: Bascule Oui/Non<br>
+            - Case à cocher : Bascule Oui/Non <br>
             <br>
-            - <b>Boîte combinée</b>: Choix unique avec couleurs de fond optionnelles (vert, jaune ou rouge) en utilisant des balises entre crochets (ex. `sans défaut [green]`, `réparation requise [red]`).<br>
+            - Liste de sélection : Les options possibles doivent être saisies séparées par des
+            virgules. Une option est ensuite sélectionné lors du remplissage de la liste de
+            contrôle. Vous pouvez également choisir les couleurs d'arrière-plan (vert, jaune ou
+            rouge) en insérant des balises de couleur entre parenthèses, comme sans Défauts
+            reconnaissables [vert], réparation requise [rouge] ou défauts éliminés [jaune]. Dans le
+            L'export PDF affichera l'option sélectionnée avec une case d'arrière-plan surlignée
+            imprimé.<br>
             <br>
-            - <b>Sélection multiple</b>: Choix multiples avec balises de couleur entre crochets (ex. `Option 1 [green], Option 2 [red]`).<br>
+            - Sélection multiple : Les options possibles doivent être saisies séparées par des
+            virgules. Une ou plusieurs Plusieurs options sont ensuite sélectionnées lors de la
+            compilation de la liste de contrôle. Vous pouvez aussi Spécifiez les couleurs
+            d'arrière-plan (vert, jaune ou rouge) en ajoutant des balises de couleur entre
+            parenthèses, telles que par exemple, options 1 [vert], option 2 [rouge] ou option 3
+            [jaune]. Dans l'export PDF, le Option sélectionnée avec une case d'arrière-plan
+            surlignée. <br>
             <br>
-            - <b>NFC</b>: Lire des tags NFC physiques<br>
+            - NFC : Lire les étiquettes NFC physiques et transférer les données <br>
             <br>
-            - <b>Code QR</b>: Scanner des codes QR avec la caméra.<br>
+            - Code QR : Scanner les codes QR avec la caméra et ajouter la valeur contenue à la
+            Accepter le champ de réponse.<br>
+            <br>
+            Ajouter un point de contrôle/question : Il suffit de cliquer sur le bouton **'+'** dans
+            le Coin inférieur right . La boîte de dialogue « Ajouter un point de contrôle/question »
+            s'ouvre. Dans le champ Titre, saisissez un nom pour votre nouveau point de
+            contrôle/question et organisez votre organisation un type de réponse. Selon le type de
+            réponse, des informations supplémentaires sont nécessaires ou possibles. Si vous voulez,
+            entrez une courte description. Vous pouvez aussi entrer le numéro de tri, mais
+            l'application le fera automatiquement pour vous. Les nouveaux points de
+            contrôle/questions sont automatiquement marqués comme requis. Changez-les L'attitude si
+            la question n'a pas nécessairement besoin d'une réponse. Avec le bouton « Enregistrer »,
+            vos entrées seront sauvegardées et stockées dans l'aperçu affiché.<br>
+            <br>
+            Ajuster l'ordre : Le numéro de tri est affiché pour chaque entrée (par exemple, #1, #2).
+            Cela contrôle la position dans la liste. Utilisez le Flèches haut (↑)/bas (↓) pour
+            ajuster l'ordre des questions. Un changement cela fait que les numéros de tri des autres
+            entrées sont automatiquement ajustés.<br>
+            <br>
+            Modification du point de contrôle/question : Appuyez sur l'icône Modifier (✏️), la boîte
+            « Modifier le point de contrôle/Question » s'ouvre. Ici, vous pouvez sélectionner le
+            titre, le description, numéro de tri, type de réponse. Bien sûr, vous pouvez aussi que
+            l'inscription soit obligatoire ou optionnelle.<br><br>
+            Supprimer le point de contrôle/question : Appuyez sur l'icône supprimer (🗑️), Une
+            fenêtre s'ouvre dans laquelle vous devez confirmer la suppression.<br>
         </p>
     </div>
 
@@ -247,7 +312,49 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Effectuer des Inspections</h2>
         <p>
-            Répondez aux questions obligatoires, ajoutez des notes et des photos, et scannez des tags NFC ou des codes QR.
+            Cliquez sur la carte « Mes listes de contrôle » dans le tableau de bord et ouvrez le
+            écran correspondant.
+            Cliquez sur une carte de liste de contrôle pour commencer le Enregistrement d'un examen.
+            Le formulaire « Remplir la liste de contrôle » s'ouvre. <br>
+            <br>
+            - <b>Évaluateur</b>: Le nom du critique a été automatiquement rempli depuis les
+            paramètres. Vous peut changer ça. <br>
+            <br>
+            - <b>Date d'inspection</b>: La date a été prédéfinie avec la date actuelle (actuellement
+            fixée dd.MM.yyy). Tu peux changer ça. <br>
+            <br>
+            - <b>Statut</b>: Le statut a été prédéfini sur « en cours ». Pour l'instant, vous pouvez
+            définir le Statut. Mais cela sera désactivé.<br>
+            <br>
+            - <b>Notes</b>: Si vous le souhaitez, vous pouvez ajouter des informations
+            supplémentaires sur l'examen dans les notes. Utilisez cette option, car les notes sont
+            affichées dans l'aperçu du journal. Cela facilite la recherche d'un examen. <br>
+            <br>
+            - <b>Points de contrôle/Questions</b>: Répondez maintenant à toutes les questions
+            obligatoires de la liste de contrôle. Vous Peut sauvegarder la modification à tout
+            moment et continuer plus tard. Utilisez le Bouton d'enregistrement dans la zone en-tête
+            du formulaire. De plus, vous trouverez un bouton d'enregistrement également à la fin de
+            la liste. Si toutes les questions nécessaires n'ont pas été répondues, Le statut est
+            prédéfini avec « en cours ». Si tous les points de contrôle/questions requis ont été
+            définis ont été répondues, le statut est automatiquement changé en « Terminé » lors de
+            la sauvegarde.<br>
+            <br>
+            - <b>Tags NFC</b>: Pour les questions NFC, appuyez sur le bouton NFC et maintenez une
+            Étiquette NFC à l'arrière de votre appareil pour qu'il puisse être scanné. Quand tout a
+            fonctionné, les données ont été transférées dans le champ de réponse. Veuillez noter que
+            ceci Sur votre appareil. <br>
+            <br>
+            - <b>Codes QR</b>: Pour les questions sur les codes QR, appuyez sur le bouton « Scanner
+            le code QR ». Donc Le scanner de caméra s'ouvre et tu peux enregistrer le code. Si tout
+            s'est bien passé, Les données ont été transférées dans le champ de réponse. Veuillez
+            noter que l'application Autorisations de caméra requises.<br>
+            <br>
+            - <b>Fichiers PDF et SQL</b>: Les fichiers PDF et SQL sont automatiquement créés pour
+            les listes de contrôle entièrement complétées dès que tous des données ont été
+            collectées. Le statut est automatiquement réglé sur « Terminé ». Un fichier PDF sera
+            enregistré dans le dossier Download/pobvolMyChecks/pdf. Un fichier SQL est stocké dans
+            le dossier Download/pobvolMyChecks/sql. Pour chaque fichier SQL, un fichier
+            supplémentaire avec la somme de contrôle correspondante est stocké.<br>
         </p>
     </div>
 
@@ -255,9 +362,32 @@
     <a name="_reports"></a>
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
-        <h2>Mes Journaux & Export PDF / SQL</h2>
+        <h2>Mes Journaux</h2>
         <p>
-            Les rapports PDF au format A4 sont automatiquement enregistrés dans <b>Downloads/MyChecks</b> sous le nom <b>Submission_&lt;id&gt;_Report.pdf</b>.
+            Cliquez sur la carte « Mes journaux » dans le tableau de bord et ouvrez la écran
+            correspondant.
+            Voir les journaux enregistrés, filtrer la liste, Corrigez vos réponses et créez
+            immédiatement votre rapport PDF A4.<br>
+            <br>
+            <b>Paramètres</b>: Si vous cliquez sur l'icône d'engrenage (⚙), la boîte de dialogue «
+            PDF Report Designer » s'ouvre. Personnalisez la mise en page des rapports PDF (en-tête,
+            pied de page, les saut de page, l'affichage de la date et du statut).<br>
+            <br>
+            <b>Recherche de journaux</b>: Appuyez sur l'icône de recherche (🔍) dans la barre
+            supérieure pour Trouvez les procès-verbaux par date, titre ou notes.<br> <br>
+            <b>Filtrez les listes de contrôle par statut</b>: Filtrez la liste en tapotant un statut
+            (Terminé, en cours). Cliquer sur Tout enlève le filtre.<br>
+            <br>
+            <b>Journal d'édition</b>: Dans une carte, appuyez sur l'icône Modifier (✏️), s'ouvre la
+            fenêtre « Modifier le protocole » et vous pouvez ajuster vos entrées.<br>
+            <br>
+            <b>Delete log</b>: Appuyez sur l'icône supprimer (🗑️) dans une carte, ouvre Une fenêtre
+            dans laquelle vous devez confirmer la suppression.<br>
+            <br>
+            <b>Suppression d'un journal</b>: Supprime toutes les réponses associées.<br>
+            <br>
+            <b>Voir PDF</b>: Appuyez sur l'icône PDF sur une carte, un lecteur PDF s'ouvrira et
+            Affiche le PDF généré. Vous pouvez ensuite l'imprimer ou le partager.<br>
         </p>
     </div>
 
@@ -295,7 +425,16 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>🛠️ Technologie / Architecture</h2>
         <p>
-            Kotlin, Jetpack Compose, Room DB, Material 3, PdfDocument API.
+            - <b>Langage de développement</b>: Kotlin<br>
+            - <b>Framework UI</b>: Jetpack Compose & Material 3 (avec support Edge-to-Edge)<br>
+            - <b>Base de données</b>: Room Persistence Library (SQLite avec migrations automatiques
+            de schéma & Suppression en cascade)<br>
+            - <b>Création de documents</b>: API 'PdfDocument' Android (rendu vectoriel A4)<br>
+            - <b>Traitement d'image</b>: Composition en bobine<br>
+            - <b>Autorisations & Matériel</b>: Contrats caméra, dispatch NFC au premier plan, et
+            Scope API Storage MediaStore<br>
+            - <b>Appareils pris en charge</b>: smartphones et tablettes Android<br>
+            - Langues prises en charge</b>: allemand, anglais, espagnol et français<br>
         </p>
     </div>
 
@@ -306,7 +445,16 @@
         <h2>© Copyright</h2>
         <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow"><img class="imgrght" src="./images/gplv3-or-later.png" alt="imgage:gplv3-or-later.png"></a>
         <p>
-            L'application <b>pobvol My Checks</b> est un <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Logiciel Libre</a>☯ et open source sur <a href="https://github.com/pobvolcom/pobvol_My_Checks_Android" target="_blank" rel="nofollow">GitHub</a>☯. Vous pouvez télécharger, installer, utiliser, modifier et redistribuer ce logiciel selon les termes de la licence publique générale v3 de <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Développé avec Google Android Studio et Gemini 3.5 Flash Lite et Gemini 3.6 Flash<br>
+            L'application <b>pobvol My Checks</b> est un <a
+                href="https://en.wikipedia.org/wiki/Free_software" rel="nofollow" target="_blank">Logiciel
+            Libre</a>☯ et open source sur <a
+                href="https://github.com/pobvolcom/pobvol_My_Checks_Android" rel="nofollow"
+                target="_blank">GitHub</a>☯. Vous pouvez télécharger, installer, utiliser, modifier
+            et redistribuer ce logiciel selon les termes de la licence publique générale v3 de <a
+                href="https://www.gnu.org/licenses/gpl-3.0" rel="nofollow" target="_blank">GNU
+            General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software
+            Services.
+            Développé avec Google Android Studio et Gemini 3.5 Flash Lite et Gemini 3.6 Flash<br>
             <br>
             L'application est fournie dans l'espoir qu'elle soit utile, mais SANS AUCUNE GARANTIE ; même sans la garantie implicite de MARCHANDABILITÉ ou ADÉQUATION À UN BUT PARTICULIER. Le contenu des sites liés est toujours sous la responsabilité du fournisseur ou opérateur concerné des sites. Les liens externes sont marqués de ce symbole: ☯
         </p>

@@ -76,30 +76,26 @@
         .contentflex {
             display: flex;
             flex-flow: row nowrap;
-
-            height: auto;
+            height: auto
             margin-bottom: 10px;
-            padding-bottom:10px;
-
+            padding-bottom: 10px;
             max-width: 100%; /* Maximum width */
             margin-left: auto;
             margin-right: auto;
             padding-right: 15px;
-            overflow-x: scroll;  
-
+            overflow-x: scroll;
             background: white;
             border-radius: 25px;
             line-height: 1.2;
-
             /*align-items: center;*/
-
-            }
+        }
         .contentflex > div {
             background-color: whitesmoke;
-            margin-right:20px;
+            margin-right:25px;
             padding:15px;
-            min-width: 175px; 
-            max-height: 425px;
+            height: auto;
+            min-width: 33%;
+            text-align: center;
             border: 1px solid grey;
             border-radius: 25px;
             box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
@@ -121,12 +117,12 @@
         <p style="font-size:normal;font-weight: normal;text-align: left;">
             &#x1F517;&nbsp;<a href="#_screenshots" target="_self">Capturas de pantalla</a><br>
             &#x1F517;&nbsp;<a href="#_dashboard" target="_self">Panel y Navegación</a><br>
-            &#x1F517;&nbsp;<a href="#_settings" target="_self">Configuración y Personalización</a><br>
+            &#x1F517;&nbsp;<a href="#_settings" target="_self">Configuración</a><br>
             &#x1F517;&nbsp;<a href="#_checklists" target="_self">Mis Listas de Control</a><br>
             &#x1F517;&nbsp;<a href="#_checkpoints" target="_self">Puntos de control / Preguntas</a><br>
             &#x1F517;&nbsp;<a href="#_executions" target="_self">Realizar Inspecciones</a><br>
-            &#x1F517;&nbsp;<a href="#_reports" target="_self">Mis Registros y Exportación PDF / SQL</a><br>
-            &#x1F517;&nbsp;<a href="#_data_security" target="_self">Seguridad de Datos y Exportación SQL</a><br>
+            &#x1F517;&nbsp;<a href="#_reports" target="_self">Mis Registros</a><br>
+            &#x1F517;&nbsp;<a href="#_data_security" target="_self">Seguridad de Datos</a><br>
             &#x1F517;&nbsp;<a href="#_architecture" target="_self">Tecnología / Arquitectura</a><br>
             &#x1F517;&nbsp;<a href="#_copyright" target="_self">© Copyright</a><br>
         </p>
@@ -139,35 +135,27 @@
         <h2>Screenshots</h2>
         <div class="contentflex">
             <div>
-                Dashboard
                 <img width=100% src="./images/dashboard.png" alt="Dashboard">
             </div>
             <div>
-                Meine Checklisten
                 <img width=100% src="./images/my-checklists.png" alt="My Checklists">
             </div>
             <div>
-                Checkliste bearbeiten
                 <img width=100% src="./images/edit-checklist.png" alt="Edit Checklist">
             </div>
             <div>
-                Checkpunkte/Fragen
                 <img width=100% src="./images/checkpoints-questions.png" alt="Checkpoints/Questions">
             </div>
             <div>
-                Meine Protokolle
                 <img width=100% src="./images/my-logs.png" alt="My Logs">
             </div>
             <div>
-                PDF-Report
                 <img width=100% src="./images/pdf-report.png" alt="PDF-Report">
             </div>
             <div>
-                PDF-Report Designer
                 <img width=100% src="./images/pdf-report-designer.png" alt="PDF-Report Designer">
             </div>
             <div>
-                Charts
                 <img width=100% src="./images/charts.png" alt="Charts">
             </div>
         </div>
@@ -179,20 +167,27 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Panel y Navegación</h2>
         <p>
-            El panel es su punto de partida. Use las tarjetas para navegar a sus listas de control y registros.
+            El panel de control es tu punto de partida. Usa las tarjetas para navegar hasta tus
+            listas de comprobación y Registros y acceso a Configuración y Ayuda desde la barra
+            superior. A través del icono del menú en la esquina superior izquierda, puedes ver el
+            contrato de licencia, gestionar tus propios bloques de texto, hacer una copia de
+            seguridad de la base de datos, importar copias de seguridad de la base de datos y cerrar
+            la aplicación.
         </p>
     </div>
 
     <hr>
     <a name="_settings"></a>
     <div class="card">
-        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p><h2>Configuración y Personalización</h2>
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>Configuración</h2>
         <p>
-            Toque el icono de engranaje (⚙) para abrir la configuración. Se abrirá el diálogo "Configuración general".<br>
-            <br>
-            Primero, personalice la apariencia, el idioma preferido y las categorías. Ingrese su nombre en el campo Inspector para incluirlo en los informes.<br>
-            <br>
-            Toque el botón "Personalizar diseño de informe PDF" para abrir el "Diseñador de informes PDF" y ajustar los encabezados, pies de página y saltos de página.
+            En el panel de control, haz clic en el icono de engranaje (⚙).
+            Se abrirá el cuadro de diálogo "Configuración general".
+            Personaliza el aspecto, el idioma preferido y las categorías para adaptarlas a tus
+            necesidades.
+            Introduce tu nombre en el campo examinador.
+            Tu nombre se transferirá a las actas y se publicará en el PDF.
         </p>
     </div>
 
@@ -201,21 +196,49 @@
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p><h2>Mis Listas de Control</h2>
         <p>
-            Toque la tarjeta "Mis Listas de Control" en el panel.<br>
+            Haz clic en la tarjeta "Mis listas de comprobación" en el panel de control y abre la
+            pantalla correspondiente.<br>
             <br>
-            <b>Agregar Lista</b>: Cree nuevas listas rápidamente tocando el botón **`+`** en la esquina inferior derecha.<br>
+            <b>Añadir lista de comprobación</b>: Puedes crear nuevas listas de comprobación bastante
+            rápido. Haz clic Simplemente haz clic en el botón **'+'** en la esquina inferior
+            derecha. Se abrirá el diálogo "Añadir lista de comprobación". En el campo Título,
+            introduce un nombre para tu nueva lista de comprobación, Asigna una categoría y, si
+            quieres, introduce una breve descripción. Con El botón "Añadir" guardará tus entradas y
+            creará tu nueva lista de verificación y se muestra en la vista general.<br>
             <br>
-            <b>Buscar Listas</b>: Toque el icono de búsqueda (🔍) para buscar por título, descripción o categoría.<br>
+            <b>Encontrar listas de comprobación</b>: Toque el icono de búsqueda (🔍) en la barra
+            superior para Busca listas de comprobación por título, descripción o categoría.<br>
             <br>
-            <b>Filtrar por Categoría</b>: Filtre tocando una categoría.<br>
+            <b>Filtrar listas de verificación por categoría</b>: Filtrar la lista haciendo clic en
+            Categoría (Salud, UVV, etc.). Al hacer clic en Todos, el filtro vuelve a eliminar.<br>
             <br>
-            <b>Editar / Eliminar</b>: Use los iconos de edición (✏️) o eliminación (🗑️) en las tarjetas de lista.<br>
+            <b>Editar una lista de comprobación</b>: En una tarjeta de lista de comprobación, pulsa
+            el icono de Cambiar (), ✏️ se abre la ventana "Editar lista de comprobación". Aquí
+            puedes seleccionar el título, la Personaliza la categoría y la descripción.<br>
             <br>
-            <b>Iniciar Inspección</b>: Toque una tarjeta de lista para registrar una nueva inspección.<br>
+            <b>Puntos de control/Preguntas</b>: En una tarjeta de lista de comprobación, toca el
+            icono de la pregunta (💬), se abre la pantalla de "Puntos de control/Preguntas". Aquí
+            gestionas los puntos de control y Preguntas para la lista de verificación seleccionada.
+            Puedes averiguar cómo hacerlo un poco más adelante en el capítulo [Puntos de
+            control/Preguntas].<br>
             <br>
-            <b>Ver Registros</b>: Toque el icono de registro (📋) para ver los registros de la lista.<br>
+            <b>Lista de verificación de eliminar</b>: En una tarjeta de lista, toca el icono de
+            eliminar (🗑️), Se abre una ventana en la que tienes que confirmar la eliminación.
+            Eliminar un Checklist elimina automáticamente las preguntas asociadas. Por favor, nota:
+            Checklists, para que ya han tenido un registro registrado, no pueden ser eliminados.<br>
             <br>
-            <b>Ver Gráfico</b>: Toque el icono de gráfico (📋) para ver análisis estadísticos.
+            <b>Añadir un examen</b>: Haz clic en una tarjeta de lista de verificación para comenzar
+            el Grabando un examen. Se abre el formulario "Rellenar la lista de comprobación".<br>
+            <br>
+            <b>Mostrar gráfico</b>: En una tarjeta de lista de comprobación, toca el icono del
+            gráfico (📋), se abre la pantalla del gráfico. Esto muestra en un primer gráfico cuántos
+            informes de pruebas se registraron al día. Si la lista de comprobación contiene una
+            pregunta numérica, un segundo gráfico muestra la curva para el valor del primer número.
+            Si la lista contiene dos preguntas numéricas, un tercer gráfico muestra la curva para
+            los dos primeros valores numéricos.<br><br>
+            <b>Ver registros de exámenes</b>: En una tarjeta de lista de comprobación, toca el icono
+            de registro (📋), se abre la pantalla "Mis registros". Aquí se muestra el Protocolos para
+            la lista de verificación seleccionada.
         </p>
     </div>
 
@@ -225,21 +248,59 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Puntos de control / Preguntas</h2>
         <p>
-            Administre puntos de control y preguntas. Tipos de respuesta admitidos: Texto, Número, Casilla de verificación, Cuadro combinado, Selección múltiple, NFC y Código QR.<br>
+            En esta pantalla, gestionas los puntos de control/preguntas de una lista de
+            comprobación.
+            Para ello, Soporta los siguientes tipos de respuesta: texto, número, casilla de
+            selección, lista de selección simple, Lista de selección múltiple, NFC y código QR. <br>
             <br>
-            - <b>Texto</b>: Entrada de texto flexible<br>
+            - <b>Texto</b>: Entrada flexible de texto <br>
             <br>
-            - <b>Número</b>: Entrada numérica con límites opcionales de mínimo y máximo.<br>
+            - <b>Número</b>: Entrada de valores numéricos. Puedes establecer un mínimo y un Valor
+            máximo. Estos no deben ser sub- ni superados al entrar.<br>
             <br>
-            - <b>Casilla de verificación</b>: Interruptor Sí/No<br>
+            - <b>Casilla de selección</b>: Interruptor Sí/No <br>
             <br>
-            - <b>Cuadro combinado</b>: Opción única con colores de fondo opcionales (verde, amarillo, rojo) usando etiquetas como `sin defectos [green]`, `reparación requerida [red]`, o `defectos corregidos [yellow]`.<br>
+            - <b>Lista de selección</b>: Las opciones posibles deben introducirse separadas por
+            comas. Una opción se selecciona al rellenar la lista de comprobación. También puedes
+            elegir colores de fondo (verde, amarillo o rojo) insertando etiquetas de color entre
+            paréntesis, como sin Defectos reconocibles [verde], reparación requerida [rojo] o
+            defectos eliminados [amarillo]. En el La exportación PDF mostrará la opción seleccionada
+            con un cuadro de fondo resaltado impreso.<br>
             <br>
-            - <b>Selección múltiple</b>: Opciones múltiples con etiquetas de color en corchetes (ej. `Opción 1 [green], Opción 2 [red]`).<br>
+            - <b>Selección múltiple</b>: Las opciones posibles deben introducirse separadas por
+            comas. Una o más A continuación, se seleccionan varias opciones al rellenar la lista de
+            comprobación. También puedes Especifica los colores de fondo (verde, amarillo o rojo)
+            añadiendo etiquetas de color entre paréntesis, como por ejemplo, opciones 1 [verde],
+            opción 2 [rojo] u opción 3 [amarillo]. En la exportación PDF, el Opción seleccionada con
+            un cuadro de fondo resaltado. <br>
             <br>
-            - <b>NFC</b>: Leer etiquetas NFC físicas<br>
+            - <b>NFC</b>: Lee etiquetas NFC físicas y transfiere los datos <br>
             <br>
-            - <b>Código QR</b>: Escanear códigos QR con la cámara.<br>
+            - <b>Código QR</b>: Escanea los códigos QR con la cámara y añade el valor contenido a la
+            Aceptar campo de respuesta.<br>
+            <br>
+            <b>Añadir punto de control/pregunta</b>: Solo tienes que hacer clic en el botón **'+'**
+            en el Esquina inferior derecha. Se abre el diálogo "Añadir punto de control/pregunta".
+            En el campo Título, introduce un nombre para tu nuevo punto de control/pregunta y
+            organiza Un tipo de respuesta. Dependiendo del tipo de respuesta, se requiere o es
+            posible obtener más información. Si quieres, introduce una breve descripción. También
+            puedes introducir el número de ordenación, pero la app lo hará automáticamente por ti.
+            Los nuevos puntos de control/preguntas se marcan automáticamente como requerimientos.
+            Cámbialos Actitud si la pregunta no necesariamente necesita respuesta. Con el botón
+            "Guardar", tus entradas se guardarán y almacenarán en la visión general
+            mostrado.<br><br>
+            <b>Ajustar orden</b>: El número de clasificación se muestra para cada entrada (por
+            ejemplo, #1, #2). Esto controla la posición en la lista. Utiliza el Flechas arriba
+            (↑)/abajo(↓) para ajustar el orden de las preguntas. Un cambio hace que los números de
+            ordenación de otras entradas se ajusten automáticamente.<br>
+            <br>
+            <b>Edición punto de control/pregunta</b>: Toca el icono de Cambiar (✏️), se abre el
+            cuadro de diálogo "Editar punto de control/Pregunta". Aquí puedes seleccionar el título,
+            el descripción, el número de clasificación, el tipo de respuesta. Por supuesto, también
+            puedes si la inscripción es obligatoria u opcional.<br>
+            <br>
+            <b>Borrar punto de control/pregunta</b>: Toca el icono de borrar (🗑️), Se abre una
+            ventana en la que tienes que confirmar la eliminación.<br>
         </p>
     </div>
 
@@ -249,7 +310,48 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Realizar Inspecciones</h2>
         <p>
-            Responda preguntas obligatorias, agregue notas y fotos, y escanee etiquetas NFC o códigos QR.
+            Haz clic en la tarjeta "Mis listas de comprobación" en el panel de control y abre la
+            pantalla correspondiente.
+            Haz clic en una tarjeta de lista de verificación para comenzar la Grabando un examen.
+            Se abre el formulario "Rellenar la lista de comprobación". <br>
+            <br>
+            - <b>Revisor</b>: El nombre del revisor se ha rellenado automáticamente desde la
+            configuración. Tú puede cambiarlo. <br>
+            <br>
+            - <b>Fecha de inspección</b>: La fecha se ha preestablecido con la fecha actual
+            (actualmente fijada dd.MM.y). Puedes cambiar esto. <br>
+            <br>
+            - <b>Estado</b>: El estado se ha preestablecido como "en progreso". Por el momento,
+            puedes establecer el Estado. Pero eso se apagará.<br>
+            <br>
+            - <b>Notas</b>: Si quieres, puedes añadir información adicional sobre el examen en las
+            notas. Utiliza esta opción, ya que las notas se muestran en la visión general del
+            registro. Esto facilita que encuentres un examen. <br>
+            <br>
+            - <b>Puntos de control/Preguntas</b>: Ahora responde todas las preguntas obligatorias de
+            la lista de comprobación. Tú puedes guardar la edición en cualquier momento y continuar
+            más adelante. Usa la Botón de guardar en la cabecera del formulario. Además, encontrarás
+            un botón de guardar también al final de la lista. Si no se han respondido todas las
+            preguntas necesarias, El estado está preestablecido con "en progreso". Si todos los
+            puntos de control o preguntas requeridos han sido se han respondido, el estado cambia
+            automáticamente a "Completado" al guardar. <br>
+            <br>
+            - <b>Etiquetas NFC</b>: Para preguntas NFC, pulsa el botón NFC y mantén pulsado Etiqueta
+            NFC en la parte trasera de tu dispositivo para que pueda ser escaneado. Cuando todo ha
+            funcionado, los datos se han transferido al campo de respuesta. Por favor, tenga en
+            cuenta que esto En tu dispositivo. <br>
+            <br>
+            - <b>Códigos QR</b>: Para preguntas sobre códigos QR, pulsa el botón "Escanear código
+            QR". Así El escáner de cámara se abre y puedes grabar el código. Si todo fue bien, Los
+            datos se han transferido al campo de respuesta. Ten en cuenta que la aplicación Se
+            requieren permisos de cámara.<br>
+            <br>
+            - <b>Archivos PDF y SQL</b>: Los archivos PDF y SQL se crean automáticamente para listas
+            de verificación completamente completadas tan pronto como todos se recopilaron datos. El
+            estado se establece automáticamente como "Completado". Un archivo PDF se guardará en la
+            carpeta Download/pobvolMyChecks/pdf. Un archivo SQL se almacena en la carpeta
+            Download/pobvolMyChecks/sql. Para cada archivo SQL, se almacena un archivo adicional con
+            la suma de comprobación correspondiente.<br>
         </p>
     </div>
 
@@ -257,9 +359,32 @@
     <a name="_reports"></a>
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
-        <h2>Mis Registros y Exportación PDF / SQL</h2>
+        <h2>Mis Registr</h2>
         <p>
-            Los informes PDF en tamaño A4 se guardan automáticamente en la carpeta <b>Downloads/MyChecks</b> con el nombre <b>Submission_&lt;id&gt;_Report.pdf</b>.
+            Haz clic en la tarjeta "Mis registros" en el panel de control y abre la pantalla
+            correspondiente.
+            Ver registros grabados, filtrar la lista, edita tus respuestas y crea tu informe A4 en
+            PDF inmediatamente.<br>
+            <br>
+            <b>Configuración</b>: Si haces clic en el icono de engranaje (⚙), se abre el cuadro de
+            diálogo "PDF Report Designer". Personalizar el diseño de los informes PDF (cabecera, pie
+            de página, saltos de página, visualización de fecha y estado). <br>
+            <br>
+            <b>Encontrar registros</b>: Toca el icono de búsqueda (🔍) en la barra superior para
+            Encuentra actas por fecha, título o notas. <br>
+            <br>
+            <b>Filtrar listas de comprobación por estado</b>: Filtrar la lista tocando un estado
+            (Completado, en progreso). Al hacer clic en Todo se elimina el filtro.<br>
+            <br>
+            <b>Registro de edición</b>: En un mapa, toca el icono de Cambiar (✏️), se abre la
+            ventana de "Editar protocolo" y puedes ajustar tus entradas. <br>
+            <br>
+            <b>Registro de borrar</b>: Toca el icono de borrar (🗑️) en una tarjeta, se abre Una
+            ventana en la que tienes que confirmar la eliminación. Eliminar un registro Elimina
+            todas las respuestas relacionadas.<br>
+            <br>
+            <b>Ver PDF</b>: Toca el icono PDF en un mapa, se abrirá un visor PDF y Muestra el PDF
+            generado. Luego puedes imprimirlo o compartirlo.<br>
         </p>
     </div>
 
@@ -296,7 +421,17 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>🛠️ Tecnología / Arquitectura</h2>
         <p>
-            Kotlin, Jetpack Compose, Room DB, Material 3, PdfDocument API.
+            - <b>Lenguaje de desarrollo</b>: Kotlin<br>
+            - Marco de interfaz</b>: Composición de Jetpack y Material 3 (con soporte
+            Edge-to-Edge)<br>
+            - <b>Base de datos</b>: Biblioteca de Persistencia de Habitaciones (SQLite con
+            migraciones automáticas de esquemas y Eliminado en cascada)<br>
+            - <b>Creación de documentos</b>: API 'PdfDocument' de Android (renderizado vectorial A4)<br>
+            - <b>Procesamiento de imágenes</b>: Composición en bobina<br>
+            - <b>Permisos y Hardware</b>: Contratos de cámara, envío NFC en primer plano y Alcance
+            Storage MediaStore APIs<br>
+            - <b>Dispositivos compatibles</b>: smartphones y tabletas Android<br>
+            - <b>Idiomas soportados</b>: alemán, inglés, español y francés<br>
         </p>
     </div>
 
@@ -307,7 +442,15 @@
         <h2>© Copyright</h2>
         <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow"><img class="imgrght" src="./images/gplv3-or-later.png" alt="imgage:gplv3-or-later.png"></a>
         <p>
-            La app <b>pobvol My Checks</b> es <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Software Libre</a>☯ y código abierto vía <a href="https://github.com/pobvolcom/pobvol_My_Checks_Android" target="_blank" rel="nofollow">GitHub</a>☯. Puedes descargar, instalar, operar, modificar y redistribuir este software bajo los términos de la <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Desarrollado con Google Android Studio y Gemini 3.5 Flash Lite y Gemini 3.6 Flash.<br>
+            La app <b>pobvol My Checks</b> es <a href="https://en.wikipedia.org/wiki/Free_software"
+                                                 rel="nofollow" target="_blank">Software Libre</a>☯
+            y código abierto vía <a href="https://github.com/pobvolcom/pobvol_My_Checks_Android"
+                                    rel="nofollow" target="_blank">GitHub</a>☯. Puedes descargar,
+            instalar, operar, modificar y redistribuir este software bajo los términos de la <a
+                href="https://www.gnu.org/licenses/gpl-3.0" rel="nofollow" target="_blank">GNU
+            General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software
+            Services.
+            Desarrollado con Google Android Studio y Gemini 3.5 Flash Lite y Gemini 3.6 Flash.<br>
             <br>
             La aplicación se proporciona con la esperanza de que sea útil, pero SIN GARANTÍA DE NINGÚN TIPO; incluso sin la garantía implícita de COMERCIALIZACIÓN o APTITUD PARA UN PROPÓSITO PARTICULAR. El contenido de los sitios enlazados es siempre responsabilidad del proveedor o operador respectivo de los sitios. Los enlaces externos están marcados con este símbolo: ☯
         </p>

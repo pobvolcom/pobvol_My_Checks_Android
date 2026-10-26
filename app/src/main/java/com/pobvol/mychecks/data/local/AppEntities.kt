@@ -188,5 +188,6 @@ data class ChecklistAnswerEntity(
     val value: String,
     val notes: String? = null,
     val imagePath: String? = null,
+    val pictureSize: String = "medium",
     val timestamp: Long = System.currentTimeMillis()
 )

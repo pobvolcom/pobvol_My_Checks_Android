@@ -243,7 +243,7 @@
     <string name="license_agreement">ENDBENUTZER - LIZENZVEREINBARUNG (EULA)</string>
     <string name="menu_license">Lizenzvereinbarung</string>
     <string name="accept_license">Akzeptieren &amp; Zustimmen</string>
-    <string name="license_text_content">"Danke, dass Sie ** pobvol My Checks ** installiert haben. Die App ist Freie Software und wird quelloffen ausgeliefert. Die App wurde entwickelt mit Google Android Studio und Gemini 3.5 Flash Lite and Gemini 3.6 Flash. Der Sourcecode wurde über GitHub veröffentlicht.
+    <string name="license_text_content">"Danke, dass Sie ** pobvol My Checks ** installiert haben. Die App ist Freie Software und wird quelloffen ausgeliefert. Die App wurde entwickelt mit Google Android Studio und Gemini 3.5 Flash Lite and Gemini 3.6 Flash. Der Sourcecode wird über GitHub veröffentlicht.
 
 1. LIZENZERTEILUNG
 Sie können die App unter den Bedingungen der GNU General Public License v3 herunterladen, installieren, betreiben, modifizieren und weiter verteilen. Siehe https://www.gnu.org/licenses/gpl-3.0
@@ -251,19 +251,23 @@ Sie können die App unter den Bedingungen der GNU General Public License v3 heru
 2. COPYRIGHT
 Copyright © 2026 Volker Pobloth, pobvol Software Services
 
-3. DATENSCHUTZ
-Alle Daten werden auf Ihrem Gerät in einem abgesicherten Bereich der App gespeichert (/data/data/com.pobvol.mychecks). Die App überträgt keine Daten in die Cloud oder auf fremde Server.
+3. DATENSCHUTZ / DATENSICHERUNG
+Daten werden auf Ihrem Gerät in einem abgesicherten Bereich der App gespeichert (/data/data/com.pobvol.mychecks). Sie können jederzeit über den Startbildschirm eine Sicherungskopie der Datenbank erstellen. PDF- und SQL-Dateien erstellt die App automatisch, sobald eine Checkliste vollständig ausgefüllt wurde. Datenbankkopien, PDF- und SQL-Dateien finden Sie in ihrem Download-Folder, Unterordner pobvolMyChecks. Sie können diese Daten auf einen PC oder ein anderes Gerät kopieren und sichern. Die App überträgt keine Daten in die Cloud oder auf fremde Server.
 
-4. DATENSICHERUNG
-Sie können jederzeit über den Startbildschirm eine Sicherungskopie der Datenbank erstellen. PDF- und SQL-Dateien erstellt die App automatisch, sobald eine Checkliste vollständig ausgefüllt wurde. Datenbankkopien, PDF- und SQL-Dateien finden Sie in ihrem Download-Folder. Sie können diese Daten auf einen PC oder ein anderes Gerät kopieren und sichern. Die App überträgt keine Daten in die Cloud oder auf fremde Server.
-
-5. HAFTUNGSAUSSCHLUSS
+4. HAFTUNGSAUSSCHLUSS
 Die App wird in der Hoffnung, dass sie nützlich sein wird, aber OHNE JEGLICHE GEWÄHRLEISTUNG bereitgestellt; sogar ohne die implizite Gewährleistung der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK. Der Entwickler haftet nicht für Datenverluste oder fehlerhafte Protokolle.
 
-6. ZUSTIMMUNG
+5. ZUSTIMMUNG
 Durch Klicken auf [Akzeptieren &amp; Zustimmen] bestätigen Sie, dass Sie diese Bedingungen gelesen, verstanden und akzeptiert haben.
     "</string>
     <string name="pdf_pos">Pos</string>
     <string name="pdf_checkpoint">Checkpoint/Frage</string>
     <string name="pdf_status">Ergebnis</string>
+    <string name="pdf_picture_size_label">Bildgröße im PDF</string>
+    <string name="pdf_picture_size_small">Klein (100px)</string>
+    <string name="pdf_picture_size_medium">Mittel (200px)</string>
+    <string name="pdf_picture_size_large">Groß (300px)</string>
+    <string name="pdf_picture_size_s_label">Größe S (px)</string>
+    <string name="pdf_picture_size_m_label">Größe M (px)</string>
+    <string name="pdf_picture_size_l_label">Größe L (px)</string>
 </resources>

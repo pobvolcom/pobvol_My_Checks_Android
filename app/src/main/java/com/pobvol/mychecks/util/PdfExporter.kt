@@ -531,7 +531,12 @@ object PdfExporter {
                     try {
                         picBitmap = BitmapFactory.decodeFile(picFile.absolutePath)
                         if (picBitmap != null) {
-                            val targetWidth = minOf(picBitmap.width.toFloat(), 240f)
+                            val maxAllowedWidth = when (answerEntity.pictureSize?.lowercase()) {
+                                "small", "s" -> settings.pdfPictureSizeSmall.toFloat()
+                                "large", "l" -> settings.pdfPictureSizeLarge.toFloat()
+                                else -> settings.pdfPictureSizeMedium.toFloat()
+                            }
+                            val targetWidth = minOf(picBitmap.width.toFloat(), maxAllowedWidth)
                             val targetHeight =
                                 (picBitmap.height.toFloat() / picBitmap.width.toFloat()) * targetWidth
                             picHeight = targetHeight + 8f
@@ -628,13 +633,18 @@ object PdfExporter {
                 // PICTURES must be printed below of notes
                 if (picBitmap != null && picHeight > 0f) {
                     try {
-                        val targetWidth = minOf(picBitmap.width.toFloat(), 240f)
+                        val maxAllowedWidth = when (answerEntity?.pictureSize?.lowercase()) {
+                            "small", "s" -> settings.pdfPictureSizeSmall.toFloat()
+                            "large", "l" -> settings.pdfPictureSizeLarge.toFloat()
+                            else -> settings.pdfPictureSizeMedium.toFloat()
+                        }
+                        val targetWidth = minOf(picBitmap.width.toFloat(), maxAllowedWidth)
                         val targetHeight =
                             (picBitmap.height.toFloat() / picBitmap.width.toFloat()) * targetWidth
                         val destRect = RectF(
                             startX + 40f,
                             leftY,
-                            startX + 20f + targetWidth,
+                            startX + 40f + targetWidth,
                             leftY + targetHeight
                         )
                         val bitmapPaint = Paint().apply {
@@ -882,7 +892,7 @@ object PdfExporter {
             settings
         )
         val fileName = "Submission_${submission.id}_Report.pdf"
-        val subFolderPath = "${SqlExporter.getDeviceFolder(context)}/pdf"
+        val subFolderPath = "pobvolMyChecks/pdf"
 
         try {
             val baos = java.io.ByteArrayOutputStream()

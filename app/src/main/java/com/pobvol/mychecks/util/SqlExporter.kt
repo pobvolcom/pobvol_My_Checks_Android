@@ -72,7 +72,7 @@ object SqlExporter {
     fun getSqlDir(context: Context): File {
         val dir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-            "${getDeviceFolder(context)}/sql"
+            "pobvolMyChecks/sql"
         )
         if (!dir.exists()) dir.mkdirs()
         return dir
@@ -81,7 +81,7 @@ object SqlExporter {
     fun getPdfDir(context: Context): File {
         val dir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-            "${getDeviceFolder(context)}/pdf"
+            "pobvolMyChecks/pdf"
         )
         if (!dir.exists()) dir.mkdirs()
         return dir
@@ -90,7 +90,7 @@ object SqlExporter {
     fun getDbBackupDir(context: Context): File {
         val dir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-            "${getDeviceFolder(context)}/dbbackup"
+            "pobvolMyChecks/dbbackup"
         )
         if (!dir.exists()) dir.mkdirs()
         return dir
@@ -250,13 +250,13 @@ object SqlExporter {
             if (submissionAnswers.isNotEmpty()) {
                 append("-- Answers\n")
                 submissionAnswers.forEach { a ->
-                    append("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `timestamp`) VALUES (\n")
+                    append("INSERT OR REPLACE INTO `checklist_answers` (`id`, `submissionid`, `questionid`, `value`, `notes`, `imagePath`, `pictureSize`, `timestamp`) VALUES (\n")
                     append(
                         "  '${a.id}', '${a.submissionid}', '${a.questionid}', '${escapeSql(a.value)}', '${
                             escapeSql(
                                 a.notes ?: ""
                             )
-                        }', '${escapeSql(a.imagePath ?: "")}', ${a.timestamp}\n);\n"
+                        }', '${escapeSql(a.imagePath ?: "")}', '${escapeSql(a.pictureSize)}', ${a.timestamp}\n);\n"
                     )
                 }
             }

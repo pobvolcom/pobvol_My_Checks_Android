@@ -44,6 +44,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -492,6 +493,11 @@ fun FillChecklistScreen(
                         isActiveNfcTarget = (activeNfcQuestionId == question.id),
                         onActivateNfcScan = { activeNfcQuestionId = question.id },
                         textBlocks = uiState.textBlocks,
+                        currentPictureSize = answersMap[question.id]?.pictureSize ?: "medium",
+                        onPictureSizeChanged = { size ->
+                            val current = answersMap[question.id] ?: AnswerInput()
+                            answersMap[question.id] = current.copy(pictureSize = size)
+                        },
                     )
                 }
             }
@@ -582,6 +588,8 @@ fun AnswerQuestionItem(
     isActiveNfcTarget: Boolean = false,
     onActivateNfcScan: () -> Unit = {},
     textBlocks: List<TextBlockEntity> = emptyList(),
+    currentPictureSize: String = "medium",
+    onPictureSizeChanged: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -961,33 +969,68 @@ fun AnswerQuestionItem(
                         )
                     }
 
-                    //Picture, Camera, Upload, Delete
-                    Row(
+                    //Picture, Camera, Upload, Delete, Size S/M/L
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            val imageModel: Any = remember(currentImageUri) {
+                                if (currentImageUri.startsWith("content://") || currentImageUri.startsWith(
+                                        "file://"
+                                    )
+                                ) {
+                                    currentImageUri
+                                } else {
+                                    PdfExporter.getPictureFile(context, currentImageUri)
+                                        ?: currentImageUri
+                                }
+                            }
 
-                        val imageModel: Any = remember(currentImageUri) {
-                            if (currentImageUri.startsWith("content://") || currentImageUri.startsWith(
-                                    "file://"
-                                )
+                            AsyncImage(
+                                model = imageModel,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                contentScale = ContentScale.Crop,
+                            )
+
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
                             ) {
-                                currentImageUri
-                            } else {
-                                PdfExporter.getPictureFile(context, currentImageUri)
-                                    ?: currentImageUri
+                                Text(
+                                    text = "PDF Size:",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    val sizes =
+                                        listOf("small" to "S", "medium" to "M", "large" to "L")
+                                    sizes.forEach { (sizeCode, sizeLabel) ->
+                                        val isSelected =
+                                            currentPictureSize.equals(sizeCode, ignoreCase = true)
+                                        FilterChip(
+                                            selected = isSelected,
+                                            onClick = { onPictureSizeChanged(sizeCode) },
+                                            label = {
+                                                Text(
+                                                    sizeLabel,
+                                                    style = MaterialTheme.typography.labelSmall
+                                                )
+                                            },
+                                        )
+                                    }
+                                }
                             }
                         }
-
-                        AsyncImage(
-                            model = imageModel,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(80.dp)
-                                .clip(RoundedCornerShape(8.dp)),
-                            contentScale = ContentScale.Crop,
-                        )
 
                         //Column (verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Row(

@@ -94,9 +94,10 @@ fun SubmissionDetailScreen(
     val existingAnswersMap = remember(submission.id, uiState.answers) {
         uiState.answers.filter { it.submissionid == submission.id }.associate {
             it.questionid to AnswerInput(
-                it.value,
-                it.notes ?: "",
-                imagePath = it.imagePath
+                value = it.value,
+                notes = it.notes ?: "",
+                imagePath = it.imagePath,
+                pictureSize = it.pictureSize,
             )
         }
     }
@@ -482,6 +483,11 @@ fun SubmissionDetailScreen(
                         isActiveNfcTarget = (activeNfcQuestionId == question.id),
                         onActivateNfcScan = { activeNfcQuestionId = question.id },
                         textBlocks = uiState.textBlocks,
+                        currentPictureSize = answersMap[question.id]?.pictureSize ?: "medium",
+                        onPictureSizeChanged = { size ->
+                            val current = answersMap[question.id] ?: AnswerInput()
+                            answersMap[question.id] = current.copy(pictureSize = size)
+                        },
                     )
                 }
             }

@@ -44,6 +44,11 @@ class SettingsRepositoryImpl(
         val FTP_USER = stringPreferencesKey("ftp_user")
         val FTP_PASSWORD = stringPreferencesKey("ftp_password")
         val IS_LICENSE_ACCEPTED = booleanPreferencesKey("is_license_accepted")
+        val PICTURE_SIZE = stringPreferencesKey("picture_size")
+        val PDF_PICTURE_SIZE = stringPreferencesKey("pdf_picture_size")
+        val PDF_PICTURE_SIZE_SMALL = intPreferencesKey("pdf_picture_size_small")
+        val PDF_PICTURE_SIZE_MEDIUM = intPreferencesKey("pdf_picture_size_medium")
+        val PDF_PICTURE_SIZE_LARGE = intPreferencesKey("pdf_picture_size_large")
     }
 
     override val userSettings: Flow<UserSettings> = context.dataStore.data
@@ -92,6 +97,10 @@ class SettingsRepositoryImpl(
             val ftpUser = preferences[PreferencesKeys.FTP_USER] ?: ""
             val ftpPassword = preferences[PreferencesKeys.FTP_PASSWORD] ?: ""
             val isLicenseAccepted = preferences[PreferencesKeys.IS_LICENSE_ACCEPTED] ?: false
+            val pdfPictureSize = preferences[PreferencesKeys.PDF_PICTURE_SIZE] ?: "medium"
+            val pdfPictureSizeSmall = preferences[PreferencesKeys.PDF_PICTURE_SIZE_SMALL] ?: 100
+            val pdfPictureSizeMedium = preferences[PreferencesKeys.PDF_PICTURE_SIZE_MEDIUM] ?: 200
+            val pdfPictureSizeLarge = preferences[PreferencesKeys.PDF_PICTURE_SIZE_LARGE] ?: 300
 
             UserSettings(
                 themeMode = themeMode,
@@ -120,6 +129,10 @@ class SettingsRepositoryImpl(
                 ftpUser = ftpUser,
                 ftpPassword = ftpPassword,
                 isLicenseAccepted = isLicenseAccepted,
+                pdfPictureSize = pdfPictureSize,
+                pdfPictureSizeSmall = pdfPictureSizeSmall,
+                pdfPictureSizeMedium = pdfPictureSizeMedium,
+                pdfPictureSizeLarge = pdfPictureSizeLarge,
             )
         }
 
@@ -284,6 +297,36 @@ class SettingsRepositoryImpl(
     override suspend fun acceptLicense() {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.IS_LICENSE_ACCEPTED] = true
+        }
+    }
+
+    override suspend fun updatePdfPictureSize(size: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.PDF_PICTURE_SIZE] = size
+        }
+    }
+
+    override suspend fun updatePdfPictureSizeSmall(size: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.PDF_PICTURE_SIZE_SMALL] = size
+        }
+    }
+
+    override suspend fun updatePdfPictureSizeMedium(size: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.PDF_PICTURE_SIZE_MEDIUM] = size
+        }
+    }
+
+    override suspend fun updatePdfPictureSizeLarge(size: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.PDF_PICTURE_SIZE_LARGE] = size
+        }
+    }
+
+    override suspend fun updatePictureSize(size: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.PICTURE_SIZE] = size
         }
     }
 }

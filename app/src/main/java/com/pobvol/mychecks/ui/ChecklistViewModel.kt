@@ -654,6 +654,7 @@ class ChecklistViewModel(
                         value = answerInput.value,
                         notes = answerInput.notes?.ifBlank { null },
                         imagePath = answerInput.imagePath,
+                        pictureSize = answerInput.pictureSize,
                         timestamp = System.currentTimeMillis(),
                     )
                     answerRepository.insertChecklistAnswer(answer)
@@ -815,11 +816,12 @@ class ChecklistViewModel(
                     } else if (newAnswerInput.imageUri == null && existingAnswer.imagePath != null && newAnswerInput.imagePath == null) {
                         imagePathToUse = null
                     }
-                    if (newAnswerInput.value != existingAnswer.value || newAnswerInput.notes != existingAnswer.notes || imagePathToUse != existingAnswer.imagePath) {
+                    if (newAnswerInput.value != existingAnswer.value || newAnswerInput.notes != existingAnswer.notes || imagePathToUse != existingAnswer.imagePath || newAnswerInput.pictureSize != existingAnswer.pictureSize) {
                         val modifiedAnswer = existingAnswer.copy(
                             value = newAnswerInput.value,
                             notes = newAnswerInput.notes?.ifBlank { null },
                             imagePath = imagePathToUse,
+                            pictureSize = newAnswerInput.pictureSize,
                             timestamp = System.currentTimeMillis(),
                         )
                         answerRepository.updateChecklistAnswer(modifiedAnswer)
@@ -830,6 +832,7 @@ class ChecklistViewModel(
                         questionid = questionId,
                         value = newAnswerInput.value,
                         notes = newAnswerInput.notes?.ifBlank { null },
+                        pictureSize = newAnswerInput.pictureSize,
                         timestamp = System.currentTimeMillis(),
                     )
                     answerRepository.insertChecklistAnswer(newAnswer)
@@ -1124,6 +1127,22 @@ class ChecklistViewModel(
 
     fun updatePdfTemplateVersion(version: String) {
         viewModelScope.launch { settingsRepository.updatePdfTemplateVersion(version) }
+    }
+
+    fun updatePdfPictureSize(size: String) {
+        viewModelScope.launch { settingsRepository.updatePdfPictureSize(size) }
+    }
+
+    fun updatePdfPictureSizeSmall(size: Int) {
+        viewModelScope.launch { settingsRepository.updatePdfPictureSizeSmall(size) }
+    }
+
+    fun updatePdfPictureSizeMedium(size: Int) {
+        viewModelScope.launch { settingsRepository.updatePdfPictureSizeMedium(size) }
+    }
+
+    fun updatePdfPictureSizeLarge(size: Int) {
+        viewModelScope.launch { settingsRepository.updatePdfPictureSizeLarge(size) }
     }
 
     fun openLicenseScreen() {
