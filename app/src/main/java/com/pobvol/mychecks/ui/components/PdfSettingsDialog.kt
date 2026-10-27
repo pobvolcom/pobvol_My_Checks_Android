@@ -50,6 +50,7 @@ fun PdfSettingsDialog(
     onPdfIncludePageNumberChanged: (Boolean) -> Unit,
     onPdfIncludeUnansweredQuestionsChanged: (Boolean) -> Unit,
     onPdfIncludeQuestionTitleChanged: (Boolean) -> Unit,
+    onPdfIncludeQuestionDescriptionChanged: (Boolean) -> Unit = {},
     onPdfIncludeAnswerValueChanged: (Boolean) -> Unit,
     onPdfIncludeAnswerNotesChanged: (Boolean) -> Unit,
     onPdfIncludeAnswerPictureChanged: (Boolean) -> Unit,
@@ -259,6 +260,11 @@ fun PdfSettingsDialog(
                         stringResource(R.string.pdf_include_question_title),
                         userSettings.pdfIncludeQuestionTitle,
                         onPdfIncludeQuestionTitleChanged
+                    )
+                    PdfSwitchRow(
+                        stringResource(R.string.pdf_include_question_description),
+                        userSettings.pdfIncludeQuestionDescription,
+                        onPdfIncludeQuestionDescriptionChanged
                     )
                     PdfSwitchRow(
                         stringResource(R.string.pdf_include_answer_value),

@@ -272,4 +272,10 @@ By clicking [Accept &amp; Agree], you confirm that you have read, understood and
     <string name="pdf_picture_size_s_label">Small Size S (px)</string>
     <string name="pdf_picture_size_m_label">Medium Size M (px)</string>
     <string name="pdf_picture_size_l_label">Large Size L (px)</string>
+    <string name="copy_checklist">Duplicate Checklist</string>
+    <string name="copy_from_template">Copy questions from checklist (Optional)</string>
+    <string name="msg_checklist_copied">Checklist and questions copied successfully.</string>
+    <string name="duplicate">Duplicate</string>
+    <string name="template_none">None (Empty Checklist)</string>
+    <string name="pdf_include_question_description">Include Question Description</string>
 </resources>

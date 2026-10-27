@@ -31,6 +31,8 @@ class SettingsRepositoryImpl(
         val PDF_INCLUDE_PAGE_NUMBER = booleanPreferencesKey("pdf_include_page_number")
         val INCLUDE_UNANSWERED_QUESTIONS = booleanPreferencesKey("include_unanswered_questions")
         val PDF_INCLUDE_QUESTION_TITLE = booleanPreferencesKey("pdf_include_question_title")
+        val PDF_INCLUDE_QUESTION_DESCRIPTION =
+            booleanPreferencesKey("pdf_include_question_description")
         val PDF_INCLUDE_ANSWER_VALUE = booleanPreferencesKey("pdf_include_answer_value")
         val INCLUDE_ANSWER_NOTES = booleanPreferencesKey("include_answer_notes")
         val PDF_INCLUDE_ANSWER_PICTURE = booleanPreferencesKey("pdf_include_answer_picture")
@@ -82,6 +84,8 @@ class SettingsRepositoryImpl(
             val includeUnansweredQuestions = preferences[PreferencesKeys.INCLUDE_UNANSWERED_QUESTIONS] ?: true
             val pdfIncludeQuestionTitle =
                 preferences[PreferencesKeys.PDF_INCLUDE_QUESTION_TITLE] ?: true
+            val pdfIncludeQuestionDescription =
+                preferences[PreferencesKeys.PDF_INCLUDE_QUESTION_DESCRIPTION] ?: false
             val pdfIncludeAnswerValue =
                 preferences[PreferencesKeys.PDF_INCLUDE_ANSWER_VALUE] ?: true
             val includeAnswerNotes = preferences[PreferencesKeys.INCLUDE_ANSWER_NOTES] ?: true
@@ -116,6 +120,7 @@ class SettingsRepositoryImpl(
                 pdfIncludePageNumber = pdfIncludePageNumber,
                 includeUnansweredQuestions = includeUnansweredQuestions,
                 pdfIncludeQuestionTitle = pdfIncludeQuestionTitle,
+                pdfIncludeQuestionDescription = pdfIncludeQuestionDescription,
                 pdfIncludeAnswerValue = pdfIncludeAnswerValue,
                 pdfIncludeAnswerNotes = includeAnswerNotes,
                 pdfIncludeAnswerPicture = pdfIncludeAnswerPicture,
@@ -219,6 +224,12 @@ class SettingsRepositoryImpl(
     override suspend fun updatePdfIncludeQuestionTitle(include: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.PDF_INCLUDE_QUESTION_TITLE] = include
+        }
+    }
+
+    override suspend fun updatePdfIncludeQuestionDescription(include: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.PDF_INCLUDE_QUESTION_DESCRIPTION] = include
         }
     }
 

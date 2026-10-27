@@ -22,6 +22,7 @@ data class UserSettings(
     val pdfIncludePageNumber: Boolean = true,
     val includeUnansweredQuestions: Boolean = true,
     val pdfIncludeQuestionTitle: Boolean = true,
+    val pdfIncludeQuestionDescription: Boolean = false,
     val pdfIncludeAnswerValue: Boolean = true,
     val pdfIncludeAnswerNotes: Boolean = true,
     val pdfIncludeAnswerPicture: Boolean = true,
@@ -57,6 +58,7 @@ interface SettingsRepository {
     suspend fun updatePdfIncludePageNumber(include: Boolean)
     suspend fun updatePdfIncludeUnansweredQuestions(include: Boolean)
     suspend fun updatePdfIncludeQuestionTitle(include: Boolean)
+    suspend fun updatePdfIncludeQuestionDescription(include: Boolean)
     suspend fun updatePdfIncludeAnswerValue(include: Boolean)
     suspend fun updatePdfIncludeAnswerNotes(include: Boolean)
     suspend fun updatePdfIncludeAnswerPicture(include: Boolean)

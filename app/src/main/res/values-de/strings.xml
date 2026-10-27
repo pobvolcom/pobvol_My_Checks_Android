@@ -270,4 +270,10 @@ Durch Klicken auf [Akzeptieren &amp; Zustimmen] bestätigen Sie, dass Sie diese 
     <string name="pdf_picture_size_s_label">Größe S (px)</string>
     <string name="pdf_picture_size_m_label">Größe M (px)</string>
     <string name="pdf_picture_size_l_label">Größe L (px)</string>
+    <string name="copy_checklist">Checkliste duplizieren</string>
+    <string name="copy_from_template">Fragen aus Checkliste kopieren (Optional)</string>
+    <string name="msg_checklist_copied">Checkliste und Fragen erfolgreich kopiert.</string>
+    <string name="duplicate">Duplizieren</string>
+    <string name="template_none">Keine (Leere Checkliste)</string>
+    <string name="pdf_include_question_description">Fragenbeschreibung drucken</string>
 </resources>

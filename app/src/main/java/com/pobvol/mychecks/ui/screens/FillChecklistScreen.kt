@@ -805,19 +805,26 @@ fun AnswerQuestionItem(
                         onValueChange = onAnswerChanged,
                         label = { Text(stringResource(R.string.enter_response)) },
                         trailingIcon = {
-                            if (textBlocks.isNotEmpty()) {
-                                Box {
-                                    IconButton(onClick = { answerTextBlockMenuExpanded = true }) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Rounded.Note,
-                                            contentDescription = stringResource(R.string.text_blocks),
-                                            tint = MaterialTheme.colorScheme.primary,
+                            Box {
+                                IconButton(onClick = { answerTextBlockMenuExpanded = true }) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Rounded.Note,
+                                        contentDescription = stringResource(R.string.text_blocks),
+                                        tint = if (textBlocks.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(
+                                            alpha = 0.6f
+                                        ),
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = answerTextBlockMenuExpanded,
+                                    onDismissRequest = { answerTextBlockMenuExpanded = false },
+                                ) {
+                                    if (textBlocks.isEmpty()) {
+                                        DropdownMenuItem(
+                                            text = { Text(stringResource(R.string.no_text_blocks_recorded)) },
+                                            onClick = { answerTextBlockMenuExpanded = false },
                                         )
-                                    }
-                                    DropdownMenu(
-                                        expanded = answerTextBlockMenuExpanded,
-                                        onDismissRequest = { answerTextBlockMenuExpanded = false },
-                                    ) {
+                                    } else {
                                         textBlocks.forEachIndexed { index, block ->
                                             if (index > 0) {
                                                 HorizontalDivider(
@@ -867,19 +874,26 @@ fun AnswerQuestionItem(
                 onValueChange = onNotesChanged,
                 label = { Text(stringResource(R.string.answer_notes_optional)) },
                 trailingIcon = {
-                    if (textBlocks.isNotEmpty()) {
-                        Box {
-                            IconButton(onClick = { textBlockMenuExpanded = true }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Rounded.Note,
-                                    contentDescription = stringResource(R.string.text_blocks),
-                                    tint = MaterialTheme.colorScheme.primary,
+                    Box {
+                        IconButton(onClick = { textBlockMenuExpanded = true }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.Note,
+                                contentDescription = stringResource(R.string.text_blocks),
+                                tint = if (textBlocks.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(
+                                    alpha = 0.6f
+                                ),
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = textBlockMenuExpanded,
+                            onDismissRequest = { textBlockMenuExpanded = false },
+                        ) {
+                            if (textBlocks.isEmpty()) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.no_text_blocks_recorded)) },
+                                    onClick = { textBlockMenuExpanded = false },
                                 )
-                            }
-                            DropdownMenu(
-                                expanded = textBlockMenuExpanded,
-                                onDismissRequest = { textBlockMenuExpanded = false },
-                            ) {
+                            } else {
                                 textBlocks.forEachIndexed { index, block ->
                                     if (index > 0) {
                                         HorizontalDivider(

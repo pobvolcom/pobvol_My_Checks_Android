@@ -2,6 +2,7 @@ package com.pobvol.mychecks.ui.components
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,8 +14,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -26,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pobvol.mychecks.R
@@ -37,15 +42,18 @@ import com.pobvol.mychecks.ui.theme.mychecksTheme
 fun AddEditChecklistDialog(
     checklistToEdit: ChecklistEntity?,
     availableCategories: List<CategoryEntity> = emptyList(),
+    availableChecklists: List<ChecklistEntity> = emptyList(),
     onDismiss: () -> Unit,
-    onSave: (title: String, language: String, description: String, category: String, icon: String) -> Unit
+    onSave: (title: String, language: String, description: String, category: String, icon: String, templateChecklistId: String?) -> Unit
 ) {
     var title by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.title ?: "") }
     var language by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.language ?: "English") }
     var description by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.description ?: "") }
     var category by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.category ?: "UVV") }
     var icon by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.icon ?: "") }
+    var selectedTemplateChecklist by remember { mutableStateOf<ChecklistEntity?>(null) }
     var isTitleError by remember { mutableStateOf(false) }
+    var templateDropdownExpanded by remember { mutableStateOf(false) }
 
     val categoriesList = remember(availableCategories) {
         val dbCategories = availableCategories.map { it.title.ifBlank { it.category } }
@@ -83,6 +91,55 @@ fun AddEditChecklistDialog(
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                if (checklistToEdit == null && availableChecklists.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = stringResource(R.string.copy_from_template),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Box {
+                        OutlinedButton(
+                            onClick = { templateDropdownExpanded = true },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = selectedTemplateChecklist?.title
+                                    ?: stringResource(R.string.template_none),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = templateDropdownExpanded,
+                            onDismissRequest = { templateDropdownExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.template_none)) },
+                                onClick = {
+                                    selectedTemplateChecklist = null
+                                    templateDropdownExpanded = false
+                                }
+                            )
+                            availableChecklists.forEach { cl ->
+                                DropdownMenuItem(
+                                    text = { Text(cl.title) },
+                                    onClick = {
+                                        selectedTemplateChecklist = cl
+                                        templateDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -139,7 +196,14 @@ fun AddEditChecklistDialog(
                     if (title.isBlank()) {
                         isTitleError = true
                     } else {
-                        onSave(title, language, description, category, icon)
+                        onSave(
+                            title,
+                            language,
+                            description,
+                            category,
+                            icon,
+                            selectedTemplateChecklist?.id
+                        )
                     }
                 },
                 shape = RoundedCornerShape(12.dp)
@@ -166,7 +230,7 @@ fun AddChecklistDialogPreview() {
         AddEditChecklistDialog(
             checklistToEdit = null,
             onDismiss = {},
-            onSave = { _, _, _, _, _ -> }
+            onSave = { _, _, _, _, _, _ -> }
         )
     }
 }
@@ -185,7 +249,7 @@ fun EditChecklistDialogPreview() {
                 icon = "Null"
             ),
             onDismiss = {},
-            onSave = { _, _, _, _, _ -> }
+            onSave = { _, _, _, _, _, _ -> }
         )
     }
 }

@@ -20,7 +20,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         ChecklistSubmissionEntity::class,
         ChecklistAnswerEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -68,6 +68,20 @@ abstract class AppDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE `checklist_answers` ADD COLUMN `pictureSize` TEXT NOT NULL DEFAULT 'medium'")
             }
         }
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("INSERT OR IGNORE INTO checklists (id, title, language, description, category, icon, timestamp) VALUES ('checklist-3','Checkliste für Leitern und Tritte','Deutsch','Beispiel für eine UVV Checkliste','UVV','',1791566533405)")
+                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-1','checklist-3',1,'NFC-Tag','Sie können Daten von einem NFC-Tag lesen. Das Gerät muss NFC unterstützen und Sie müssen NFC einschalten.','nfc',NULL,0,1791566533405,NULL,NULL)")
+                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-2','checklist-3',2,'Holme/Stufen/Sprossen/Plattform','Geprüft wird auf Verformung, Beschädigung, Scharfe Kanten, Schutzbehandlung, Verbindung zum Holm, Abnutzung, Korrosion','combobox','in Ordnung [grün], mangelhaft [rot]',1,1791566533405,NULL,NULL)")
+                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-3','checklist-3',3,'Spreizsicherung','Geprüft wird auf Vollständigkeit/Befestigung, Funktionsfähigkeit, Beschädigung','combobox','in Ordnung [grün], mangelhaft [rot]',1,1791566533405,NULL,NULL)")
+                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-4','checklist-3',4,'Beschlagteile','Geprüft wird auf Beschädigung/Korrosion, Vollständigkeit/Befestigung, Funktionsfähigkeit, Abnutzung, Schmierung (mechanische Teile)','combobox','in Ordnung [grün], mangelhaft [rot]',1,1791566533405,NULL,NULL)")
+                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-5','checklist-3',5,'Leiter-/Trittfüße/Rollen','Geprüft wird auf Vollständigkeit/Befestigung, Abnutzung/Beschädigung, Funktionsfähigkeit','combobox','in Ordnung [grün], mangelhaft [rot]',1,1791566533405,NULL,NULL)")
+                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-6','checklist-3',6,'Zubehör (z.B. Holmverlängerung, Fußverbreiterung, Wandabstützung)','Geprüft wird auf Vollständigkeit/Befestigung/Beschädigung','combobox','in Ordnung [grün], mangelhaft [rot]',1,1791566533405,NULL,NULL)")
+                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-7','checklist-3',7,'Kennzeichnung','Geprüft wird die Betriebsanleitung (z.B. Piktogramm)','combobox','in Ordnung [grün], mangelhaft [rot]',1,1791566533405,NULL,NULL)")
+                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-8','checklist-3',8,'Kontrollergebnis','','combobox','Leiter/Tritt i.O. und verwendungsfähig [grün], Reparatur notwendig [gelb], Leiter/Tritt sofort aussondern [rot]',1,1791566533405,NULL,NULL)")
+                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-9','checklist-3',9,'Sicherheitsrelevante Kommentare','','text',NULL,0,1791566533405,NULL,NULL)")
+            }
+        }
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -79,6 +93,7 @@ abstract class AppDatabase : RoomDatabase() {
                     .addMigrations(
                         MIGRATION_1_2,
                         MIGRATION_2_3,
+                        MIGRATION_3_4,
                     )
                     .fallbackToDestructiveMigration(true)
                     .addCallback(
@@ -101,11 +116,13 @@ abstract class AppDatabase : RoomDatabase() {
 
                                 db.execSQL("INSERT OR IGNORE INTO categories (category, title) VALUES ('HEALTH', 'Health')")
                                 db.execSQL("INSERT OR IGNORE INTO categories (category, title) VALUES ('UVV', 'UVV')")
+                                db.execSQL("INSERT OR IGNORE INTO categories (category, title) VALUES ('PERSONAL', 'Personal')")
 
                                 db.execSQL("INSERT OR IGNORE INTO checklists (id, title, language, description, category, icon, timestamp) VALUES ('checklist-1','UVV Prüfung Flurförderzeuge','Deutsch','Beispiel für eine UVV Checkliste','UVV','',1791566533405)")
                                 db.execSQL("INSERT OR IGNORE INTO checklists (id, title, language, description, category, icon, timestamp) VALUES ('checklist-2','Blutdruckmessung','Deutsch','Beispiel für eine Blutdruckmessung','Health','',1791566533405)")
+                                db.execSQL("INSERT OR IGNORE INTO checklists (id, title, language, description, category, icon, timestamp) VALUES ('checklist-3','Checkliste für Leitern und Tritte','Deutsch','Beispiel für eine UVV Checkliste','UVV','',1791566533405)")
 
-                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-1','checklist-1',1,'NFC-Tag','Sie können Daten von einem NFC-Tag lesen. Das Gerät muss NFC unterstützen und Sie müssen NFC einschalten.','nfc',NULL,1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-1','checklist-1',1,'NFC-Tag','Sie können Daten von einem NFC-Tag lesen. Das Gerät muss NFC unterstützen und Sie müssen NFC einschalten.','nfc',NULL,0,1791566533405,NULL,NULL)")
                                 db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-2','checklist-1',2,'Abgas','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
                                 db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-3','checklist-1',3,'Bereifung','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
                                 db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question1-4','checklist-1',4,'DGUV V3 Ladegerät','','combobox','ohne erkennbare Mängel [grün], Reparatur erforderlich [rot], Mängel beseitigt [gelb]',1,1791566533405,NULL,NULL)")
@@ -123,6 +140,16 @@ abstract class AppDatabase : RoomDatabase() {
                                 db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question2-1','checklist-2',1,'Wert1','','number',NULL,1,1791566533405,NULL,NULL)")
                                 db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question2-2','checklist-2',2,'Wert2','','number',NULL,1,1791566533405,NULL,NULL)")
                                 db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question2-3','checklist-2',3,'Puls','','number',NULL,0,1791566533405,NULL,NULL)")
+
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-1','checklist-3',1,'NFC-Tag','Sie können Daten von einem NFC-Tag lesen. Das Gerät muss NFC unterstützen und Sie müssen NFC einschalten.','nfc',NULL,0,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-2','checklist-3',2,'Holme/Stufen/Sprossen/Plattform','Geprüft wird auf Verformung, Beschädigung, Scharfe Kanten, Schutzbehandlung, Verbindung zum Holm, Abnutzung, Korrosion','combobox','in Ordnung [grün], mangelhaft [rot]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-3','checklist-3',3,'Spreizsicherung','Geprüft wird auf Vollständigkeit/Befestigung, Funktionsfähigkeit, Beschädigung','combobox','in Ordnung [grün], mangelhaft [rot]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-4','checklist-3',4,'Beschlagteile','Geprüft wird auf Beschädigung/Korrosion, Vollständigkeit/Befestigung, Funktionsfähigkeit, Abnutzung, Schmierung (mechanische Teile)','combobox','in Ordnung [grün], mangelhaft [rot]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-5','checklist-3',5,'Leiter-/Trittfüße/Rollen','Geprüft wird auf Vollständigkeit/Befestigung, Abnutzung/Beschädigung, Funktionsfähigkeit','combobox','in Ordnung [grün], mangelhaft [rot]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-6','checklist-3',6,'Zubehör (z.B. Holmverlängerung, Fußverbreiterung, Wandabstützung)','Geprüft wird auf Vollständigkeit/Befestigung/Beschädigung','combobox','in Ordnung [grün], mangelhaft [rot]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-7','checklist-3',7,'Kennzeichnung','Geprüft wird die Betriebsanleitung (z.B. Piktogramm)','combobox','in Ordnung [grün], mangelhaft [rot]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-8','checklist-3',8,'Kontrollergebnis','','combobox','Leiter/Tritt i.O. und verwendungsfähig [grün], Reparatur notwendig [gelb], Leiter/Tritt sofort aussondern [rot]',1,1791566533405,NULL,NULL)")
+                                db.execSQL("INSERT OR IGNORE INTO checklist_questions (id, checklistid, sortno, title, description, type, options, required, timestamp, minValue, maxValue) VALUES ('question3-9','checklist-3',9,'Sicherheitsrelevante Kommentare','','text',NULL,0,1791566533405,NULL,NULL)")
 
                                 db.execSQL("INSERT OR IGNORE INTO `checklist_submissions` (`id`, `checklistid`, `status`, `inspector`, `notes`, `date`, `timestamp`) VALUES ('submission2-1','checklist-2','COMPLETED', 'Dummy', '', '10.10.2026', 1791566533405)")
                                 db.execSQL("INSERT OR IGNORE INTO `checklist_submissions` (`id`, `checklistid`, `status`, `inspector`, `notes`, `date`, `timestamp`) VALUES ('submission2-2','checklist-2','COMPLETED', 'Dummy', '', '11.10.2026', 1791566533405)")

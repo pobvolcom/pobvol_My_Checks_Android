@@ -41,6 +41,7 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 class ChecklistViewModel(
     private val repository: ChecklistRepository,
@@ -105,6 +106,9 @@ class ChecklistViewModel(
 
     private val _checklistToDelete = MutableStateFlow<ChecklistEntity?>(null)
     val checklistToDelete: StateFlow<ChecklistEntity?> = _checklistToDelete.asStateFlow()
+
+    private val _checklistToCopy = MutableStateFlow<ChecklistEntity?>(null)
+    val checklistToCopy: StateFlow<ChecklistEntity?> = _checklistToCopy.asStateFlow()
 
     private val _selectedChecklistForQuestions = MutableStateFlow<ChecklistEntity?>(null)
     val selectedChecklistForQuestions: StateFlow<ChecklistEntity?> = _selectedChecklistForQuestions.asStateFlow()
@@ -186,6 +190,7 @@ class ChecklistViewModel(
         val isAddEditVisible: Boolean,
         val checklistToEdit: ChecklistEntity?,
         val checklistToDelete: ChecklistEntity?,
+        val checklistToCopy: ChecklistEntity?,
         val selectedChecklistForQuestions: ChecklistEntity?,
         val questions: List<ChecklistQuestionEntity>,
         val isAddEditQuestionVisible: Boolean,
@@ -200,6 +205,7 @@ class ChecklistViewModel(
         _isAddEditDialogVisible,
         _checklistToEdit,
         _checklistToDelete,
+        _checklistToCopy,
         _selectedChecklistForQuestions,
         _questions,
         _isAddEditQuestionDialogVisible,
@@ -213,14 +219,15 @@ class ChecklistViewModel(
             isAddEditVisible = states[0] as Boolean,
             checklistToEdit = states[1] as ChecklistEntity?,
             checklistToDelete = states[2] as ChecklistEntity?,
-            selectedChecklistForQuestions = states[3] as ChecklistEntity?,
-            questions = states[4] as List<ChecklistQuestionEntity>,
-            isAddEditQuestionVisible = states[5] as Boolean,
-            questionToEdit = states[6] as ChecklistQuestionEntity?,
-            questionToDelete = states[7] as ChecklistQuestionEntity?,
-            message = states[8] as String?,
-            selectedChecklistToAnswer = states[9] as ChecklistEntity?,
-            submissionToDelete = states[10] as ChecklistSubmissionEntity?,
+            checklistToCopy = states[3] as ChecklistEntity?,
+            selectedChecklistForQuestions = states[4] as ChecklistEntity?,
+            questions = states[5] as List<ChecklistQuestionEntity>,
+            isAddEditQuestionVisible = states[6] as Boolean,
+            questionToEdit = states[7] as ChecklistQuestionEntity?,
+            questionToDelete = states[8] as ChecklistQuestionEntity?,
+            message = states[9] as String?,
+            selectedChecklistToAnswer = states[10] as ChecklistEntity?,
+            submissionToDelete = states[11] as ChecklistSubmissionEntity?,
         )
     }
 
@@ -399,6 +406,7 @@ class ChecklistViewModel(
             isAddEditDialogVisible = dialogState.isAddEditVisible,
             checklistToEdit = dialogState.checklistToEdit,
             checklistToDelete = dialogState.checklistToDelete,
+            checklistToCopy = dialogState.checklistToCopy,
             selectedChecklistForQuestions = dialogState.selectedChecklistForQuestions,
             questionsForSelectedChecklist = dialogState.questions,
             isAddEditQuestionDialogVisible = dialogState.isAddEditQuestionVisible,
@@ -489,7 +497,14 @@ class ChecklistViewModel(
         _checklistToEdit.value = null
     }
 
-    fun saveChecklist(title: String, language: String, description: String, category: String, icon: String) {
+    fun saveChecklist(
+        title: String,
+        language: String,
+        description: String,
+        category: String,
+        icon: String,
+        templateChecklistId: String? = null,
+    ) {
         val trimmedTitle = title.trim()
         val trimmedLanguage = language.trim().ifBlank { "en" }
         val trimmedCategory = if (category.isBlank()) "General" else category.trim()
@@ -499,11 +514,13 @@ class ChecklistViewModel(
         if (trimmedTitle.isBlank()) return
 
         val currentEdit = _checklistToEdit.value
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             categoryRepository.insertCategory(CategoryEntity(category = trimmedCategory, title = trimmedCategory))
 
             if (currentEdit == null) {
+                val newChecklistId = UUID.randomUUID().toString()
                 val newChecklist = ChecklistEntity(
+                    id = newChecklistId,
                     title = trimmedTitle,
                     language = trimmedLanguage,
                     description = trimmedDesc,
@@ -512,7 +529,24 @@ class ChecklistViewModel(
                     timestamp = System.currentTimeMillis(),
                 )
                 repository.insertChecklist(newChecklist)
-                _userMessage.value = context.getString(R.string.msg_checklist_added)
+
+                if (!templateChecklistId.isNullOrBlank()) {
+                    val templateQuestions =
+                        questionRepository.getChecklistQuestionsByChecklistId(templateChecklistId)
+                            .first()
+                    templateQuestions.forEach { q ->
+                        val copiedQuestion = q.copy(
+                            id = UUID.randomUUID().toString(),
+                            checklistid = newChecklistId,
+                            timestamp = System.currentTimeMillis(),
+                        )
+                        questionRepository.insertChecklistQuestion(copiedQuestion)
+                    }
+                }
+
+                withContext(Dispatchers.Main) {
+                    _userMessage.value = context.getString(R.string.msg_checklist_added)
+                }
             } else {
                 val updatedChecklist = currentEdit.copy(
                     title = trimmedTitle,
@@ -523,9 +557,52 @@ class ChecklistViewModel(
                     timestamp = System.currentTimeMillis(),
                 )
                 repository.updateChecklist(updatedChecklist)
-                _userMessage.value = context.getString(R.string.msg_checklist_updated)
+                withContext(Dispatchers.Main) {
+                    _userMessage.value = context.getString(R.string.msg_checklist_updated)
+                }
             }
-            dismissAddEditDialog()
+            withContext(Dispatchers.Main) {
+                dismissAddEditDialog()
+            }
+        }
+    }
+
+    fun openCopyChecklistDialog(checklist: ChecklistEntity) {
+        _checklistToCopy.value = checklist
+    }
+
+    fun dismissCopyChecklistDialog() {
+        _checklistToCopy.value = null
+    }
+
+    fun copyChecklist(sourceChecklist: ChecklistEntity, newTitle: String) {
+        val trimmedTitle = newTitle.trim()
+        if (trimmedTitle.isBlank()) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val newChecklistId = UUID.randomUUID().toString()
+            val newChecklist = sourceChecklist.copy(
+                id = newChecklistId,
+                title = trimmedTitle,
+                timestamp = System.currentTimeMillis(),
+            )
+            repository.insertChecklist(newChecklist)
+
+            val sourceQuestions =
+                questionRepository.getChecklistQuestionsByChecklistId(sourceChecklist.id).first()
+            sourceQuestions.forEach { q ->
+                val newQuestion = q.copy(
+                    id = UUID.randomUUID().toString(),
+                    checklistid = newChecklistId,
+                    timestamp = System.currentTimeMillis(),
+                )
+                questionRepository.insertChecklistQuestion(newQuestion)
+            }
+
+            withContext(Dispatchers.Main) {
+                dismissCopyChecklistDialog()
+                _userMessage.value = context.getString(R.string.msg_checklist_copied)
+            }
         }
     }
 
@@ -1103,6 +1180,10 @@ class ChecklistViewModel(
 
     fun updatePdfIncludeQuestionTitle(include: Boolean) {
         viewModelScope.launch { settingsRepository.updatePdfIncludeQuestionTitle(include) }
+    }
+
+    fun updatePdfIncludeQuestionDescription(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeQuestionDescription(include) }
     }
 
     fun updatePdfIncludeAnswerValue(include: Boolean) {

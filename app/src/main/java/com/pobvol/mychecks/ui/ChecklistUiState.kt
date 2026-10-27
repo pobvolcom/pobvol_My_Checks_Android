@@ -17,6 +17,7 @@ data class ChecklistUiState(
     val isAddEditDialogVisible: Boolean = false,
     val checklistToEdit: ChecklistEntity? = null,
     val checklistToDelete: ChecklistEntity? = null,
+    val checklistToCopy: ChecklistEntity? = null,
     val selectedChecklistForQuestions: ChecklistEntity? = null,
     val questionsForSelectedChecklist: List<ChecklistQuestionEntity> = emptyList(),
     val isAddEditQuestionDialogVisible: Boolean = false,

@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Assignment
 import androidx.compose.material.icons.rounded.Analytics
+import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.QuestionAnswer
@@ -47,6 +48,7 @@ fun ChecklistItem(
     onQuestionsClick: (ChecklistEntity) -> Unit,
     onEditClick: (ChecklistEntity) -> Unit,
     onDeleteClick: (ChecklistEntity) -> Unit,
+    onCopyClick: (ChecklistEntity) -> Unit = {},
     onChartClick: (ChecklistEntity) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -142,6 +144,16 @@ fun ChecklistItem(
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = stringResource(R.string.edit_checklist),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+
+                    // DUPLICATE / COPY CHECKLIST
+                    IconButton(onClick = { onCopyClick(checklist) }) {
+                        Icon(
+                            imageVector = Icons.Rounded.ContentCopy,
+                            contentDescription = stringResource(R.string.copy_checklist),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                             modifier = Modifier.size(28.dp)
                         )

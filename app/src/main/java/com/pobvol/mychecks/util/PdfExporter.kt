@@ -491,6 +491,8 @@ object PdfExporter {
 
             val linePadding = if (qIndex > 0) 6f else 0f
             val hasTitle = settings.pdfIncludeQuestionTitle
+            val hasDescription =
+                settings.pdfIncludeQuestionDescription && !q.description.isNullOrBlank()
             val hasValue = settings.pdfIncludeAnswerValue
             val hasNotes = settings.pdfIncludeAnswerNotes && !answerEntity?.notes.isNullOrBlank()
             val qType = q.type.lowercase()
@@ -498,9 +500,19 @@ object PdfExporter {
                 qType in listOf("number", "combobox", "multiselect", "checkbox")
 
 
-            // Calculate Left Block Height (Title + Left Answer + Notes + Picture)
+            // Calculate Left Block Height (Title + Description + Left Answer + Notes + Picture)
             var leftBlockHeight = 0f
             if (hasTitle) leftBlockHeight += 14f
+            if (hasDescription) {
+                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+                paint.textSize = 10f
+                leftBlockHeight += calculateMultiLineHeight(
+                    "    ${q.description}",
+                    paint,
+                    endX - startX,
+                    14f
+                )
+            }
             if (hasValue && !isRightAlignedType) {
                 paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                 paint.textSize = 11f
@@ -531,7 +543,7 @@ object PdfExporter {
                     try {
                         picBitmap = BitmapFactory.decodeFile(picFile.absolutePath)
                         if (picBitmap != null) {
-                            val maxAllowedWidth = when (answerEntity.pictureSize?.lowercase()) {
+                            val maxAllowedWidth = when (answerEntity.pictureSize.lowercase()) {
                                 "small", "s" -> settings.pdfPictureSizeSmall.toFloat()
                                 "large", "l" -> settings.pdfPictureSizeLarge.toFloat()
                                 else -> settings.pdfPictureSizeMedium.toFloat()
@@ -591,6 +603,25 @@ object PdfExporter {
                     val titleStr = truncateText(paint, q.title, 320f)
                     canvas.drawText(titleStr, startX + 40f, y + 10f, paint)
                     leftY = y + 24f
+                }
+
+                // QUESTION DESCRIPTION
+                if (hasDescription && !q.description.isNullOrBlank()) {
+                    paint.textSize = 10f
+                    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+                    paint.color = Color.DKGRAY
+                    val descContent = "    ${q.description}"
+                    leftY = drawMultiLineText(
+                        canvas = canvas,
+                        text = descContent,
+                        startX = startX + 40f,
+                        startY = leftY,
+                        paint = paint,
+                        maxWidth = 320f,
+                        lineHeight = 14f,
+                        bottomLimit = bottomLimit,
+                        onPageOverflow = { startNewPage() }
+                    )
                 }
 
                 // TEXT VALUE must be printed below of the title

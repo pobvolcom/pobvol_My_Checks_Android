@@ -66,6 +66,7 @@ import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.ui.ChecklistUiState
 import com.pobvol.mychecks.ui.components.AddEditChecklistDialog
 import com.pobvol.mychecks.ui.components.ChecklistItem
+import com.pobvol.mychecks.ui.components.CopyChecklistDialog
 import com.pobvol.mychecks.ui.components.DeleteChecklistConfirmationDialog
 import com.pobvol.mychecks.ui.components.PdfSettingsDialog
 import com.pobvol.mychecks.ui.components.SettingsDialog
@@ -83,11 +84,14 @@ fun ChecklistListScreen(
     onQuestionsClick: (ChecklistEntity) -> Unit,
     onEditClick: (ChecklistEntity) -> Unit,
     onDeleteClick: (ChecklistEntity) -> Unit,
+    onCopyClick: (ChecklistEntity) -> Unit = {},
     onChartClick: (ChecklistEntity) -> Unit = {},
     onDismissAddEditDialog: () -> Unit,
-    onSaveChecklist: (title: String, language: String, description: String, category: String, icon: String) -> Unit,
+    onSaveChecklist: (title: String, language: String, description: String, category: String, icon: String, templateChecklistId: String?) -> Unit,
     onDismissDeleteDialog: () -> Unit,
     onConfirmDelete: () -> Unit,
+    onDismissCopyDialog: () -> Unit = {},
+    onConfirmCopyChecklist: (sourceChecklist: ChecklistEntity, newTitle: String) -> Unit = { _, _ -> },
     onUserMessageShown: () -> Unit,
     onBackClick: () -> Unit = {},
     onOpenHelpClick: () -> Unit = {},
@@ -108,6 +112,7 @@ fun ChecklistListScreen(
     onPdfIncludePageNumberChanged: (Boolean) -> Unit = {},
     onPdfIncludeUnansweredQuestionsChanged: (Boolean) -> Unit = {},
     onPdfIncludeQuestionTitleChanged: (Boolean) -> Unit = {},
+    onPdfIncludeQuestionDescriptionChanged: (Boolean) -> Unit = {},
     onPdfIncludeAnswerValueChanged: (Boolean) -> Unit = {},
     onPdfIncludeAnswerNotesChanged: (Boolean) -> Unit = {},
     onPdfIncludeAnswerPictureChanged: (Boolean) -> Unit = {},
@@ -379,6 +384,7 @@ fun ChecklistListScreen(
                             onQuestionsClick = onQuestionsClick,
                             onEditClick = onEditClick,
                             onDeleteClick = onDeleteClick,
+                            onCopyClick = onCopyClick,
                             onChartClick = onChartClick,
                         )
                     }
@@ -390,6 +396,7 @@ fun ChecklistListScreen(
             AddEditChecklistDialog(
                 checklistToEdit = uiState.checklistToEdit,
                 availableCategories = uiState.categories,
+                availableChecklists = uiState.checklists,
                 onDismiss = onDismissAddEditDialog,
                 onSave = onSaveChecklist
             )
@@ -400,6 +407,16 @@ fun ChecklistListScreen(
                 checklist = uiState.checklistToDelete,
                 onDismiss = onDismissDeleteDialog,
                 onConfirmDelete = onConfirmDelete
+            )
+        }
+
+        if (uiState.checklistToCopy != null) {
+            CopyChecklistDialog(
+                sourceChecklist = uiState.checklistToCopy,
+                onDismiss = onDismissCopyDialog,
+                onCopy = { newTitle ->
+                    onConfirmCopyChecklist(uiState.checklistToCopy, newTitle)
+                }
             )
         }
 
@@ -432,6 +449,7 @@ fun ChecklistListScreen(
                 onPdfIncludePageNumberChanged = onPdfIncludePageNumberChanged,
                 onPdfIncludeUnansweredQuestionsChanged = onPdfIncludeUnansweredQuestionsChanged,
                 onPdfIncludeQuestionTitleChanged = onPdfIncludeQuestionTitleChanged,
+                onPdfIncludeQuestionDescriptionChanged = onPdfIncludeQuestionDescriptionChanged,
                 onPdfIncludeAnswerValueChanged = onPdfIncludeAnswerValueChanged,
                 onPdfIncludeAnswerNotesChanged = onPdfIncludeAnswerNotesChanged,
                 onPdfIncludeAnswerPictureChanged = onPdfIncludeAnswerPictureChanged,
@@ -553,7 +571,7 @@ fun ChecklistListScreenPreview() {
             onEditClick = {},
             onDeleteClick = {},
             onDismissAddEditDialog = {},
-            onSaveChecklist = { _, _, _, _, _ -> },
+            onSaveChecklist = { _, _, _, _, _, _ -> },
             onDismissDeleteDialog = {},
             onConfirmDelete = {},
             onUserMessageShown = {},

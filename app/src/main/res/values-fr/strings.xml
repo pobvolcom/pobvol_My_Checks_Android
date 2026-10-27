@@ -270,5 +270,11 @@ En cliquant sur « Accepter et Accepter », vous confirmez avoir lu, compris et 
     <string name="pdf_picture_size_s_label">Taille S (px)</string>
     <string name="pdf_picture_size_m_label">Taille M (px)</string>
     <string name="pdf_picture_size_l_label">Taille L (px)</string>
+    <string name="copy_checklist">Dupliquer la liste de contrôle</string>
+    <string name="copy_from_template">Copier les questions d\'une liste existante (Optionnel)</string>
+    <string name="msg_checklist_copied">Liste de contrôle et questions copiées avec succès.</string>
+    <string name="duplicate">Dupliquer</string>
+    <string name="template_none">Aucun (Liste vide)</string>
+    <string name="pdf_include_question_description">Inclure la description de la question</string>
 
 </resources>
