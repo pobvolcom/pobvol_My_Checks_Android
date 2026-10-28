@@ -280,5 +280,6 @@ Al hacer clic en [Aceptar y Aceptar], confirmas que has leído, entendido y acep
     <string name="capture_signature">Capturar firma</string>
     <string name="clear">Borrar</string>
     <string name="msg_signature_saved">Firma guardada con éxito.</string>
+    <string name="add_new_submission">Añadir nueva sumisión</string>
 
 </resources>

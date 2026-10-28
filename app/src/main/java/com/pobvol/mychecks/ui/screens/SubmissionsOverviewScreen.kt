@@ -17,11 +17,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.FactCheck
 import androidx.compose.material.icons.automirrored.rounded.Help
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
@@ -37,6 +39,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -63,6 +66,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.CategoryEntity
+import com.pobvol.mychecks.data.local.ChecklistEntity
 import com.pobvol.mychecks.data.local.ChecklistSubmissionEntity
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.ui.ChecklistUiState
@@ -113,6 +117,7 @@ fun SubmissionsOverviewScreen(
     onPdfPictureSizeMediumChanged: (Int) -> Unit = {},
     onPdfPictureSizeLargeChanged: (Int) -> Unit = {},
     onSignatureCaptured: (String) -> Unit = {},
+    onAddSubmissionClick: (ChecklistEntity) -> Unit = {},
     onExportPdfClick: (ChecklistSubmissionEntity) -> Unit = {},
     onExportSqlClick: (ChecklistSubmissionEntity) -> Unit = {},
     onEditSubmissionClick: (ChecklistSubmissionEntity) -> Unit,
@@ -140,6 +145,21 @@ fun SubmissionsOverviewScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        floatingActionButton = {
+            if (uiState.selectedChecklistForSubmissions != null) {
+                FloatingActionButton(
+                    onClick = { onAddSubmissionClick(uiState.selectedChecklistForSubmissions) },
+                    shape = CircleShape,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = stringResource(R.string.add_new_submission),
+                    )
+                }
+            }
+        },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -515,13 +535,6 @@ fun SubmissionItem(
                             modifier = Modifier.size(28.dp)
                         )
                     }
-                }
-
-                // Right group: PDF report
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(0.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
                     IconButton(onClick = onExportPdfClick) {
                         Icon(
                             imageVector = Icons.Rounded.PictureAsPdf,
@@ -530,6 +543,13 @@ fun SubmissionItem(
                             modifier = Modifier.size(28.dp)
                         )
                     }
+                }
+
+                // Right group: PDF report
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(0.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                 }
             }
         }

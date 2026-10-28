@@ -280,5 +280,6 @@ En cliquant sur « Accepter et Accepter », vous confirmez avoir lu, compris et 
     <string name="capture_signature">Capturer la signature</string>
     <string name="clear">Effacer</string>
     <string name="msg_signature_saved">Signature enregistrée avec succès.</string>
+    <string name="add_new_submission">Ajouter une nouvelle soumission</string>
 
 </resources>

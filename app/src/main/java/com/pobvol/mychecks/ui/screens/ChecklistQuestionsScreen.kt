@@ -343,11 +343,6 @@ fun QuestionItem(
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         )
                     }
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
                     IconButton(onClick = onEditClick) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
@@ -364,6 +359,11 @@ fun QuestionItem(
                             modifier = Modifier.size(28.dp),
                         )
                     }
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                 }
             }
         }

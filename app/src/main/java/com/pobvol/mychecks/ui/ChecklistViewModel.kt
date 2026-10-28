@@ -354,6 +354,7 @@ class ChecklistViewModel(
         _dialogState,
         _globalState,
         _textBlockState,
+        _selectedChecklistForSubmissions,
     ) { flows ->
         val checklists = flows[0] as List<ChecklistEntity>
         val query = flows[1] as String
@@ -361,6 +362,7 @@ class ChecklistViewModel(
         val dialogState = flows[3] as DialogState
         val globalState = flows[4] as GlobalState
         val textBlockState = flows[5] as TextBlockState
+        val selectedChecklistSub = flows[6] as ChecklistEntity?
         val selectedStatus = globalState.selectedSubmissionStatus
         val preferredLang = globalState.settingsState.settings.preferredLanguage
         val checklistsInLang = checklists.filter { it.language.equals(preferredLang, ignoreCase = true) }
@@ -382,7 +384,6 @@ class ChecklistViewModel(
             matchesQuery && matchesCategory
         }
 
-        val selectedChecklistSub = _selectedChecklistForSubmissions.value
         val checklistMap = checklists.associateBy { it.id }
         val filteredSubmissions = globalState.submissionState.submissions.filter { submission ->
             val matchesChecklist = selectedChecklistSub == null || submission.checklistid == selectedChecklistSub.id

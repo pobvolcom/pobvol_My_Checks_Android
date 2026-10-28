@@ -199,6 +199,26 @@ class MainActivity : AppCompatActivity() {
                             onNfcTagConsumed = viewModel::clearNfcTag,
                             modifier = Modifier.fillMaxSize(),
                         )
+                    } else if (selectedChecklistToAnswer != null) {
+                        FillChecklistScreen(
+                            checklist = selectedChecklistToAnswer,
+                            uiState = uiState,
+                            onBackClick = viewModel::closeFillChecklist,
+                            onOpenHelpClick = viewModel::openHelpScreen,
+                            onSubmit = { checklistId, inspector, notes, date, status, answers ->
+                                viewModel.submitChecklistAnswers(
+                                    checklistId = checklistId,
+                                    inspector = inspector,
+                                    notes = notes,
+                                    date = date,
+                                    status = status,
+                                    answers = answers,
+                                )
+                            },
+                            onUserMessageShown = viewModel::userMessageShown,
+                            onNfcTagConsumed = viewModel::clearNfcTag,
+                            modifier = Modifier.fillMaxSize(),
+                        )
                     } else if (uiState.isSubmissionsOverviewVisible) {
                         SubmissionsOverviewScreen(
                             uiState = uiState,
@@ -238,6 +258,7 @@ class MainActivity : AppCompatActivity() {
                             onPdfPictureSizeMediumChanged = viewModel::updatePdfPictureSizeMedium,
                             onPdfPictureSizeLargeChanged = viewModel::updatePdfPictureSizeLarge,
                             onSignatureCaptured = viewModel::updateSignaturePath,
+                            onAddSubmissionClick = viewModel::openFillChecklist,
                             onExportPdfClick = { submission ->
                                 viewModel.exportSubmissionPdf(this, submission)
                             },
@@ -249,26 +270,6 @@ class MainActivity : AppCompatActivity() {
                             onDismissDeleteSubmissionDialog = viewModel::dismissDeleteSubmission,
                             onConfirmDeleteSubmission = viewModel::confirmDeleteSubmission,
                             onUserMessageShown = viewModel::userMessageShown,
-                            modifier = Modifier.fillMaxSize(),
-                        )
-                    } else if (selectedChecklistToAnswer != null) {
-                        FillChecklistScreen(
-                            checklist = selectedChecklistToAnswer,
-                            uiState = uiState,
-                            onBackClick = viewModel::closeFillChecklist,
-                            onOpenHelpClick = viewModel::openHelpScreen,
-                            onSubmit = { checklistId, inspector, notes, date, status, answers ->
-                                viewModel.submitChecklistAnswers(
-                                    checklistId = checklistId,
-                                    inspector = inspector,
-                                    notes = notes,
-                                    date = date,
-                                    status = status,
-                                    answers = answers,
-                                )
-                            },
-                            onUserMessageShown = viewModel::userMessageShown,
-                            onNfcTagConsumed = viewModel::clearNfcTag,
                             modifier = Modifier.fillMaxSize(),
                         )
                     } else if (selectedChecklistForQuestions != null) {
@@ -296,7 +297,6 @@ class MainActivity : AppCompatActivity() {
                             onCategoryFilterChange = viewModel::onCategoryFilterChange,
                             onAddClick = viewModel::openAddDialog,
                             onSelectChecklist = viewModel::openSubmissionsForChecklist,
-                            onFillClick = viewModel::openFillChecklist,
                             onQuestionsClick = viewModel::openQuestionsForChecklist,
                             onEditClick = viewModel::openEditDialog,
                             onDeleteClick = viewModel::requestDeleteConfirmation,

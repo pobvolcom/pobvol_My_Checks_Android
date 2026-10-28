@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Assignment
 import androidx.compose.material.icons.rounded.Analytics
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Delete
@@ -44,7 +43,6 @@ fun ChecklistItem(
     checklist: ChecklistEntity,
     submissionCount: Int = 0,
     onSelectChecklist: (ChecklistEntity) -> Unit = {},
-    onFillClick: (ChecklistEntity) -> Unit = {},
     onQuestionsClick: (ChecklistEntity) -> Unit,
     onEditClick: (ChecklistEntity) -> Unit,
     onDeleteClick: (ChecklistEntity) -> Unit,
@@ -178,13 +176,6 @@ fun ChecklistItem(
                             modifier = Modifier.size(28.dp)
                         )
                     }
-                }
-
-                // Right group: Chart (if submissionCount > 2) and Submissions/Fill
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(0.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
                     // CHART (Only if more than 2 submissions are recorded)
                     if (submissionCount > 2) {
                         IconButton(onClick = { onChartClick(checklist) }) {
@@ -196,16 +187,13 @@ fun ChecklistItem(
                             )
                         }
                     }
+                }
 
-                    // LOGS
-                    IconButton(onClick = { onFillClick(checklist) }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.Assignment,
-                            contentDescription = stringResource(R.string.fill_checklist),
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
+                // Right group: Chart (if submissionCount > 2) and Submissions/Fill
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(0.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                 }
             }
         }
