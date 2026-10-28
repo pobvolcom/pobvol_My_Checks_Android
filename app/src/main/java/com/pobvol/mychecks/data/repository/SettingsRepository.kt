@@ -41,6 +41,7 @@ data class UserSettings(
     val pdfPictureSizeSmall: Int = 100,
     val pdfPictureSizeMedium: Int = 200,
     val pdfPictureSizeLarge: Int = 300,
+    val signaturePath: String = "",
 )
 
 interface SettingsRepository {
@@ -77,4 +78,5 @@ interface SettingsRepository {
     suspend fun updatePdfPictureSizeSmall(size: Int)
     suspend fun updatePdfPictureSizeMedium(size: Int)
     suspend fun updatePdfPictureSizeLarge(size: Int)
+    suspend fun updateSignaturePath(path: String)
 }

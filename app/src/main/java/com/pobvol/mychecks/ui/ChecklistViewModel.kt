@@ -1146,6 +1146,10 @@ class ChecklistViewModel(
         viewModelScope.launch { settingsRepository.updatePdfHeaderTitle(title) }
     }
 
+    fun updateSignaturePath(path: String) {
+        viewModelScope.launch { settingsRepository.updateSignaturePath(path) }
+    }
+
     fun updatePdfIncludeChecklistTitle(include: Boolean) {
         viewModelScope.launch { settingsRepository.updatePdfIncludeChecklistTitle(include) }
     }

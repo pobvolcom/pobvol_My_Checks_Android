@@ -30,6 +30,7 @@ import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.SearchOff
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -95,6 +96,7 @@ fun ChecklistListScreen(
     onUserMessageShown: () -> Unit,
     onBackClick: () -> Unit = {},
     onOpenHelpClick: () -> Unit = {},
+    onOpenSettingsClick: () -> Unit = {},
     onDismissSettingsDialog: () -> Unit = {},
     onOpenPdfSettingsClick: () -> Unit = {},
     onDismissPdfSettingsDialog: () -> Unit = {},
@@ -124,6 +126,7 @@ fun ChecklistListScreen(
     onPdfPictureSizeLargeChanged: (Int) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
+    onSignatureCaptured: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -177,6 +180,13 @@ fun ChecklistListScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.Help,
                             contentDescription = stringResource(R.string.help),
+                        )
+                    }
+
+                    IconButton(onClick = onOpenSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Rounded.Settings,
+                            contentDescription = stringResource(R.string.settings_content_description),
                         )
                     }
 
@@ -459,6 +469,7 @@ fun ChecklistListScreen(
                 onPdfPictureSizeSmallChanged = onPdfPictureSizeSmallChanged,
                 onPdfPictureSizeMediumChanged = onPdfPictureSizeMediumChanged,
                 onPdfPictureSizeLargeChanged = onPdfPictureSizeLargeChanged,
+                onSignatureCaptured = onSignatureCaptured,
                 onDismissRequest = onDismissPdfSettingsDialog,
             )
         }

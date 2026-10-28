@@ -278,4 +278,8 @@ By clicking [Accept &amp; Agree], you confirm that you have read, understood and
     <string name="duplicate">Duplicate</string>
     <string name="template_none">None (Empty Checklist)</string>
     <string name="pdf_include_question_description">Include Question Description</string>
+    <string name="signature_section">Signature</string>
+    <string name="capture_signature">Capture Signature</string>
+    <string name="clear">Clear</string>
+    <string name="msg_signature_saved">Signature saved successfully.</string>
 </resources>

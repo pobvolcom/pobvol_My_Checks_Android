@@ -276,5 +276,9 @@ Al hacer clic en [Aceptar y Aceptar], confirmas que has leído, entendido y acep
     <string name="duplicate">Duplicar</string>
     <string name="template_none">Ninguna (Lista vacía)</string>
     <string name="pdf_include_question_description">Incluir descripción de la pregunta</string>
+    <string name="signature_section">Firma</string>
+    <string name="capture_signature">Capturar firma</string>
+    <string name="clear">Borrar</string>
+    <string name="msg_signature_saved">Firma guardada con éxito.</string>
 
 </resources>

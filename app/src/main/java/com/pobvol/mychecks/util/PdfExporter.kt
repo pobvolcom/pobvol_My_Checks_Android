@@ -827,11 +827,38 @@ object PdfExporter {
             //----------------------------------------------
             //print Inspector
             paint.textSize = 11f
-            canvas.drawLine(footerX + 220f, y + 16, footerX + 380f, y + 16, dividerPaint)
+            val inspX = footerX + 220f
+
+            if (!settings.signaturePath.isBlank()) {
+                val sigFile = File(settings.signaturePath)
+                if (sigFile.exists()) {
+                    try {
+                        val sigBitmap = BitmapFactory.decodeFile(sigFile.absolutePath)
+                        if (sigBitmap != null) {
+                            val sigWidth = 120f
+                            val sigHeight =
+                                (sigBitmap.height.toFloat() / sigBitmap.width.toFloat()) * sigWidth
+                            val destRect = RectF(
+                                inspX,
+                                y + 16f - sigHeight - 4f,
+                                inspX + sigWidth,
+                                y + 16f - 4f
+                            )
+                            val bitmapPaint =
+                                Paint().apply { isAntiAlias = true; isFilterBitmap = true }
+                            canvas.drawBitmap(sigBitmap, null, destRect, bitmapPaint)
+                            sigBitmap.recycle()
+                        }
+                    } catch (_: Exception) {
+                    }
+                }
+            }
+
+            canvas.drawLine(inspX, y + 16, inspX + 160f, y + 16, dividerPaint)
             paint.textSize = 8f
             canvas.drawText(
                 context.getString(R.string.inspector) + ": " + submission.inspector,
-                footerX + 220f,
+                inspX,
                 y + 26f,
                 paint
             )

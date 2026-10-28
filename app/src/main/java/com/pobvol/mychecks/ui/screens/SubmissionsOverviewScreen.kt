@@ -62,9 +62,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pobvol.mychecks.R
+import com.pobvol.mychecks.data.local.CategoryEntity
 import com.pobvol.mychecks.data.local.ChecklistSubmissionEntity
+import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.ui.ChecklistUiState
 import com.pobvol.mychecks.ui.components.PdfSettingsDialog
+import com.pobvol.mychecks.ui.components.SettingsDialog
 import com.pobvol.mychecks.ui.theme.mychecksTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -79,6 +82,14 @@ fun SubmissionsOverviewScreen(
     onClearChecklistFilter: () -> Unit = {},
     onBackClick: () -> Unit,
     onOpenHelpClick: () -> Unit = {},
+    onOpenSettingsClick: () -> Unit = {},
+    onDismissSettingsDialog: () -> Unit = {},
+    onThemeModeSelected: (ThemeMode) -> Unit = {},
+    onLanguageSelected: (String) -> Unit = {},
+    onUserNameChanged: (String) -> Unit = {},
+    onAudioFeedbackChanged: (Boolean) -> Unit = {},
+    onAddCategory: (String) -> Unit = {},
+    onDeleteCategory: (CategoryEntity) -> Unit = {},
     onOpenPdfSettingsClick: () -> Unit = {},
     onDismissPdfSettingsDialog: () -> Unit = {},
     onPdfHeaderTitleChanged: (String) -> Unit = {},
@@ -101,6 +112,7 @@ fun SubmissionsOverviewScreen(
     onPdfPictureSizeSmallChanged: (Int) -> Unit = {},
     onPdfPictureSizeMediumChanged: (Int) -> Unit = {},
     onPdfPictureSizeLargeChanged: (Int) -> Unit = {},
+    onSignatureCaptured: (String) -> Unit = {},
     onExportPdfClick: (ChecklistSubmissionEntity) -> Unit = {},
     onExportSqlClick: (ChecklistSubmissionEntity) -> Unit = {},
     onEditSubmissionClick: (ChecklistSubmissionEntity) -> Unit,
@@ -147,18 +159,21 @@ fun SubmissionsOverviewScreen(
                     }
                 },
                 actions = {
+
                     IconButton(onClick = onOpenHelpClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.Help,
                             contentDescription = stringResource(R.string.help),
                         )
                     }
+
                     IconButton(onClick = onOpenPdfSettingsClick) {
                         Icon(
                             imageVector = Icons.Rounded.Settings,
                             contentDescription = stringResource(R.string.configure_pdf_settings),
                         )
                     }
+
                     IconButton(
                         onClick = {
                             isSearchActive = !isSearchActive
@@ -357,7 +372,24 @@ fun SubmissionsOverviewScreen(
                 onPdfPictureSizeSmallChanged = onPdfPictureSizeSmallChanged,
                 onPdfPictureSizeMediumChanged = onPdfPictureSizeMediumChanged,
                 onPdfPictureSizeLargeChanged = onPdfPictureSizeLargeChanged,
+                onSignatureCaptured = onSignatureCaptured,
                 onDismissRequest = onDismissPdfSettingsDialog,
+            )
+        }
+
+        if (uiState.isSettingsDialogVisible) {
+            SettingsDialog(
+                userSettings = uiState.userSettings,
+                languages = uiState.availableLanguages,
+                categories = uiState.categories,
+                onThemeModeSelected = onThemeModeSelected,
+                onLanguageSelected = onLanguageSelected,
+                onUserNameChanged = onUserNameChanged,
+                onAudioFeedbackChanged = onAudioFeedbackChanged,
+                onOpenPdfSettingsClick = onOpenPdfSettingsClick,
+                onAddCategory = onAddCategory,
+                onDeleteCategory = onDeleteCategory,
+                onDismissRequest = onDismissSettingsDialog,
             )
         }
     }

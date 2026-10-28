@@ -51,6 +51,7 @@ class SettingsRepositoryImpl(
         val PDF_PICTURE_SIZE_SMALL = intPreferencesKey("pdf_picture_size_small")
         val PDF_PICTURE_SIZE_MEDIUM = intPreferencesKey("pdf_picture_size_medium")
         val PDF_PICTURE_SIZE_LARGE = intPreferencesKey("pdf_picture_size_large")
+        val SIGNATURE_PATH = stringPreferencesKey("signature_path")
     }
 
     override val userSettings: Flow<UserSettings> = context.dataStore.data
@@ -105,6 +106,7 @@ class SettingsRepositoryImpl(
             val pdfPictureSizeSmall = preferences[PreferencesKeys.PDF_PICTURE_SIZE_SMALL] ?: 100
             val pdfPictureSizeMedium = preferences[PreferencesKeys.PDF_PICTURE_SIZE_MEDIUM] ?: 200
             val pdfPictureSizeLarge = preferences[PreferencesKeys.PDF_PICTURE_SIZE_LARGE] ?: 300
+            val signaturePath = preferences[PreferencesKeys.SIGNATURE_PATH] ?: ""
 
             UserSettings(
                 themeMode = themeMode,
@@ -138,6 +140,7 @@ class SettingsRepositoryImpl(
                 pdfPictureSizeSmall = pdfPictureSizeSmall,
                 pdfPictureSizeMedium = pdfPictureSizeMedium,
                 pdfPictureSizeLarge = pdfPictureSizeLarge,
+                signaturePath = signaturePath,
             )
         }
 
@@ -332,6 +335,12 @@ class SettingsRepositoryImpl(
     override suspend fun updatePdfPictureSizeLarge(size: Int) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.PDF_PICTURE_SIZE_LARGE] = size
+        }
+    }
+
+    override suspend fun updateSignaturePath(path: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.SIGNATURE_PATH] = path
         }
     }
 

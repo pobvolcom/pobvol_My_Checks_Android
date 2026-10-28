@@ -276,5 +276,9 @@ En cliquant sur « Accepter et Accepter », vous confirmez avoir lu, compris et 
     <string name="duplicate">Dupliquer</string>
     <string name="template_none">Aucun (Liste vide)</string>
     <string name="pdf_include_question_description">Inclure la description de la question</string>
+    <string name="signature_section">Signature</string>
+    <string name="capture_signature">Capturer la signature</string>
+    <string name="clear">Effacer</string>
+    <string name="msg_signature_saved">Signature enregistrée avec succès.</string>
 
 </resources>

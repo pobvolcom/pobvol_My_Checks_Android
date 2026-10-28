@@ -1,5 +1,8 @@
 package com.pobvol.mychecks.ui.components
 
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -29,6 +33,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,6 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.repository.UserSettings
+import com.pobvol.mychecks.util.PdfExporter
+import java.io.File
 
 @Composable
 fun PdfSettingsDialog(
@@ -60,6 +71,7 @@ fun PdfSettingsDialog(
     onPdfPictureSizeSmallChanged: (Int) -> Unit = {},
     onPdfPictureSizeMediumChanged: (Int) -> Unit = {},
     onPdfPictureSizeLargeChanged: (Int) -> Unit = {},
+    onSignatureCaptured: (String) -> Unit = {},
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -222,16 +234,6 @@ fun PdfSettingsDialog(
                         onPdfIncludeChecklistTitleChanged
                     )
                     PdfSwitchRow(
-                        stringResource(R.string.pdf_include_date),
-                        userSettings.pdfIncludeDate,
-                        onPdfIncludeDateChanged
-                    )
-                    PdfSwitchRow(
-                        stringResource(R.string.include_inspector),
-                        userSettings.pdfIncludeInspector,
-                        onPdfIncludeInspectorChanged
-                    )
-                    PdfSwitchRow(
                         stringResource(R.string.pdf_include_status),
                         userSettings.pdfIncludeStatus,
                         onPdfIncludeStatusChanged
@@ -312,6 +314,75 @@ fun PdfSettingsDialog(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                     )
+                    PdfSwitchRow(
+                        stringResource(R.string.pdf_include_date),
+                        userSettings.pdfIncludeDate,
+                        onPdfIncludeDateChanged
+                    )
+                    PdfSwitchRow(
+                        stringResource(R.string.include_inspector),
+                        userSettings.pdfIncludeInspector,
+                        onPdfIncludeInspectorChanged
+                    )
+
+                    // Signature Section below Inspector Name
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        var showSignatureDialog by remember { mutableStateOf(false) }
+
+                        Button(
+                            onClick = { showSignatureDialog = true },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(stringResource(R.string.capture_signature))
+                        }
+
+                        //Show signature
+                        if (!userSettings.signaturePath.isBlank()) {
+                            val context = LocalContext.current
+                            val sigFile = PdfExporter.getPictureFile(
+                                context,
+                                File(userSettings.signaturePath).name
+                            ) ?: File(userSettings.signaturePath)
+                            if (sigFile.exists()) {
+                                val sigLastModified =
+                                    remember(userSettings.signaturePath, sigFile.lastModified()) {
+                                        if (sigFile.exists()) sigFile.lastModified() else System.currentTimeMillis()
+                                    }
+                                val bitmap = remember(userSettings.signaturePath, sigLastModified) {
+                                    BitmapFactory.decodeFile(sigFile.absolutePath)
+                                }
+                                if (bitmap != null) {
+                                    Text(
+                                        text = "Saved Signature Preview:",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                    Image(
+                                        bitmap = bitmap.asImageBitmap(),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(80.dp)
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(Color.White),
+                                        contentScale = ContentScale.Fit,
+                                    )
+                                }
+                            }
+                        }
+
+                        if (showSignatureDialog) {
+                            SignatureCaptureDialog(
+                                onDismiss = { showSignatureDialog = false },
+                                onSaveSignature = { path ->
+                                    onSignatureCaptured(path)
+                                    showSignatureDialog = false
+                                }
+                            )
+                        }
+                    }
                     PdfSwitchRow(
                         stringResource(R.string.include_timestamp),
                         userSettings.includeTimestamp,

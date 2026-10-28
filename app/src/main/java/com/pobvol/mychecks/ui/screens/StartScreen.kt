@@ -103,6 +103,7 @@ fun StartScreen(
     onPdfPictureSizeLargeChanged: (Int) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
+    onSignatureCaptured: (String) -> Unit = {},
     onExportDbClick: () -> Unit = {},
     onImportDbClick: () -> Unit = {},
     onCloseAppClick: () -> Unit = {},
@@ -364,6 +365,7 @@ fun StartScreen(
                 onPdfPictureSizeSmallChanged = onPdfPictureSizeSmallChanged,
                 onPdfPictureSizeMediumChanged = onPdfPictureSizeMediumChanged,
                 onPdfPictureSizeLargeChanged = onPdfPictureSizeLargeChanged,
+                onSignatureCaptured = onSignatureCaptured,
                 onDismissRequest = onDismissPdfSettingsDialog,
             )
         }
