@@ -1155,6 +1155,10 @@ class ChecklistViewModel(
         viewModelScope.launch { settingsRepository.updatePdfIncludeChecklistTitle(include) }
     }
 
+    fun updatePdfIncludeChecklistDescription(include: Boolean) {
+        viewModelScope.launch { settingsRepository.updatePdfIncludeChecklistDescription(include) }
+    }
+
     fun updatePdfIncludeDate(include: Boolean) {
         viewModelScope.launch { settingsRepository.updatePdfIncludeDate(include) }
     }

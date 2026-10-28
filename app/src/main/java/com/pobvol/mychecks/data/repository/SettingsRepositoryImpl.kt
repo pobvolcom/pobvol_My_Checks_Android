@@ -23,6 +23,8 @@ class SettingsRepositoryImpl(
         val USER_NAME = stringPreferencesKey("user_name")
         val PDF_HEADER_TITLE = stringPreferencesKey("pdf_header_title")
         val PDF_INCLUDE_CHECKLIST_TITLE = booleanPreferencesKey("pdf_include_checklist_title")
+        val PDF_INCLUDE_CHECKLIST_DESCRIPTION =
+            booleanPreferencesKey("pdf_include_checklist_description")
         val PDF_INCLUDE_DATE = booleanPreferencesKey("pdf_include_date")
         val PDF_INCLUDE_INSPECTOR = booleanPreferencesKey("pdf_include_inspector")
         val PDF_INCLUDE_STATUS = booleanPreferencesKey("pdf_include_status")
@@ -76,17 +78,20 @@ class SettingsRepositoryImpl(
             val pdfHeaderTitle = preferences[PreferencesKeys.PDF_HEADER_TITLE] ?: "My Checks Inspection Report"
             val pdfIncludeChecklistTitle =
                 preferences[PreferencesKeys.PDF_INCLUDE_CHECKLIST_TITLE] ?: true
+            val pdfIncludeChecklistDescription =
+                preferences[PreferencesKeys.PDF_INCLUDE_CHECKLIST_DESCRIPTION] ?: true
             val pdfIncludeDate = preferences[PreferencesKeys.PDF_INCLUDE_DATE] ?: true
             val pdfIncludeInspector = preferences[PreferencesKeys.PDF_INCLUDE_INSPECTOR] ?: true
             val pdfIncludeStatus = preferences[PreferencesKeys.PDF_INCLUDE_STATUS] ?: true
             val pdfIncludeNotes = preferences[PreferencesKeys.PDF_INCLUDE_NOTES] ?: true
             val includeTimestamp = preferences[PreferencesKeys.INCLUDE_TIMESTAMP] ?: true
             val pdfIncludePageNumber = preferences[PreferencesKeys.PDF_INCLUDE_PAGE_NUMBER] ?: true
-            val includeUnansweredQuestions = preferences[PreferencesKeys.INCLUDE_UNANSWERED_QUESTIONS] ?: true
+            val includeUnansweredQuestions =
+                preferences[PreferencesKeys.INCLUDE_UNANSWERED_QUESTIONS] ?: false
             val pdfIncludeQuestionTitle =
                 preferences[PreferencesKeys.PDF_INCLUDE_QUESTION_TITLE] ?: true
             val pdfIncludeQuestionDescription =
-                preferences[PreferencesKeys.PDF_INCLUDE_QUESTION_DESCRIPTION] ?: false
+                preferences[PreferencesKeys.PDF_INCLUDE_QUESTION_DESCRIPTION] ?: true
             val pdfIncludeAnswerValue =
                 preferences[PreferencesKeys.PDF_INCLUDE_ANSWER_VALUE] ?: true
             val includeAnswerNotes = preferences[PreferencesKeys.INCLUDE_ANSWER_NOTES] ?: true
@@ -103,8 +108,8 @@ class SettingsRepositoryImpl(
             val ftpPassword = preferences[PreferencesKeys.FTP_PASSWORD] ?: ""
             val isLicenseAccepted = preferences[PreferencesKeys.IS_LICENSE_ACCEPTED] ?: false
             val pdfPictureSize = preferences[PreferencesKeys.PDF_PICTURE_SIZE] ?: "medium"
-            val pdfPictureSizeSmall = preferences[PreferencesKeys.PDF_PICTURE_SIZE_SMALL] ?: 100
-            val pdfPictureSizeMedium = preferences[PreferencesKeys.PDF_PICTURE_SIZE_MEDIUM] ?: 200
+            val pdfPictureSizeSmall = preferences[PreferencesKeys.PDF_PICTURE_SIZE_SMALL] ?: 75
+            val pdfPictureSizeMedium = preferences[PreferencesKeys.PDF_PICTURE_SIZE_MEDIUM] ?: 150
             val pdfPictureSizeLarge = preferences[PreferencesKeys.PDF_PICTURE_SIZE_LARGE] ?: 300
             val signaturePath = preferences[PreferencesKeys.SIGNATURE_PATH] ?: ""
 
@@ -114,6 +119,7 @@ class SettingsRepositoryImpl(
                 userName = userName,
                 pdfHeaderTitle = pdfHeaderTitle,
                 pdfIncludeChecklistTitle = pdfIncludeChecklistTitle,
+                pdfIncludeChecklistDescription = pdfIncludeChecklistDescription,
                 pdfIncludeDate = pdfIncludeDate,
                 pdfIncludeInspector = pdfIncludeInspector,
                 pdfIncludeStatus = pdfIncludeStatus,
@@ -179,6 +185,12 @@ class SettingsRepositoryImpl(
     override suspend fun updatePdfIncludeChecklistTitle(include: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.PDF_INCLUDE_CHECKLIST_TITLE] = include
+        }
+    }
+
+    override suspend fun updatePdfIncludeChecklistDescription(include: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.PDF_INCLUDE_CHECKLIST_DESCRIPTION] = include
         }
     }
 

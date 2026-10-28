@@ -281,5 +281,5 @@ Al hacer clic en [Aceptar y Aceptar], confirmas que has leído, entendido y acep
     <string name="clear">Borrar</string>
     <string name="msg_signature_saved">Firma guardada con éxito.</string>
     <string name="add_new_submission">Añadir nueva sumisión</string>
-
+    <string name="pdf_include_checklist_description">Include Checklist description</string>
 </resources>

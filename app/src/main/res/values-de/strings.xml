@@ -281,4 +281,5 @@ Durch Klicken auf [Akzeptieren &amp; Zustimmen] bestätigen Sie, dass Sie diese 
     <string name="clear">Löschen</string>
     <string name="msg_signature_saved">Unterschrift erfolgreich gespeichert.</string>
     <string name="add_new_submission">Neuen Prüfbericht hinzufügen</string>
+    <string name="pdf_include_checklist_description">Include Checklist description</string>
 </resources>

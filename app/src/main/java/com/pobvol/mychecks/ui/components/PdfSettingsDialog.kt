@@ -53,6 +53,7 @@ fun PdfSettingsDialog(
     userSettings: UserSettings,
     onPdfHeaderTitleChanged: (String) -> Unit,
     onPdfIncludeChecklistTitleChanged: (Boolean) -> Unit,
+    onPdfIncludeChecklistDescriptionChanged: (Boolean) -> Unit,
     onPdfIncludeDateChanged: (Boolean) -> Unit,
     onPdfIncludeInspectorChanged: (Boolean) -> Unit,
     onPdfIncludeStatusChanged: (Boolean) -> Unit,
@@ -232,6 +233,11 @@ fun PdfSettingsDialog(
                         stringResource(R.string.pdf_include_checklist_title),
                         userSettings.pdfIncludeChecklistTitle,
                         onPdfIncludeChecklistTitleChanged
+                    )
+                    PdfSwitchRow(
+                        stringResource(R.string.pdf_include_checklist_description),
+                        userSettings.pdfIncludeChecklistDescription,
+                        onPdfIncludeChecklistDescriptionChanged
                     )
                     PdfSwitchRow(
                         stringResource(R.string.pdf_include_status),

@@ -315,9 +315,12 @@ object PdfExporter {
 
             // print Checklist title & Status
             val headerTitleParts = mutableListOf<String>()
+            val headerDescriptionParts = mutableListOf<String>()
             if (checklist != null) {
                 headerTitleParts.add(checklist.title)
+                headerDescriptionParts.add(checklist.description)
             }
+
             if (settings.pdfIncludeStatus) {
                 val translatedStatus = when (submission.status.uppercase()) {
                     "COMPLETED" -> context.getString(R.string.status_completed)
@@ -333,6 +336,14 @@ object PdfExporter {
                 paint.textSize = 14f
                 paint.color = Color.BLACK
                 canvas.drawText(headerTitleParts.joinToString(" "), startX, y, paint)
+                y += 20f
+            }
+
+            if (settings.pdfIncludeChecklistDescription && headerDescriptionParts.isNotEmpty()) {
+                paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+                paint.textSize = 11f
+                paint.color = Color.DKGRAY
+                canvas.drawText(headerDescriptionParts.joinToString(" "), startX, y, paint)
                 y += 20f
             }
 
@@ -389,8 +400,10 @@ object PdfExporter {
 
         // print Checklist title & Status
         val headerTitleParts = mutableListOf<String>()
+        val headerDescriptionParts = mutableListOf<String>()
         if (checklist != null) {
             headerTitleParts.add(checklist.title)
+            headerDescriptionParts.add(checklist.description)
         }
         if (settings.pdfIncludeStatus) {
             val translatedStatus = when (submission.status.uppercase()) {
@@ -408,6 +421,14 @@ object PdfExporter {
             paint.textSize = 14f
             paint.color = Color.BLACK
             canvas.drawText(headerTitleParts.joinToString(" "), startX, y, paint)
+            y += 20f
+        }
+
+        if (settings.pdfIncludeChecklistDescription && headerDescriptionParts.isNotEmpty()) {
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+            paint.textSize = 11f
+            paint.color = Color.DKGRAY
+            canvas.drawText(headerDescriptionParts.joinToString(" "), startX, y, paint)
             y += 20f
         }
 

@@ -283,4 +283,5 @@ By clicking [Accept &amp; Agree], you confirm that you have read, understood and
     <string name="clear">Clear</string>
     <string name="msg_signature_saved">Signature saved successfully.</string>
     <string name="add_new_submission">Add New Submission</string>
+    <string name="pdf_include_checklist_description">Include Checklist description</string>
 </resources>

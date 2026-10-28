@@ -241,11 +241,6 @@ fun TextBlocksScreen(
                                                 ),
                                             )
                                         }
-                                    }
-
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
                                         IconButton(onClick = { onEditTextBlockClick(textBlock) }) {
                                             Icon(
                                                 imageVector = Icons.Rounded.Edit,
@@ -260,6 +255,11 @@ fun TextBlocksScreen(
                                                 tint = MaterialTheme.colorScheme.error,
                                             )
                                         }
+                                    }
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
                                     }
                                 }
                             }

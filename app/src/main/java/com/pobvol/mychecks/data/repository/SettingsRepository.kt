@@ -14,6 +14,7 @@ data class UserSettings(
     val userName: String = "",
     val pdfHeaderTitle: String = "My Checks Inspection Report",
     val pdfIncludeChecklistTitle: Boolean = true,
+    val pdfIncludeChecklistDescription: Boolean = true,
     val pdfIncludeDate: Boolean = true,
     val pdfIncludeInspector: Boolean = true,
     val pdfIncludeStatus: Boolean = true,
@@ -51,6 +52,7 @@ interface SettingsRepository {
     suspend fun updateUserName(userName: String)
     suspend fun updatePdfHeaderTitle(title: String)
     suspend fun updatePdfIncludeChecklistTitle(include: Boolean)
+    suspend fun updatePdfIncludeChecklistDescription(include: Boolean)
     suspend fun updatePdfIncludeDate(include: Boolean)
     suspend fun updatePdfIncludeInspector(include: Boolean)
     suspend fun updatePdfIncludeStatus(include: Boolean)
