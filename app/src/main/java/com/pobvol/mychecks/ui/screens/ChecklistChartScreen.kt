@@ -163,9 +163,8 @@ fun ChecklistChartScreen(
                             val singleSeriesData = submissions.map { sub ->
                                 val subAnswers =
                                     uiState.answers.filter { it.submissionid == sub.id }
-                                val v1 =
-                                    subAnswers.find { it.questionid == q1.id }?.value?.toDoubleOrNull()
-                                        ?: 0.0
+                                val rawV1 = subAnswers.find { it.questionid == q1.id }?.value ?: ""
+                                val v1 = rawV1.replace(',', '.').toDoubleOrNull() ?: 0.0
                                 Pair(sub.date.ifBlank { "Sub #${sub.id}" }, v1)
                             }
 
@@ -215,12 +214,10 @@ fun ChecklistChartScreen(
                             val seriesData = submissions.map { sub ->
                                 val subAnswers =
                                     uiState.answers.filter { it.submissionid == sub.id }
-                                val v1 =
-                                    subAnswers.find { it.questionid == q1.id }?.value?.toDoubleOrNull()
-                                        ?: 0.0
-                                val v2 =
-                                    subAnswers.find { it.questionid == q2.id }?.value?.toDoubleOrNull()
-                                        ?: 0.0
+                                val rawV1 = subAnswers.find { it.questionid == q1.id }?.value ?: ""
+                                val v1 = rawV1.replace(',', '.').toDoubleOrNull() ?: 0.0
+                                val rawV2 = subAnswers.find { it.questionid == q2.id }?.value ?: ""
+                                val v2 = rawV2.replace(',', '.').toDoubleOrNull() ?: 0.0
                                 Triple(sub.date.ifBlank { "Sub #${sub.id}" }, v1, v2)
                             }
 
