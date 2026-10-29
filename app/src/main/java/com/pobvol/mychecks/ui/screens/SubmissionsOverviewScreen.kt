@@ -223,14 +223,14 @@ fun SubmissionsOverviewScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
-            if (isSearchActive) {
+            if (isSearchActive || uiState.submissionSearchQuery.isNotEmpty()) {
                 OutlinedTextField(
-                    value = uiState.searchQuery,
+                    value = uiState.submissionSearchQuery,
                     onValueChange = onSearchQueryChange,
                     placeholder = { Text(stringResource(R.string.search_submissions)) },
                     leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
                     trailingIcon = {
-                        if (uiState.searchQuery.isNotEmpty()) {
+                        if (uiState.submissionSearchQuery.isNotEmpty()) {
                             IconButton(onClick = { onSearchQueryChange("") }) {
                                 Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.clear_search))
                             }

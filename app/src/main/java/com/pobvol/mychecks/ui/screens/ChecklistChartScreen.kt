@@ -349,7 +349,7 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>, isDarkTheme: Boolean) {
                         drawContext.canvas.nativeCanvas.drawText(
                             formatValue(data[index].second),
                             point.x,
-                            point.y - 14f, // increased padding-bottom from line
+                            point.y - 21f, // increased padding-bottom from line
                             textPaint
                         )
                     }
@@ -459,7 +459,7 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
                         drawContext.canvas.nativeCanvas.drawText(
                             formatValue(data[index].second),
                             point.x,
-                            point.y - 14f, // increased padding-bottom from line
+                            point.y - 21f, // increased padding-bottom from line
                             textPaint
                         )
                     }
@@ -493,7 +493,8 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
 fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme: Boolean) {
     if (data.isEmpty()) return
     val density = LocalDensity.current
-    val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
+    //val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
+    val labelSmallPx = with(density) { MaterialTheme.typography.labelMedium.fontSize.toPx() }
     val maxVal = maxOf(
         data.maxOfOrNull { maxOf(it.second, it.third) } ?: 1.0,
         1.0
@@ -594,7 +595,7 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme:
                         drawContext.canvas.nativeCanvas.drawText(
                             formatValue(data[index].second),
                             point.x,
-                            point.y - 14f, // increased padding-bottom for upper line
+                            point.y - 21f, // increased padding-bottom for upper line
                             textPaint1
                         )
                     }

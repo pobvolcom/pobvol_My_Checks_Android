@@ -77,8 +77,23 @@ class ChecklistViewModel(
         }
     }
 
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+    private val _checklistSearchQuery = MutableStateFlow("")
+    val checklistSearchQuery: StateFlow<String> = _checklistSearchQuery.asStateFlow()
+
+    private val _submissionSearchQuery = MutableStateFlow("")
+    val submissionSearchQuery: StateFlow<String> = _submissionSearchQuery.asStateFlow()
+
+    fun onChecklistSearchQueryChange(query: String) {
+        _checklistSearchQuery.value = query
+    }
+
+    fun onSubmissionSearchQueryChange(query: String) {
+        _submissionSearchQuery.value = query
+    }
+
+    fun onSearchQueryChange(query: String) {
+        _checklistSearchQuery.value = query
+    }
 
     private val _selectedCategory = MutableStateFlow<String?>(null)
     val selectedCategory: StateFlow<String?> = _selectedCategory.asStateFlow()
@@ -352,7 +367,8 @@ class ChecklistViewModel(
 
     val uiState: StateFlow<ChecklistUiState> = combine(
         repository.getAllChecklists(),
-        _searchQuery,
+        _checklistSearchQuery,
+        _submissionSearchQuery,
         _selectedCategory,
         _dialogState,
         _globalState,
@@ -361,23 +377,24 @@ class ChecklistViewModel(
         _submissionLimit,
     ) { flows ->
         val checklists = flows[0] as List<ChecklistEntity>
-        val query = flows[1] as String
-        val category = flows[2] as String?
-        val dialogState = flows[3] as DialogState
-        val globalState = flows[4] as GlobalState
-        val textBlockState = flows[5] as TextBlockState
-        val selectedChecklistSub = flows[6] as ChecklistEntity?
-        val limit = flows[7] as Int
+        val checklistQuery = flows[1] as String
+        val submissionQuery = flows[2] as String
+        val category = flows[3] as String?
+        val dialogState = flows[4] as DialogState
+        val globalState = flows[5] as GlobalState
+        val textBlockState = flows[6] as TextBlockState
+        val selectedChecklistSub = flows[7] as ChecklistEntity?
+        val limit = flows[8] as Int
         val selectedStatus = globalState.selectedSubmissionStatus
         val preferredLang = globalState.settingsState.settings.preferredLanguage
         val checklistsInLang = checklists.filter { it.language.equals(preferredLang, ignoreCase = true) }
         val effectiveChecklists = if (checklistsInLang.isNotEmpty()) checklistsInLang else checklists
 
         val filteredChecklists = effectiveChecklists.filter { checklist ->
-            val matchesQuery = query.isBlank() ||
-                    checklist.title.contains(query, ignoreCase = true) ||
-                    checklist.description.contains(query, ignoreCase = true) ||
-                    checklist.category.contains(query, ignoreCase = true)
+            val matchesQuery = checklistQuery.isBlank() ||
+                    checklist.title.contains(checklistQuery, ignoreCase = true) ||
+                    checklist.description.contains(checklistQuery, ignoreCase = true) ||
+                    checklist.category.contains(checklistQuery, ignoreCase = true)
 
             val matchesCategory = category == null || category.equals("All", ignoreCase = true) ||
                     checklist.category.equals(category, ignoreCase = true) ||
@@ -393,11 +410,14 @@ class ChecklistViewModel(
         val filteredSubmissions = globalState.submissionState.submissions.filter { submission ->
             val matchesChecklist = selectedChecklistSub == null || submission.checklistid == selectedChecklistSub.id
 
-            val matchesSearch = query.isBlank() ||
-                    submission.inspector?.contains(query, ignoreCase = true) == true ||
-                    submission.notes?.contains(query, ignoreCase = true) == true ||
-                    submission.date.contains(query, ignoreCase = true) == true ||
-                    (checklistMap[submission.checklistid]?.title?.contains(query, ignoreCase = true) == true)
+            val matchesSearch = submissionQuery.isBlank() ||
+                    submission.inspector?.contains(submissionQuery, ignoreCase = true) == true ||
+                    submission.notes?.contains(submissionQuery, ignoreCase = true) == true ||
+                    submission.date.contains(submissionQuery, ignoreCase = true) == true ||
+                    (checklistMap[submission.checklistid]?.title?.contains(
+                        submissionQuery,
+                        ignoreCase = true
+                    ) == true)
 
             val matchesStatus = selectedStatus == null || selectedStatus.equals("All", ignoreCase = true) ||
                     submission.status.equals(selectedStatus, ignoreCase = true)
@@ -410,7 +430,9 @@ class ChecklistViewModel(
 
         ChecklistUiState(
             checklists = filteredChecklists,
-            searchQuery = query,
+            searchQuery = checklistQuery,
+            checklistSearchQuery = checklistQuery,
+            submissionSearchQuery = submissionQuery,
             selectedCategory = category,
             isAddEditDialogVisible = dialogState.isAddEditVisible,
             checklistToEdit = dialogState.checklistToEdit,
@@ -461,10 +483,6 @@ class ChecklistViewModel(
         _selectedSubmissionStatus.value = status
     }
 
-    fun onSearchQueryChange(newQuery: String) {
-        _searchQuery.value = newQuery
-    }
-
     fun onCategoryFilterChange(category: String?) {
         _selectedCategory.value = category
     }
@@ -479,6 +497,7 @@ class ChecklistViewModel(
 
     fun closeChecklistsScreen() {
         _isChecklistListVisible.value = false
+        _checklistSearchQuery.value = ""
     }
 
     fun closeHelpScreen() {
@@ -686,6 +705,7 @@ class ChecklistViewModel(
         questionsJob?.cancel()
         _selectedChecklistForQuestions.value = null
         _questions.value = emptyList()
+        _checklistSearchQuery.value = ""
     }
 
     fun openFillChecklist(checklist: ChecklistEntity) {
@@ -702,6 +722,7 @@ class ChecklistViewModel(
         questionsJob?.cancel()
         _selectedChecklistToAnswer.value = null
         _questions.value = emptyList()
+        _checklistSearchQuery.value = ""
     }
 
     fun submitChecklistAnswers(
@@ -831,6 +852,7 @@ class ChecklistViewModel(
     fun closeSubmissionsOverview() {
         _isSubmissionsOverviewVisible.value = false
         _selectedChecklistForSubmissions.value = null
+        _submissionSearchQuery.value = ""
     }
 
     fun exportSubmissionPdf(context: Context, submission: ChecklistSubmissionEntity) {
@@ -880,6 +902,7 @@ class ChecklistViewModel(
         questionsJob?.cancel()
         _selectedSubmissionToEdit.value = null
         _questions.value = emptyList()
+        _submissionSearchQuery.value = ""
     }
 
     fun updateSubmissionAndAnswers(

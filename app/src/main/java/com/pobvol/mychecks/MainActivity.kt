@@ -223,7 +223,7 @@ class MainActivity : AppCompatActivity() {
                     } else if (uiState.isSubmissionsOverviewVisible) {
                         SubmissionsOverviewScreen(
                             uiState = uiState,
-                            onSearchQueryChange = viewModel::onSearchQueryChange,
+                            onSearchQueryChange = viewModel::onSubmissionSearchQueryChange,
                             onStatusFilterChange = viewModel::onSubmissionStatusFilterChange,
                             onClearChecklistFilter = viewModel::clearChecklistSubmissionsFilter,
                             onBackClick = viewModel::closeSubmissionsOverview,
@@ -296,7 +296,7 @@ class MainActivity : AppCompatActivity() {
                     } else if (uiState.isChecklistListVisible) {
                         ChecklistListScreen(
                             uiState = uiState,
-                            onSearchQueryChange = viewModel::onSearchQueryChange,
+                            onSearchQueryChange = viewModel::onChecklistSearchQueryChange,
                             onCategoryFilterChange = viewModel::onCategoryFilterChange,
                             onAddClick = viewModel::openAddDialog,
                             onSelectChecklist = viewModel::openSubmissionsForChecklist,

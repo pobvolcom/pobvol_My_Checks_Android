@@ -13,6 +13,8 @@ import com.pobvol.mychecks.data.repository.UserSettings
 data class ChecklistUiState(
     val checklists: List<ChecklistEntity> = emptyList(),
     val searchQuery: String = "",
+    val checklistSearchQuery: String = "",
+    val submissionSearchQuery: String = "",
     val selectedCategory: String? = null,
     val isAddEditDialogVisible: Boolean = false,
     val checklistToEdit: ChecklistEntity? = null,

@@ -230,12 +230,12 @@ fun ChecklistListScreen(
                 .padding(innerPadding)
         ) {
             AnimatedVisibility(
-                visible = isSearchActive,
+                visible = isSearchActive || uiState.checklistSearchQuery.isNotEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
                 OutlinedTextField(
-                    value = uiState.searchQuery,
+                    value = uiState.checklistSearchQuery,
                     onValueChange = onSearchQueryChange,
                     placeholder = { Text(stringResource(R.string.search_checklists_placeholder)) },
                     leadingIcon = {
@@ -245,7 +245,7 @@ fun ChecklistListScreen(
                         )
                     },
                     trailingIcon = {
-                        if (uiState.searchQuery.isNotEmpty()) {
+                        if (uiState.checklistSearchQuery.isNotEmpty()) {
                             IconButton(onClick = { onSearchQueryChange("") }) {
                                 Icon(
                                     imageVector = Icons.Rounded.Clear,
