@@ -113,6 +113,6 @@ The App is provided in the hope that it will be useful, but WITHOUT WARRANTY OF 
 
 If you have any questions or suggestions about this project, do not hesitate to contact me at:
 
-• Developer: Volker Pobloth, pobvol Software Services, poppi66292@gmail.com
-• GitHub: pobvolcom/pobvol_My_Checks_Android
+- Developer: Volker Pobloth, pobvol Software Services, poppi66292@gmail.com
+- GitHub: pobvolcom/pobvol_My_Checks_Android
 
