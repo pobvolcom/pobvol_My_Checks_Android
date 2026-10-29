@@ -120,8 +120,8 @@
             &#x1F517;&nbsp;<a href="#_settings" target="_self">Configuración</a><br>
             &#x1F517;&nbsp;<a href="#_checklists" target="_self">Mis Listas de Control</a><br>
             &#x1F517;&nbsp;<a href="#_checkpoints" target="_self">Puntos de control / Preguntas</a><br>
-            &#x1F517;&nbsp;<a href="#_executions" target="_self">Realizar Inspecciones</a><br>
             &#x1F517;&nbsp;<a href="#_reports" target="_self">Mis Registros</a><br>
+            &#x1F517;&nbsp;<a href="#_executions" target="_self">Realizar Inspecciones</a><br>
             &#x1F517;&nbsp;<a href="#_data_security" target="_self">Seguridad de Datos</a><br>
             &#x1F517;&nbsp;<a href="#_architecture" target="_self">Tecnología / Arquitectura</a><br>
             &#x1F517;&nbsp;<a href="#_copyright" target="_self">© Copyright</a><br>
@@ -169,7 +169,9 @@
         <p>
             El panel de control es tu punto de partida. Usa las tarjetas para navegar hasta tus
             listas de comprobación y Registros y acceso a Configuración y Ayuda desde la barra
-            superior. A través del icono del menú en la esquina superior izquierda, puedes ver el
+            superior. <br>
+            <br>
+            A través del icono del menú en la esquina superior izquierda, puedes ver el
             contrato de licencia, gestionar tus propios bloques de texto, hacer una copia de
             seguridad de la base de datos, importar copias de seguridad de la base de datos y cerrar
             la aplicación.
@@ -188,6 +190,7 @@
             necesidades.
             Introduce tu nombre en el campo examinador.
             Tu nombre se transferirá a las actas y se publicará en el PDF.
+            Si quieres, activa Narrador (TTS). Luego te leerán los mensajes de la app.
         </p>
     </div>
 
@@ -225,26 +228,29 @@
             <b>Puntos de control/Preguntas</b>: En una tarjeta de lista de comprobación, toca el
             icono de la pregunta (💬), se abre la pantalla de "Puntos de control/Preguntas". Aquí
             gestionas los puntos de control y Preguntas para la lista de verificación seleccionada.
-            Puedes averiguar cómo hacerlo un poco más adelante en el capítulo [Puntos de
-            control/Preguntas].<br>
+            Puedes averiguar cómo hacerlo un poco más adelante en el capítulo [<a
+                href="#_checkpoints" target="_self">Puntos de control / Preguntas</a>].<br>
             <br>
             <b>Lista de verificación de eliminar</b>: En una tarjeta de lista, toca el icono de
             eliminar (🗑️), Se abre una ventana en la que tienes que confirmar la eliminación.
             Eliminar un Checklist elimina automáticamente las preguntas asociadas. Por favor, nota:
             Checklists, para que ya han tenido un registro registrado, no pueden ser eliminados.<br>
             <br>
-            <b>Añadir un examen</b>: Haz clic en una tarjeta de lista de verificación para comenzar
-            el Grabando un examen. Se abre el formulario "Rellenar la lista de comprobación".<br>
+            Mostrar gráfico : Si al menos 3 protocolos han sido registrados para una lista de
+            comprobación,
+            se muestra el símbolo del gráfico (📋).
+            Con este icono abres la pantalla del gráfico.
+            Esto muestra en un primer gráfico cuántos informes de pruebas se registraron al día.
+            Si la lista de comprobación contiene una pregunta numérica,
+            un segundo gráfico muestra la curva para el valor del primer número.
+            Si la lista de verificación contiene dos preguntas numéricas,
+            un tercer gráfico muestra las curvas para los dos primeros valores numéricos. <br>
             <br>
-            <b>Mostrar gráfico</b>: En una tarjeta de lista de comprobación, toca el icono del
-            gráfico (📋), se abre la pantalla del gráfico. Esto muestra en un primer gráfico cuántos
-            informes de pruebas se registraron al día. Si la lista de comprobación contiene una
-            pregunta numérica, un segundo gráfico muestra la curva para el valor del primer número.
-            Si la lista contiene dos preguntas numéricas, un tercer gráfico muestra la curva para
-            los dos primeros valores numéricos.<br><br>
-            <b>Ver registros de exámenes</b>: En una tarjeta de lista de comprobación, toca el icono
-            de registro (📋), se abre la pantalla "Mis registros". Aquí se muestra el Protocolos para
-            la lista de verificación seleccionada.
+            <b>Ver y añadir registros de exámenes</b>: En una tarjeta de lista de comprobación,
+            toca la Icono de registro (📋), se abre la pantalla de "Mis registros".
+            En este se enumeran los protocolos registrados para la lista de verificación
+            seleccionada.
+            También puedes añadir registros aquí.
         </p>
     </div>
 
@@ -311,6 +317,52 @@
     </div>
 
     <hr>
+    <a name="_reports"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>Mis Registr</h2>
+        <p>
+            Haz clic en la tarjeta "Mis registros" en el panel de control y abre la pantalla
+            correspondiente.
+            Ver registros grabados, filtrar la lista, edita tus respuestas y crea tu informe A4 en
+            PDF inmediatamente.<br>
+            <br>
+            <b>Configuración</b>: Si haces clic en el icono de engranaje (⚙), se abre el cuadro de
+            diálogo "PDF Report Designer". Personalizar el diseño de los informes PDF (cabecera, pie
+            de página, saltos de página, visualización de fecha y estado).
+            Para las imágenes, puedes ajustar tus valores para S, M, L a tu gusto.
+            Por defecto, 100px se usa para S, 200px para M y 300px para L. <br>
+            <br>
+            <b>Añadir minutos</b>: Simplemente haz clic en el botón **'+'** en la esquina inferior
+            derecha.
+            Para más información, véase el capítulo [<a href="#_executions" target="_self">Realizar
+            Inspecciones</a>].<br>
+            <br>
+            <b>Encontrar registros</b>: Toca el icono de búsqueda (🔍) en la barra superior para
+            Encuentra actas por fecha, título o notas. <br>
+            <br>
+            <b>Filtrar listas de comprobación por estado</b>: Filtrar la lista tocando un estado
+            (Completado, en progreso). Al hacer clic en Todo se elimina el filtro.<br>
+            <br>
+            <b>Registro de edición</b>: En un mapa, toca el icono de Cambiar (✏️), se abre la
+            ventana de "Editar protocolo" y puedes ajustar tus entradas. <br>
+            <br>
+            <b>Registro de borrar</b>: Toca el icono de borrar (🗑️) en una tarjeta, se abre Una
+            ventana en la que tienes que confirmar la eliminación. Eliminar un registro Elimina
+            todas las respuestas relacionadas.<br>
+            <br>
+            <b>Ver PDF</b>: Toca el icono del PDF en un mapa, se abre una Visor de PDF y muestra el
+            PDF generado.
+            Luego puedes imprimirlo o compartirlo.
+            Si necesitas una nueva versión del PDF, toca el icono de Cambiar (✏️) en una tarjeta.
+            En la ventana de Editar Registro, guarda el registro de nuevo.
+            Cuando se hayan respondido todas las preguntas necesarias, se creará un nuevo archivo
+            PDF.
+            Espera a que el mensaje de la app ya no sea visible antes de hacer clic en el icono PDF.
+        </p>
+    </div>
+
+    <hr>
     <a name="_executions"></a>
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
@@ -361,7 +413,8 @@
             S representa un ancho de 100px, M un ancho de 200px y L un ancho de 300px.
             Puedes configurarlo individualmente para cada imagen o respuesta.<br>
             <br
-            - <b>Archivos PDF y SQL</b>: Los archivos PDF y SQL se crean automáticamente para listas
+                    - <b>Archivos PDF y SQL</b>: Los archivos PDF y SQL se crean automáticamente
+            para listas
             de verificación completamente completadas tan pronto como todos se recopilaron datos. El
             estado se establece automáticamente como "Completado".
             Un archivo PDF se guardará en la carpeta Download/pobvolMyChecks/pdf.
@@ -370,41 +423,6 @@
             correspondiente en la carpeta SQL.
             Si se han añadido imágenes, también se copian a la carpeta sql.
             <br>
-        </p>
-    </div>
-
-    <hr>
-    <a name="_reports"></a>
-    <div class="card">
-        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
-        <h2>Mis Registr</h2>
-        <p>
-            Haz clic en la tarjeta "Mis registros" en el panel de control y abre la pantalla
-            correspondiente.
-            Ver registros grabados, filtrar la lista, edita tus respuestas y crea tu informe A4 en
-            PDF inmediatamente.<br>
-            <br>
-            <b>Configuración</b>: Si haces clic en el icono de engranaje (⚙), se abre el cuadro de
-            diálogo "PDF Report Designer". Personalizar el diseño de los informes PDF (cabecera, pie
-            de página, saltos de página, visualización de fecha y estado).
-            Para las imágenes, puedes ajustar tus valores para S, M, L a tu gusto.
-            Por defecto, 100px se usa para S, 200px para M y 300px para L. <br>
-            <br>
-            <b>Encontrar registros</b>: Toca el icono de búsqueda (🔍) en la barra superior para
-            Encuentra actas por fecha, título o notas. <br>
-            <br>
-            <b>Filtrar listas de comprobación por estado</b>: Filtrar la lista tocando un estado
-            (Completado, en progreso). Al hacer clic en Todo se elimina el filtro.<br>
-            <br>
-            <b>Registro de edición</b>: En un mapa, toca el icono de Cambiar (✏️), se abre la
-            ventana de "Editar protocolo" y puedes ajustar tus entradas. <br>
-            <br>
-            <b>Registro de borrar</b>: Toca el icono de borrar (🗑️) en una tarjeta, se abre Una
-            ventana en la que tienes que confirmar la eliminación. Eliminar un registro Elimina
-            todas las respuestas relacionadas.<br>
-            <br>
-            <b>Ver PDF</b>: Toca el icono PDF en un mapa, se abrirá un visor PDF y Muestra el PDF
-            generado. Luego puedes imprimirlo o compartirlo.<br>
         </p>
     </div>
 
@@ -442,7 +460,7 @@
         <h2>🛠️ Tecnología / Arquitectura</h2>
         <p>
             - <b>Lenguaje de desarrollo</b>: Kotlin<br>
-            - Marco de interfaz</b>: Composición de Jetpack y Material 3 (con soporte
+            - <b>Marco de interfaz</b>: Composición de Jetpack y Material 3 (con soporte
             Edge-to-Edge)<br>
             - <b>Base de datos</b>: Biblioteca de Persistencia de Habitaciones (SQLite con
             migraciones automáticas de esquemas y Eliminado en cascada)<br>

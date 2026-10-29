@@ -69,7 +69,7 @@
     <string name="filter_prefix">Filter: %1$s</string>
     <string name="clear_checklist_filter">Filter löschen</string>
     <string name="no_submissions_recorded">Keine Protokolle gefunden</string>
-    <string name="no_submissions_hint">Eine Checkliste auswählen und die Ergebnisse erfassen.</string>
+    <string name="no_submissions_hint">"Tippen Sie unten auf die Schaltfläche '+', um ein Protokoll hinzuzufügen."</string>
     <string name="delete_submission_title">Protokoll löschen?</string>
     <string name="delete_submission_message">Möchten Sie dieses Protokoll wirklich löschen? Alle zugehörigen Daten werden ebenfalls entfernt.</string>
     <string name="edit_submission">Protokoll bearbeiten</string>
@@ -281,5 +281,5 @@ Durch Klicken auf [Akzeptieren &amp; Zustimmen] bestätigen Sie, dass Sie diese 
     <string name="clear">Löschen</string>
     <string name="msg_signature_saved">Unterschrift erfolgreich gespeichert.</string>
     <string name="add_new_submission">Neuen Prüfbericht hinzufügen</string>
-    <string name="pdf_include_checklist_description">Include Checklist description</string>
+    <string name="pdf_include_checklist_description">Beschreibung einschließen</string>
 </resources>

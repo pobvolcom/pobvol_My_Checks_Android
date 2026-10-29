@@ -69,7 +69,7 @@
     <string name="filter_prefix">Filter: %1$s</string>
     <string name="clear_checklist_filter">Clear filter</string>
     <string name="no_submissions_recorded">No logs found</string>
-    <string name="no_submissions_hint">Select a checklist, answer the checkpoints/questions and save your results.</string>
+    <string name="no_submissions_hint">"Tap the '+' button at the bottom to add a log."</string>
     <string name="delete_submission_title">Delete log?</string>
     <string name="delete_submission_message">Are you sure you want to delete this log? All associated checkpoints/answers will also be removed.</string>
     <string name="edit_submission">Edit Log</string>

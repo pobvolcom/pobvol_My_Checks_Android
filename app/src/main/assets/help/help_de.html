@@ -136,9 +136,9 @@ pobvol Software Services
         &#x1F517;&nbsp;<a href="#_settings" target="_self">Einstellungen</a><br>
         &#x1F517;&nbsp;<a href="#_checklists" target="_self">Meine Checklisten</a><br>
         &#x1F517;&nbsp;<a href="#_checkpoints" target="_self">Checkpunkte/Fragen</a><br>
+        &#x1F517;&nbsp;<a href="#_reports" target="_self">Meine Protokolle</a><br>
         &#x1F517;&nbsp;<a href="#_executions" target="_self">Prüfungen durchführen und Ergebnisse
         erfassen</a><br>
-        &#x1F517;&nbsp;<a href="#_reports" target="_self">Meine Protokolle</a><br>
         &#x1F517;&nbsp;<a href="#_data_security" target="_self">Datensicherheit</a><br>
         &#x1F517;&nbsp;<a href="#_architecture" target="_self">Technik / Architektur</a><br>
         &#x1F517;&nbsp;<a href="#_copyright" target="_self">Lizenz und Copyright</a><br>
@@ -185,7 +185,8 @@ pobvol Software Services
     <h2>Dashboard & Navigation</h2>
     <p>
         Das Dashboard ist Ihr Startpunkt. Navigieren Sie mit den Karten zu Ihren Checklisten und
-        Protokollen und greifen Sie über die obere Leiste auf Einstellungen und Hilfe zu.
+        Protokollen und greifen Sie über die obere Leiste auf Einstellungen und Hilfe zu.<br>
+        <br>
         Über das Menü-Icon in der linken oberen Ecke können Sie die Lizenzvereinbarung einsehen,
         eigene Textblöcke verwalten, die Datenbank sichern, Sicherungen der Datenbank wieder
         importieren und die App beenden.
@@ -199,11 +200,12 @@ pobvol Software Services
     <h2>Einstellungen</h2>
     <p>
         Klicken Sie im Dashboard auf das Zahnrad-Symbol (⚙). Es öffnet sich der Dialog "Allgemeine
-        Einstellungen".
-        Passen Sie das Erscheinungsbild, die bevorzugte Sprache und die Kategorien an Ihre
-        Bedürfnisse an.
-        Tragen Sie Ihren Namen in das Feld Prüfer ein. Ihr Name wird damit in die Protokolle
-        übernommen und im PDF ausgegeben.
+        Einstellungen". Passen Sie das Erscheinungsbild, die bevorzugte Sprache und die Kategorien
+        an
+        Ihre Bedürfnisse an. Tragen Sie Ihren Namen in das Feld Prüfer ein. Ihr Name wird damit in
+        die Protokolle übernommen und im PDF ausgegeben.
+        Wenn Sie mögen, schalten Sie die Sprachausgabe (TTS) ein.
+        App-Nachrichten werden Ihnen dann vorgelesen.
     </p>
 </div>
 
@@ -241,28 +243,29 @@ pobvol Software Services
         <br>
         <b>Checkpunkte/Fragen</b>: Tippen Sie in einer Checklistenkarte auf das Frage-Symbol (💬),
         öffnet sich der Bildschirm "Checkpunkte/Fragen". Hier verwalten Sie die Checkpunkte und
-        Fragen für die gewählte Checkliste. Wie das geht, finden Sie etwas weiter unten im Kapitel
-        [Checkpunkte/Fragen].<br>
+        Fragen für die gewählte Checkliste.
+        Wie das geht, finden Sie etwas weiter unten im Kapitel [<a href="#_checkpoints"
+                                                                   target="_self">Checkpunkte/Fragen</a>].<br>
         <br>
         <b>Checkliste löschen</b>: Tippen Sie in einer Checklistenkarte auf das Lösch-Symbol (🗑️),
         öffnet sich ein Fenster, in welchem Sie die Löschung bestätigen müssen. Das Löschen einer
         Checkliste löscht automatisch die zugehörigen Fragen. Bitte beachten Sie: Checklisten, zu
         denen bereits ein Protokoll erfasst wurde, können nicht gelöscht werden.<br>
         <br>
-        <b>Prüfung hinzufügen</b>: Mit einem Klick auf eine Checklistenkarte starten Sie die
-        Erfassung einer Prüfung. Es öffnet sich das Formular "Checkliste ausfüllen".<br>
-        <br>
-        <b>Chart anzeigen</b>: Tippen Sie in einer Checklistenkarte auf das Chart-Symbol (📋), öffnet
-        sich der Chart-Bildschirm. Dieser zeigt in einem ersten Chart, wieviele Prüfberichte pro Tag
-        erfasst wurden.
+        <b>Chart anzeigen</b>: Wurden zu einer Checkliste mindestens 3 Protokolle erfasst, wird das
+        Chart-Symbol (📋) angezeigt.
+        Mit diesem Icon öffnen Sie den Chart-Bildschirm.
+        Dieser zeigt in einem ersten Chart, wieviele Prüfberichte pro Tag erfasst wurden.
         Enthält die Checkliste eine Nummernfrage, zeigt ein zweites Chart die Kurve für den ersten
         Nummernwert.
-        Enthält die Checkliste zwei Nummernfragen, zeigt ein drittes Chart die Kurve für die ersten
+        Enthält die Checkliste zwei Nummernfragen, zeigt ein drittes Chart die Kurven für die ersten
         beiden Nummernwerte.<br>
         <br>
-        <b>Prüfungsprotokolle anzeigen</b>: Tippen Sie in einer Checklistenkarte auf das
-        Protokoll-Symbol (📋), öffnet sich der Bildschirm "Meine Protokolle". Dieser listet die
-        Protokolle für die gewählte Checkliste.
+        <b>Prüfungsprotokolle anzeigen und Prüfung hinzufügen</b>: Tippen Sie in einer
+        Checklistenkarte auf das
+        Protokoll-Symbol (📋), öffnet sich der Bildschirm "Meine Protokolle".
+        Dieser listet die erfassten Protokolle für die gewählte Checkliste.
+        Hier können Sie auch Protokolle hinzufügen.
     </p>
 </div>
 
@@ -331,6 +334,52 @@ pobvol Software Services
 </div>
 
 <hr>
+<a name="_reports"></a>
+<div class="card">
+    <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+    <h2>Meine Protokolle</h2>
+    <p>
+        Klicken Sie im Dashboard auf die Karte "Meine Protokolle" und öffnen Sie damit den
+        entsprechenden Bildschirm. Sehen Sie aufgezeichnete Protokolle an, filtern Sie die Liste,
+        bearbeiten Sie Ihre Antworten und erstellen Sie sofort Ihren DIN A4 PDF-Bericht.<br>
+        <br>
+        <b>Einstellungen</b>: Klicken Sie auf das Zahnrad-Symbol (⚙), öffnet sich der Dialog
+        "PDF-Berichts-Designer".
+        Passen Sie das Layout der PDF-Berichte (Kopfzeile, Fußzeile, Seitenumbrüche, Datums- und
+        Statusanzeige) an.
+        Für Bilder können Sie Ihre Werte für S, M, L an Ihre Wünsche anpassen.
+        Standardmäßig wird 100px für S, 200px für M und 300px für L verwendet.<br>
+        <br>
+        <b>Protokoll hinzufügen</b>: Klicken Sie dazu einfach auf den **`+`** Button in der unteren
+        rechten Ecke.
+        Weitere Informationen finden Sie im Kapitel [<a href="#_executions" target="_self">Prüfungen
+        durchführen und Ergebnisse erfassen</a>].<br>
+        <br>
+        <b>Protokolle suchen</b>: Tippen Sie auf das Suchsymbol (🔍) in der oberen Leiste, um
+        Protokolle nach Datum, Titel oder Notizen zu finden.<br>
+        <br>
+        <b>Checklisten nach Status filtern</b>: Filtern Sie die Liste, indem Sie auf einen Status
+        tippen (Abgeschlossen, In Bearbeitung). Ein Klick auf Alle hebt den Filter wieder auf.<br>
+        <br>
+        <b>Protokoll bearbeiten</b>: Tippen Sie in einer Karte auf das Ändern-Symbol (✏️), öffnet
+        sich das Fenster "Protokoll bearbeiten" und Sie können Ihre Eingaben anpassen.<br>
+        <br>
+        <b>Protokoll löschen</b>: Tippen Sie in einer Karte auf das Lösch-Symbol (🗑️), öffnet sich
+        ein Fenster, in welchem Sie die Löschung bestätigen müssen. Das Löschen eines Protokolls
+        löscht alle zugehörigen Antworten.<br>
+        <br>
+        <b>PDF anzeigen</b>: Tippen Sie in einer Karte auf das PDF-Symbol, öffnet sich ein
+        PDF-Viewer und zeigt das erzeugte PDF an. Dieses können Sie dann drucken oder teilen.
+        Sollten Sie eine neue Version des PDFs benötigen, tippen Sie in einer Karte auf das
+        Ändern-Symbol (✏️).
+        In dem Fenster "Protokoll bearbeiten" speichern Sie das Protokoll erneut.
+        Wenn alle erforderlichen Fragen beantwortet wurden, wird damit eine neue PDF-Datei erstellt.
+        Warten Sie bis die App-Nachricht nicht mehr sichtbar ist, bevor Sie auf das PDF-Icon
+        klicken.<br>
+    </p>
+</div>
+
+<hr>
 <a name="_executions"></a>
 <div class="card">
     <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
@@ -388,42 +437,6 @@ pobvol Software Services
 </div>
 
 <hr>
-<a name="_reports"></a>
-<div class="card">
-    <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
-    <h2>Meine Protokolle</h2>
-    <p>
-        Klicken Sie im Dashboard auf die Karte "Meine Protokolle" und öffnen Sie damit den
-        entsprechenden Bildschirm. Sehen Sie aufgezeichnete Protokolle an, filtern Sie die Liste,
-        bearbeiten Sie Ihre Antworten und erstellen Sie sofort Ihren DIN A4 PDF-Bericht.<br>
-        <br>
-        <b>Einstellungen</b>: Klicken Sie auf das Zahnrad-Symbol (⚙), öffnet sich der Dialog
-        "PDF-Berichts-Designer".
-        Passen Sie das Layout der PDF-Berichte (Kopfzeile, Fußzeile, Seitenumbrüche, Datums- und
-        Statusanzeige) an.
-        Für Bilder können Sie Ihre Werte für S, M, L an Ihre Wünsche anpassen.
-        Standardmäßig wird 100px für S, 200px für M und 300px für L verwendet.<br>
-        <br>
-        <b>Protokolle suchen</b>: Tippen Sie auf das Suchsymbol (🔍) in der oberen Leiste, um
-        Protokolle nach Datum, Titel oder Notizen zu finden.<br>
-        <br>
-        <b>Checklisten nach Status filtern</b>: Filtern Sie die Liste, indem Sie auf einen Status
-        tippen (Abgeschlossen, In Bearbeitung). Ein Klick auf Alle hebt den Filter wieder auf.<br>
-        <br>
-        <b>Protokoll bearbeiten</b>: Tippen Sie in einer Karte auf das Ändern-Symbol (✏️), öffnet
-        sich das Fenster "Protokoll bearbeiten" und Sie können Ihre Eingaben anpassen.<br>
-        <br>
-        <b>Protokoll löschen</b>: Tippen Sie in einer Karte auf das Lösch-Symbol (🗑️), öffnet sich
-        ein Fenster, in welchem Sie die Löschung bestätigen müssen. Das Löschen eines Protokolls
-        löscht alle zugehörigen Antworten.<br>
-        <br>
-        <b>PDF anzeigen</b>: Tippen Sie in einer Karte auf das PDF-Symbol, öffnet sich ein
-        PDF-Viewer und
-        zeigt das erzeugte PDF an. Dieses können Sie dann drucken oder teilen.<br>
-    </p>
-</div>
-
-<hr>
 <a name="_data_security"></a>
 <div class="card">
     <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
@@ -459,8 +472,8 @@ pobvol Software Services
         cascade deletes)<br>
         - <b>Dokumentenerstellung</b>: Android `PdfDocument` API (A4 vector rendering)<br>
         - <b>Bildverarbeitung</b>: Coil Compose<br>
-        - **Permissions & Hardware</b>: Camera contracts, NFC foreground dispatch, and Scoped
-        Storage MediaStore APIs
+        - <b>Permissions & Hardware</b>: Camera contracts, NFC foreground dispatch, and Scoped
+        Storage MediaStore APIs<br>
         - <b>Unterstützte Geräte</b>: Android Smartphones und Tablets<br>
         - <b>Unterstützte Sprachen</b>: Deutsch, Englisch, Spanisch und Französisch<br>
     </p>

@@ -120,8 +120,9 @@
             &#x1F517;&nbsp;<a href="#_settings" target="_self">Settings</a><br>
             &#x1F517;&nbsp;<a href="#_checklists" target="_self">My Checklists</a><br>
             &#x1F517;&nbsp;<a href="#_checkpoints" target="_self">Checkpoints / Questions</a><br>
-            &#x1F517;&nbsp;<a href="#_executions" target="_self">Performing Inspections & Recording Results</a><br>
             &#x1F517;&nbsp;<a href="#_reports" target="_self">My Logs & PDF and SQL Export</a><br>
+            &#x1F517;&nbsp;<a href="#_executions" target="_self">Performing Inspections & Recording
+            Results</a><br>
             &#x1F517;&nbsp;<a href="#_data_security" target="_self">Data Security & Export</a><br>
             &#x1F517;&nbsp;<a href="#_architecture" target="_self">Technology / Architecture</a><br>
             &#x1F517;&nbsp;<a href="#_copyright" target="_self">© Copyright</a><br>
@@ -168,9 +169,11 @@
         <h2>Dashboard & Navigation</h2>
         <p>
             The dashboard is your starting point. Use the cards to navigate to your checklists and
-            logs, and access settings and help via the top bar. With the menu icon in the upper left
-            corner, you can view the license agreement, manage your own text blocks, back up the
-            database, import backups of the database again and close the app.
+            logs, and access settings and help via the top bar.<br>
+            <br>
+            With the menu icon in the upper left corner, you can view the license agreement,
+            manage your own text blocks, back up the database, import backups of the database
+            again and close the app.
         </p>
     </div>
 
@@ -185,6 +188,7 @@
             Customize the appearance, preferred language, and categories to suit your needs.
             Enter your name in the examiner field.
             Your name will then be transferred to the log and the PDF.
+            If you like, turn on Narrator (TTS). App messages will then be read to you.
         </p>
     </div>
 
@@ -207,20 +211,27 @@
             checklist" dialog. Adjust the title and select [Duplicate]. The new checklist is created
             as a copy of the selected checklist and displayed in the overview.<br>
             <br>
-            <b>Checkpoints / Questions</b>: Tap the question icon (💬) on a checklist card to open the "Checkpoints/Questions" screen. Here you manage checkpoints and questions for the selected checklist.<br>
+            <b>Checkpoints / Questions</b>: Tap the question icon (💬) on a checklist card to open
+            the "Checkpoints/Questions" screen.
+            Here you manage checkpoints and questions for the selected checklist.
+            Find more details in chapter [<a href="#_checkpoints" target="_self">Checkpoints /
+            Questions</a>].<br>
             <br>
             <b>Delete Checklist</b>: Tap the delete icon (🗑️) to open a confirmation window. Deleting a checklist automatically deletes its questions. Please note: Checklists with recorded logs cannot be deleted.<br>
             <br>
-            <b>Add Inspection</b>: Tap a checklist card to start recording a new inspection. The "Fill Checklist" form opens.<br>
+            <b>Show chart</b>: If at least 3 protocols have been recorded for a checklist,
+            the chart symbol (📋) is displayed.
+            With this icon you open the chart screen.
+            This shows in a first chart how many test reports were recorded per day.
+            If the checklist contains a number question, a second chart shows the curve for the
+            first number value.
+            If the checklist contains two number questions, a third chart shows the curves for the
+            first two number values.<br>
             <br>
-            <b>Show chart</b>: In a checklist card, tap the chart icon (📋), opens the chart screen.
-            This shows in a first chart how many test reports were recorded per day. If the
-            checklist contains a number question, a second chart shows the curve for the first
-            number value. If the checklist contains two number questions, a third chart shows the
-            curve for the first two number values.<br>
-            <br>
-            <b>View Inspection Logs</b>: Tap the log icon (📋) on a checklist card to open "My Logs"
-            for that checklist.
+            <b>View and add exam logs</b>: In a checklist card, tap the Log icon (📋), the "My Logs"
+            screen opens.
+            This lists the recorded protocols for the selected checklist.
+            You can also add logs here.
         </p>
     </div>
 
@@ -284,6 +295,48 @@
     </div>
 
     <hr>
+    <a name="_reports"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>My Logs</h2>
+        <p>
+            Click on the "My Logs" card in the dashboard and open the corresponding screen.
+            View recorded logs, filter the list, edit your answers and create your A4 PDF report
+            immediately.<br>
+            <br>
+            <b>Settings</b>: If you click on the gear icon (⚙), the "PDF Report Designer" dialog
+            opens. Customize the layout of the PDF reports (header, footer, page breaks, date and
+            status display).
+            For images, you can adjust your values for S, M, L to your liking.
+            By default, 100px is used for S, 200px for M, and 300px for L.<br>
+            <br>
+            <b>Add logs</b>: Simply click on the **'+'** button in the bottom right corner.
+            For more information, see the chapter [<a href="#_executions" target="_self">Performing
+            Inspections & Recording Results</a>].<br>
+            <br>
+            <b>Find logs</b>: Tap the search icon (🔍) in the top bar to Find minutes by date, title
+            or notes.<br>
+            <br>
+            <b>Filter checklists by status</b>: Filter the list by tapping a status (Completed, In
+            Progress). Clicking All removes the filter.<br>
+            <br>
+            <b>Edit log</b>: In a map, tap the Change icon (✏️), opens the "Edit Protocol" window
+            and you can adjust your entries.<br>
+            <br>
+            <b>Delete log</b>: Tap on the delete icon (🗑️) in a card, opens a window in which you
+            have to confirm the deletion. Deleting a log deletes all related responses. <br>
+            <br>
+            <b>View PDF</b>b>: A tap on the PDF icon, opens a PDF viewer and displays the generated
+            PDF.
+            You can print or share it.
+            If you need a new version of the PDF, tap the Change icon (✏️) in a card.
+            In the Edit Log window, save the log again.
+            When all necessary questions have been answered, a new PDF file will be created.
+            Wait until the app message is no longer visible before clicking on the PDF icon.
+        </p>
+    </div>
+
+    <hr>
     <a name="_executions"></a>
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
@@ -339,39 +392,6 @@
             sql folder.
             If images have been added, they are also copied to the sql folder.
             <br>
-        </p>
-    </div>
-
-    <hr>
-    <a name="_reports"></a>
-    <div class="card">
-        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
-        <h2>My Logs</h2>
-        <p>
-            Click on the "My Logs" card in the dashboard and open the corresponding screen.
-            View recorded logs, filter the list, edit your answers and create your A4 PDF report
-            immediately.<br>
-            <br>
-            <b>Settings</b>: If you click on the gear icon (⚙), the "PDF Report Designer" dialog
-            opens. Customize the layout of the PDF reports (header, footer, page breaks, date and
-            status display).
-            For images, you can adjust your values for S, M, L to your liking.
-            By default, 100px is used for S, 200px for M, and 300px for L.<br>
-            <br>
-            <b>Find logs</b>: Tap the search icon (🔍) in the top bar to Find minutes by date, title
-            or notes.<br>
-            <br>
-            <b>Filter checklists by status</b>: Filter the list by tapping a status (Completed, In
-            Progress). Clicking All removes the filter.<br>
-            <br>
-            <b>Edit log</b>: In a map, tap the Change icon (✏️), opens the "Edit Protocol" window
-            and you can adjust your entries.<br>
-            <br>
-            <b>Delete log</b>: Tap on the delete icon (🗑️) in a card, opens a window in which you
-            have to confirm the deletion. Deleting a log deletes all related responses. <br>
-            <br>
-            <b>View PDF</b>: Tap the PDF icon in a map, a PDF viewer will open and displays the
-            generated PDF. You can then print or share it. <br>
         </p>
     </div>
 

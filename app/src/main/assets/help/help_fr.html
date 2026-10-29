@@ -120,8 +120,8 @@
             &#x1F517;&nbsp;<a href="#_settings" target="_self">Paramètres</a><br>
             &#x1F517;&nbsp;<a href="#_checklists" target="_self">Mes Listes de Contrôle</a><br>
             &#x1F517;&nbsp;<a href="#_checkpoints" target="_self">Points de contrôle / Questions</a><br>
-            &#x1F517;&nbsp;<a href="#_executions" target="_self">Effectuer des Inspections</a><br>
             &#x1F517;&nbsp;<a href="#_reports" target="_self">Mes Journaux</a><br>
+            &#x1F517;&nbsp;<a href="#_executions" target="_self">Effectuer des Inspections</a><br>
             &#x1F517;&nbsp;<a href="#_data_security" target="_self">Sécurité des données</a><br>
             &#x1F517;&nbsp;<a href="#_architecture" target="_self">Technologie / Architecture</a><br>
             &#x1F517;&nbsp;<a href="#_copyright" target="_self">© Copyright</a><br>
@@ -169,7 +169,9 @@
         <p>
             Le tableau de bord est votre point de départ. Utilisez les cartes pour accéder à vos
             listes de contrôle et Journaux et accédent aux paramètres et à l'aide depuis la barre du
-            haut. Via l'icône du menu en haut à gauche, vous pouvez consulter le contrat de licence,
+            haut.<br>
+            <br>
+            Via l'icône du menu en haut à gauche, vous pouvez consulter le contrat de licence,
             gérer vos propres blocs de texte, sauvegarder la base de données, importer à nouveau des
             sauvegardes de la base de données et fermer l'application.
         </p>
@@ -181,10 +183,13 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Paramètres</h2>
         <p>
-            Dans le tableau de bord, cliquez sur l'icône d'engrenage (⚙). La boîte de dialogue «
-            Paramètres généraux » s'ouvrira. Personnalisez l'apparence, la langue préférée et les
-            catégories selon vos besoins. Entrez votre nom dans le champ examinateur. Votre nom sera
-            ensuite transféré dans le procès-verbal et sera produit dans le PDF.
+            Dans le tableau de bord, cliquez sur l'icône d'engrenage (⚙).
+            La boîte de dialogue «Paramètres généraux » s'ouvrira.
+            Personnalisez l'apparence, la langue préférée et les catégories selon vos besoins.
+            Entrez votre nom dans le champ examinateur.
+            Votre nom sera ensuite transféré dans le procès-verbal et sera produit dans le PDF.
+            Si vous voulez, activez Narrateur (TTS). Les messages de l'application vous seront alors
+            lus.
         </p>
     </div>
 
@@ -223,8 +228,9 @@
             <b>Points de contrôle/Questions</b>: Dans une carte de checklist, appuyez sur l'icône de
             la question (💬), l'écran « Points de contrôle/Questions » s'ouvre. Ici, vous gérez les
             points de contrôle et Questions pour la liste de contrôle sélectionnée. Vous pouvez
-            découvrir comment faire cela un peu plus bas dans le chapitre [Points de
-            contrôle/Questions]. <br>
+            découvrir comment faire cela un peu plus bas dans le chapitre [<a href="#_checkpoints"
+                                                                              target="_self">Points
+            de contrôle / Questions</a>]. <br>
             <br>
             <b>Liste de contrôle Supprimer</b>: Dans une carte de liste, appuyez sur l'icône
             supprimer (🗑️), Une fenêtre s'ouvre dans laquelle vous devez confirmer la suppression.
@@ -232,19 +238,22 @@
             Veuillez noter : Listes de contrôle, à qui ont déjà eu un journal enregistré, ne peuvent
             pas être supprimés.<br>
             <br>
-            <b>Ajouter un examen</b>: Cliquez sur une fiche de checklist pour commencer la
-            Enregistrement d'un examen. Le formulaire « Remplir la liste de contrôle » s'ouvre. <br>
+            <b>Afficher le graphique</b>: Si au moins 3 protocoles ont été enregistrés pour une
+            liste de contrôle,
+            le symbole du graphique (📋) est affiché.
+            Avec cette icône, vous ouvrez l'écran du graphique.
+            Cela montre dans un premier graphique combien de rapports de tests ont été enregistrés
+            par jour.
+            Si la liste contient une question sur le nombre,
+            un second graphique montre la courbe pour la première valeur du nombre.
+            Si la liste contient deux questions de nombres,
+            un troisième graphique montre les courbes des deux premières valeurs de nombres.<br>
             <br>
-            <b>Afficher le graphique</b>: Dans une carte checklist, appuyez sur l'icône du graphique
-            (📋), s'ouvre l'écran du graphique. Cela montre dans un premier tableau combien de
-            rapports de tests ont été enregistrés par jour. Si la liste contient une question sur le
-            nombre, un second graphique montre la courbe pour la première valeur du nombre. Si la
-            liste contient deux questions de nombres, un troisième graphique montre la courbe pour
-            les deux premières valeurs de nombres. <br>
-            <br>
-            <b>Consultez les journaux d'examen</b>: Dans une carte de checklist, appuyez sur la
-            Icône de journal (📋), l'écran « Mes journaux » s'ouvre. Celle-ci liste les Protocoles
-            pour la liste de contrôle sélectionnée.<br>
+            <b>Consultez et ajoutez les journaux d'examen</b>: dans une carte de checklist, appuyez
+            sur le Icône de journal (📋),
+            l'écran « Mes journaux » s'ouvre.
+            Celle-ci liste les protocoles enregistrés pour la liste de contrôle sélectionnée.
+            Vous pouvez aussi ajouter des journaux ici.
         </p>
     </div>
 
@@ -313,6 +322,52 @@
     </div>
 
     <hr>
+    <a name="_reports"></a>
+    <div class="card">
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>Mes Journaux</h2>
+        <p>
+            Cliquez sur la carte « Mes journaux » dans le tableau de bord et ouvrez la écran
+            correspondant.
+            Voir les journaux enregistrés, filtrer la liste, Corrigez vos réponses et créez
+            immédiatement votre rapport PDF A4.<br>
+            <br>
+            <b>Paramètres</b>: Si vous cliquez sur l'icône d'engrenage (⚙), la boîte de dialogue «
+            PDF Report Designer » s'ouvre. Personnalisez la mise en page des rapports PDF (en-tête,
+            pied de page, les saut de page, l'affichage de la date et du statut).
+            Pour les images, vous pouvez ajuster vos valeurs pour S, M, L selon vos préférences.
+            Par défaut, 100px est utilisé pour S, 200px pour M, et 300px pour L.<br>
+            <br>
+            <b>Ajouter des minutes</b>: Il suffit de cliquer sur le bouton **'+'** en bas à droite.
+            Pour plus d'informations, voir le chapitre [<a href="#_executions" target="_self">Effectuer
+            des Inspections</a>].<br>
+            <br>
+            <b>Recherche de journaux</b>: Appuyez sur l'icône de recherche (🔍) dans la barre
+            supérieure pour Trouvez les procès-verbaux par date, titre ou notes.<br> <br>
+            <b>Filtrez les listes de contrôle par statut</b>: Filtrez la liste en tapotant un statut
+            (Terminé, en cours). Cliquer sur Tout enlève le filtre.<br>
+            <br>
+            <b>Journal d'édition</b>: Dans une carte, appuyez sur l'icône Modifier (✏️), s'ouvre la
+            fenêtre « Modifier le protocole » et vous pouvez ajuster vos entrées.<br>
+            <br>
+            <b>Delete log</b>: Appuyez sur l'icône supprimer (🗑️) dans une carte, ouvre Une fenêtre
+            dans laquelle vous devez confirmer la suppression.<br>
+            <br>
+            <b>Suppression d'un journal</b>: Supprime toutes les réponses associées.<br>
+            <br>
+            <b>Voir PDF</b>: Appuyez sur l'icône PDF sur une carte, ouvre une Visualiseur PDF et
+            affiche le PDF généré.
+            Vous pouvez ensuite l'imprimer ou le partager.
+            Si vous avez besoin d'une nouvelle version du PDF, appuyez sur l'icône Modifier (✏️)
+            dans une carte.
+            Dans la fenêtre du journal d'édition, sauvegardez à nouveau le journal.
+            Une fois toutes les questions nécessaires répondues, un nouveau fichier PDF sera créé.
+            Attendez que le message de l'application ne soit plus visible avant de cliquer sur
+            l'icône PDF.
+        </p>
+    </div>
+
+    <hr>
     <a name="_executions"></a>
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
@@ -377,41 +432,6 @@
     </div>
 
     <hr>
-    <a name="_reports"></a>
-    <div class="card">
-        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
-        <h2>Mes Journaux</h2>
-        <p>
-            Cliquez sur la carte « Mes journaux » dans le tableau de bord et ouvrez la écran
-            correspondant.
-            Voir les journaux enregistrés, filtrer la liste, Corrigez vos réponses et créez
-            immédiatement votre rapport PDF A4.<br>
-            <br>
-            <b>Paramètres</b>: Si vous cliquez sur l'icône d'engrenage (⚙), la boîte de dialogue «
-            PDF Report Designer » s'ouvre. Personnalisez la mise en page des rapports PDF (en-tête,
-            pied de page, les saut de page, l'affichage de la date et du statut).
-            Pour les images, vous pouvez ajuster vos valeurs pour S, M, L selon vos préférences.
-            Par défaut, 100px est utilisé pour S, 200px pour M, et 300px pour L.<br>
-            <br>
-            <b>Recherche de journaux</b>: Appuyez sur l'icône de recherche (🔍) dans la barre
-            supérieure pour Trouvez les procès-verbaux par date, titre ou notes.<br> <br>
-            <b>Filtrez les listes de contrôle par statut</b>: Filtrez la liste en tapotant un statut
-            (Terminé, en cours). Cliquer sur Tout enlève le filtre.<br>
-            <br>
-            <b>Journal d'édition</b>: Dans une carte, appuyez sur l'icône Modifier (✏️), s'ouvre la
-            fenêtre « Modifier le protocole » et vous pouvez ajuster vos entrées.<br>
-            <br>
-            <b>Delete log</b>: Appuyez sur l'icône supprimer (🗑️) dans une carte, ouvre Une fenêtre
-            dans laquelle vous devez confirmer la suppression.<br>
-            <br>
-            <b>Suppression d'un journal</b>: Supprime toutes les réponses associées.<br>
-            <br>
-            <b>Voir PDF</b>: Appuyez sur l'icône PDF sur une carte, un lecteur PDF s'ouvrira et
-            Affiche le PDF généré. Vous pouvez ensuite l'imprimer ou le partager.<br>
-        </p>
-    </div>
-
-    <hr>
     <a name="_data_security"></a>
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
@@ -454,7 +474,7 @@
             - <b>Autorisations & Matériel</b>: Contrats caméra, dispatch NFC au premier plan, et
             Scope API Storage MediaStore<br>
             - <b>Appareils pris en charge</b>: smartphones et tablettes Android<br>
-            - Langues prises en charge</b>: allemand, anglais, espagnol et français<br>
+            - <b>Langues prises en charge</b>: allemand, anglais, espagnol et français<br>
         </p>
     </div>
 

@@ -69,7 +69,7 @@
     <string name="filter_prefix">Filtre : %1$s</string>
     <string name="clear_checklist_filter">Effacer le filtre de liste</string>
     <string name="no_submissions_recorded">Aucune soumission enregistrée</string>
-    <string name="no_submissions_hint">Sélectionnez une liste dans la liste pour répondre aux questions et créer des soumissions.</string>
+    <string name="no_submissions_hint">"« Appuie sur le bouton '+' en bas pour ajouter une bûche. »</string>
     <string name="delete_submission_title">Supprimer la soumission ?</string>
     <string name="delete_submission_message">Êtes-vous sûr de vouloir supprimer cette soumission ? Toutes les réponses associées seront également supprimées.</string>
     <string name="edit_submission">Modifier la soumission</string>
@@ -281,5 +281,5 @@ En cliquant sur « Accepter et Accepter », vous confirmez avoir lu, compris et 
     <string name="clear">Effacer</string>
     <string name="msg_signature_saved">Signature enregistrée avec succès.</string>
     <string name="add_new_submission">Ajouter une nouvelle soumission</string>
-    <string name="pdf_include_checklist_description">Include Checklist description</string>
+    <string name="pdf_include_checklist_description">Inclure description</string>
 </resources>

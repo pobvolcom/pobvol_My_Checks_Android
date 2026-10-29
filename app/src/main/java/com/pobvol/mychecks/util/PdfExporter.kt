@@ -424,12 +424,25 @@ object PdfExporter {
             y += 20f
         }
 
+        // print Checklist description
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        paint.textSize = 11f
+        paint.color = Color.DKGRAY
+
         if (settings.pdfIncludeChecklistDescription && headerDescriptionParts.isNotEmpty()) {
-            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-            paint.textSize = 11f
-            paint.color = Color.DKGRAY
-            canvas.drawText(headerDescriptionParts.joinToString(" "), startX, y, paint)
-            y += 20f
+            //hasHeaderContent = true
+            y = drawMultiLineText(
+                canvas = canvas,
+                text = headerDescriptionParts.joinToString(" "),
+                startX = startX,
+                startY = y,
+                paint = paint,
+                maxWidth = endX - startX,
+                lineHeight = 16f,
+                bottomLimit = bottomLimit,
+                onPageOverflow = { startNewPage() }
+            )
+            y += 10f
         }
 
         // print Notes

@@ -69,7 +69,7 @@
     <string name="filter_prefix">Filtro: %1$s</string>
     <string name="clear_checklist_filter">Borrar filtro de lista</string>
     <string name="no_submissions_recorded">No hay envíos registrados</string>
-    <string name="no_submissions_hint">Selecciona una lista de la lista para responder preguntas y crear envíos.</string>
+    <string name="no_submissions_hint">"Pulsa el botón '+' en la parte inferior para añadir un tronco."</string>
     <string name="delete_submission_title">¿Eliminar envío?</string>
     <string name="delete_submission_message">¿Estás seguro de que deseas eliminar este envío? Todas las respuestas asociadas también se eliminarán.</string>
     <string name="edit_submission">Editar envío</string>
@@ -281,5 +281,5 @@ Al hacer clic en [Aceptar y Aceptar], confirmas que has leído, entendido y acep
     <string name="clear">Borrar</string>
     <string name="msg_signature_saved">Firma guardada con éxito.</string>
     <string name="add_new_submission">Añadir nueva sumisión</string>
-    <string name="pdf_include_checklist_description">Include Checklist description</string>
+    <string name="pdf_include_checklist_description">Incluir descripción</string>
 </resources>
