@@ -1,4 +1,4 @@
-# Privacy Policy for My Checks
+# Privacy Policy for pobvol My Checks
 Effective Date: October 28, 2026
 
 pobvol Software Services ("we", "our", or "us") built the My Checks app as a Free/Open Source Android application. This PRIVACY POLICY explains how our app handles your information.
