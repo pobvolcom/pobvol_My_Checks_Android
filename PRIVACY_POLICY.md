@@ -8,7 +8,8 @@ This PRIVACY POLICY explains how our app handles your information.
 
 The app is designed with privacy at its core.
 
-- No Personal Data Collection: I do not collect, transmit, store, or share any personal information, analytics, telemetry, or device identifiers.
+- No Personal Data Collection: The app does not collect, transmit, store, or share any personal information, analytics, telemetry.
+- Device id: A unique device id is generated automatically in the SQLite db. This is currently not used but can be necessary for upcoming data exchange features.
 - Local Storage Only: All checklists, questions, submissions, answers, and user settings are stored locally on your device in a secure app-private database (/data/data/com.pobvol.mychecks) and local export directories (Download/pobvolMyChecks).
 - No Cloud Transmission: The app does not transmit any data to external cloud servers or third parties. Data transfers (such as database backups or SQL/PDF exports) occur strictly locally on your device.
 
@@ -28,7 +29,7 @@ The app does not integrate any third-party advertising networks, analytics track
 
 I may update this Privacy Policy from time to time. Thus, you are advised to review this page periodically for any changes.
 
-# 5. Contact Me
+# 5. Contact
 
 If you have any questions or suggestions about this Privacy Policy, do not hesitate to contact me at:
 

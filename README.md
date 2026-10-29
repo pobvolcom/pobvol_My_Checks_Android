@@ -1,7 +1,8 @@
 # pobvol My Checks
 Create checklists quickly and easily | Log results | Free Software | Open Source | Android Smartphones and Tablets
 
-With the Android app pobvol My Checks, you can easily and quickly create custom checklists with checkpoints and questions, and then record, analyze, and output the results of inspections and other activities in PDF reports. All captured data is automatically backed up in SQL files. Data structures do not need to be programmed in databases with great effort. German, English, Spanish, and French are supported.
+With the app ** pobvol My Checks ** you can easily and quickly create custom checklists with checkpoints and questions, and then record, analyze, and output the results of inspections and other activities in PDF reports. All captured data is automatically backed up in SQL files. Data structures do not need to be programmed in databases with great effort. German, English, Spanish, and French are supported.
+The app is Free Software, delivered as open source. The app was developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash. The source code is published at GitHub.
 
 # Dashboard & Navigation
 
@@ -86,11 +87,16 @@ Search & Filter: Search logs by date, title, or notes, and filter by status.
 Edit / Delete Logs: Modify answers or delete logs as needed.
 
 View PDF: Tap the PDF icon on a log card to open, print, or share the generated PDF report.
-PDF reports are automatically saved to the device folder Downloads/MyChecks with filename Submission_id_Report.pdf.
+PDF reports are automatically saved to the device folder Downloads/pobvolMyChecks/pdf with filename Submission_id_Report.pdf.
 
-# Data Security & SQL Export
+# Data Security & Privacy
 
-All inspection data is securely stored in your local Android SQLite database with foreign key cascades and schema migrations. Additionally, completed reports are exported as SQL.TXT files in Downloads/MyChecks.
+The app is designed with privacy at its core.
+
+- No Personal Data Collection: The app does not collect, transmit, store, or share any personal information, analytics, telemetry.
+- Device id: A unique device id is generated automatically in the SQLite db. This is currently not used but can be necessary for upcoming data exchange features.
+- Local Storage Only: All checklists, questions, submissions, answers, and user settings are stored locally on your device in a secure app-private database (/data/data/com.pobvol.mychecks) and local export directories (Download/pobvolMyChecks).
+- No Cloud Transmission: The app does not transmit any data to external cloud servers or third parties. Data transfers (such as database backups or SQL/PDF exports) occur strictly locally on your device.
 
 # Technology / Architecture
 
@@ -103,13 +109,31 @@ All inspection data is securely stored in your local Android SQLite database wit
 - Supported Devices: Android Smartphones and Tablets
 - Supported Languages: German, English, Spanish, and French
 
+# Permissions
+
+The app requests certain device permissions solely to provide core functionality:
+
+- Camera: Used strictly on-device for scanning QR codes/barcodes and taking optional photo attachments for checklist answers. Photos are stored locally.
+- Location: Used when location tagging is required by specific checklists. Location data is stored locally.
+- Storage / Media: Used for saving generated PDF reports, SQL exports, and database backups to your device's public Download folder.
+
+# License 
+
+You can download, install, operate, modify, and redistribute the app under the terms of the GNU General Public License v3. See https://www.gnu.org/licenses/gpl-3.0
+
+# Third-Party Services
+
+The app does not integrate any third-party advertising networks, analytics trackers, or commercial SDKs.
+
 # Copyright
 
-The app is Free Software and delivered as open source. You can download, install, operate, modify, and redistribute this software under the terms of the GNU General Public License v3. Copyright © 2026 Volker Pobloth, pobvol Software Services. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
+Copyright © 2026 Volker Pobloth, pobvol Software Services
 
-The App is provided in the hope that it will be useful, but WITHOUT WARRANTY OF ANY KIND; even without the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# Disclaimer
 
-# Contact Me
+The App is provided in the hope that it will be useful, but WITHOUT WARRANTY OF ANY KIND; even without the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. The Developer is not liable for any loss of data or erroneous logs.
+
+# Contact
 
 If you have any questions or suggestions about this project, do not hesitate to contact me at:
 
