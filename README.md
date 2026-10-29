@@ -108,5 +108,11 @@ All inspection data is securely stored in your local Android SQLite database wit
 The app is Free Software and delivered as open source. You can download, install, operate, modify, and redistribute this software under the terms of the GNU General Public License v3. Copyright © 2026 Volker Pobloth, pobvol Software Services. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
 
 The App is provided in the hope that it will be useful, but WITHOUT WARRANTY OF ANY KIND; even without the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- 
+
+# Contact Me
+
+If you have any questions or suggestions about this project, do not hesitate to contact me at:
+
+• Developer: Volker Pobloth, pobvol Software Services, poppi66292@gmail.com
+• GitHub: pobvolcom/pobvol_My_Checks_Android
 

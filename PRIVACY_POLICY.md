@@ -1,15 +1,16 @@
 # Privacy Policy for pobvol My Checks
 Effective Date: October 28, 2026
 
-pobvol Software Services ("we", "our", or "us") built the My Checks app as a Free/Open Source Android application. This PRIVACY POLICY explains how our app handles your information.
+I built the app ** pobvol My Checks ** as a Free/Open Source Android application. 
+This PRIVACY POLICY explains how our app handles your information.
 
 # 1. Information Collection and Use
 
-   My Checks is designed with privacy at its core.
+   The app is designed with privacy at its core.
 
-   • No Personal Data Collection: We do not collect, transmit, store, or share any personal information, analytics, telemetry, or device identifiers.
+   • No Personal Data Collection: I do not collect, transmit, store, or share any personal information, analytics, telemetry, or device identifiers.
    • Local Storage Only: All checklists, questions, submissions, answers, and user settings are stored locally on your device in a secure app-private database (/data/data/com.pobvol.mychecks) and local export directories (Download/pobvolMyChecks).
-   • No Cloud Transmission: The app does not transmit any data to external cloud servers or third parties. Data transfers (such as database backups or SQL/PDF exports) occur strictly locally on your device or via user-configured FTP servers under your direct control.
+   • No Cloud Transmission: The app does not transmit any data to external cloud servers or third parties. Data transfers (such as database backups or SQL/PDF exports) occur strictly locally on your device.
 
 # 2. Permissions
 
@@ -25,11 +26,11 @@ pobvol Software Services ("we", "our", or "us") built the My Checks app as a Fre
 
 # 4. Changes to This Privacy Policy
 
-   We may update our Privacy Policy from time to time. Thus, you are advised to review this page periodically for any changes.
+   I may update this Privacy Policy from time to time. Thus, you are advised to review this page periodically for any changes.
 
-# 5. Contact Us
+# 5. Contact Me
 
-   If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at:
+   If you have any questions or suggestions about this Privacy Policy, do not hesitate to contact me at:
 
    • Developer: Volker Pobloth, pobvol Software Services, poppi66292@gmail.com
    • GitHub: pobvolcom/pobvol_My_Checks_Android
