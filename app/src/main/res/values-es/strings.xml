@@ -282,4 +282,9 @@ Al hacer clic en [Aceptar y Aceptar], confirmas que has leído, entendido y acep
     <string name="msg_signature_saved">Firma guardada con éxito.</string>
     <string name="add_new_submission">Añadir nueva sumisión</string>
     <string name="pdf_include_checklist_description">Incluir descripción</string>
+    <string name="load_more_submissions">Cargar más informes (%1$d de %2$d mostrados)</string>
+    <string name="invalid_number">Formato de número no válido</string>
+    <string name="number_out_of_range">El valor debe estar entre %1$s y %2$s</string>
+    <string name="number_min_value_error">El valor debe ser al menos %1$s</string>
+    <string name="number_max_value_error">El valor no puede superar %1$s</string>
 </resources>

@@ -282,4 +282,9 @@ Durch Klicken auf [Akzeptieren &amp; Zustimmen] bestätigen Sie, dass Sie diese 
     <string name="msg_signature_saved">Unterschrift erfolgreich gespeichert.</string>
     <string name="add_new_submission">Neuen Prüfbericht hinzufügen</string>
     <string name="pdf_include_checklist_description">Beschreibung einschließen</string>
+    <string name="load_more_submissions">Weitere Prüfberichte laden (%1$d von %2$d angezeigt)</string>
+    <string name="invalid_number">Ungültiges Zahlenformat</string>
+    <string name="number_out_of_range">Wert muss zwischen %1$s und %2$s liegen</string>
+    <string name="number_min_value_error">Wert muss mindestens %1$s sein</string>
+    <string name="number_max_value_error">Wert darf maximal %1$s sein</string>
 </resources>

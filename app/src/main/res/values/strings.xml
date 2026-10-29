@@ -284,4 +284,9 @@ By clicking [Accept &amp; Agree], you confirm that you have read, understood and
     <string name="msg_signature_saved">Signature saved successfully.</string>
     <string name="add_new_submission">Add New Submission</string>
     <string name="pdf_include_checklist_description">Include Checklist description</string>
+    <string name="load_more_submissions">Load More Submissions (%1$d of %2$d shown)</string>
+    <string name="invalid_number">Invalid number format</string>
+    <string name="number_out_of_range">Value must be between %1$s and %2$s</string>
+    <string name="number_min_value_error">Value must be at least %1$s</string>
+    <string name="number_max_value_error">Value cannot exceed %1$s</string>
 </resources>

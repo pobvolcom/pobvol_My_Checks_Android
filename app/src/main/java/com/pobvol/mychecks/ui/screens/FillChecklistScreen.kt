@@ -195,7 +195,7 @@ fun FillChecklistScreen(
                             for (question in uiState.questionsForSelectedChecklist) {
                                 val ans = answersMap[question.id]?.value ?: ""
                                 if (question.type.lowercase() == "number" && ans.isNotBlank()) {
-                                    val num = ans.toDoubleOrNull()
+                                    val num = ans.replace(',', '.').toDoubleOrNull()
                                     if (num == null) {
                                         rangeError =
                                             "Question \"${question.title}\" requires a valid number"
@@ -526,7 +526,7 @@ fun FillChecklistScreen(
                                     for (question in uiState.questionsForSelectedChecklist) {
                                         val ans = answersMap[question.id]?.value ?: ""
                                         if (question.type.lowercase() == "number" && ans.isNotBlank()) {
-                                            val num = ans.toDoubleOrNull()
+                                            val num = ans.replace(',', '.').toDoubleOrNull()
                                             if (num == null) {
                                                 rangeError = "Question \"${question.title}\" requires a valid number"
                                                 break
@@ -723,10 +723,40 @@ fun AnswerQuestionItem(
                         }
                     }
 
+                    val normalizedVal = currentAnswer.trim().replace(',', '.')
+                    val numVal = normalizedVal.toDoubleOrNull()
+                    val isInvalidFormat = currentAnswer.isNotBlank() && numVal == null
+                    val isOutOfRange = numVal != null && (
+                            (question.minValue != null && numVal < question.minValue) ||
+                                    (question.maxValue != null && numVal > question.maxValue)
+                            )
+                    val hasError = isInvalidFormat || isOutOfRange
+
+                    val errorMessage = when {
+                        isInvalidFormat -> stringResource(R.string.invalid_number)
+                        isOutOfRange -> {
+                            if (question.minValue != null && question.maxValue != null) {
+                                stringResource(
+                                    R.string.number_out_of_range,
+                                    question.minValue,
+                                    question.maxValue
+                                )
+                            } else if (question.minValue != null) {
+                                stringResource(R.string.number_min_value_error, question.minValue)
+                            } else {
+                                stringResource(R.string.number_max_value_error, question.maxValue!!)
+                            }
+                        }
+
+                        else -> null
+                    }
+
                     OutlinedTextField(
                         value = currentAnswer,
                         onValueChange = onAnswerChanged,
                         label = { Text(labelText) },
+                        isError = hasError,
+                        supportingText = errorMessage?.let { { Text(it) } },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         shape = RoundedCornerShape(12.dp),

@@ -282,4 +282,9 @@ En cliquant sur « Accepter et Accepter », vous confirmez avoir lu, compris et 
     <string name="msg_signature_saved">Signature enregistrée avec succès.</string>
     <string name="add_new_submission">Ajouter une nouvelle soumission</string>
     <string name="pdf_include_checklist_description">Inclure description</string>
+    <string name="load_more_submissions">Charger plus de rapports (%1$d sur %2$d affichés)</string>
+    <string name="invalid_number">Format de numéro non valide</string>
+    <string name="number_out_of_range">La valeur doit être comprise entre %1$s et %2$s</string>
+    <string name="number_min_value_error">La valeur doit être d\'au moins %1$s</string>
+    <string name="number_max_value_error">La valeur ne peut pas dépasser %1$s</string>
 </resources>

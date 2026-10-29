@@ -35,6 +35,8 @@ data class ChecklistUiState(
     val categories: List<CategoryEntity> = emptyList(),
     val selectedChecklistToAnswer: ChecklistEntity? = null,
     val submissions: List<ChecklistSubmissionEntity> = emptyList(),
+    val totalMatchingSubmissionsCount: Int = 0,
+    val submissionLimit: Int = 30,
     val allSubmissions: List<ChecklistSubmissionEntity> = emptyList(),
     val answers: List<ChecklistAnswerEntity> = emptyList(),
     val isSubmissionsOverviewVisible: Boolean = false,

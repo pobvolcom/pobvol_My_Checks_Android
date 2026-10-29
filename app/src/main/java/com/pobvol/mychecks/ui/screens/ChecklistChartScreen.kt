@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Analytics
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -39,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,6 +56,7 @@ fun ChecklistChartScreen(
     checklist: ChecklistEntity,
     uiState: ChecklistUiState,
     onBackClick: () -> Unit,
+    onLoadMoreClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     BackHandler(onBack = onBackClick)
@@ -65,8 +68,9 @@ fun ChecklistChartScreen(
         ThemeMode.SYSTEM -> systemDark
     }
 
-    val submissions = uiState.allSubmissions.filter { it.checklistid == checklist.id }
+    val totalSubmissions = uiState.allSubmissions.filter { it.checklistid == checklist.id }
         .sortedBy { it.date }
+    val submissions = totalSubmissions.takeLast(uiState.submissionLimit)
     val questions = uiState.questionsForSelectedChecklist.filter { it.checklistid == checklist.id }
     val numberQuestions = questions.filter { it.type.lowercase() == "number" }
 
@@ -234,6 +238,26 @@ fun ChecklistChartScreen(
                     }
                 }
             }
+
+            if (totalSubmissions.size > submissions.size) {
+                item {
+                    Button(
+                        onClick = onLoadMoreClick,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.load_more_submissions,
+                                submissions.size,
+                                totalSubmissions.size
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -242,9 +266,28 @@ private fun shortDate(dateStr: String): String {
     return if (dateStr.length >= 5) dateStr.take(5) else dateStr
 }
 
+private fun formatValue(value: Double): String {
+    return if (value % 1.0 == 0.0) {
+        value.toLong().toString()
+    } else {
+        java.text.DecimalFormat(
+            "#.##",
+            java.text.DecimalFormatSymbols.getInstance(java.util.Locale.US)
+        ).format(value)
+    }
+}
+
+private fun formatValue(value: Int): String = value.toString()
+
 @Composable
 fun SubmissionsLineChart(data: List<Pair<String, Int>>, isDarkTheme: Boolean) {
     if (data.isEmpty()) return
+    val density = LocalDensity.current
+
+    // textSize for values in the charts
+    // same size as labels (labelSmall)
+    val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
+
     val maxCount = data.maxOfOrNull { it.second }?.toFloat() ?: 1f
     val primaryColor = MaterialTheme.colorScheme.primary
     val scrollState = rememberScrollState()
@@ -294,7 +337,7 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>, isDarkTheme: Boolean) {
                         if (isDarkTheme) android.graphics.Color.WHITE else android.graphics.Color.BLACK
                     val textPaint = android.graphics.Paint().apply {
                         color = labelColor
-                        textSize = 14f
+                        textSize = labelSmallPx
                         isAntiAlias = true
                         textAlign = android.graphics.Paint.Align.CENTER
                     }
@@ -304,9 +347,9 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>, isDarkTheme: Boolean) {
                         drawCircle(color = Color.White, radius = 3.dp.toPx(), center = point)
 
                         drawContext.canvas.nativeCanvas.drawText(
-                            "${data[index].second}",
+                            formatValue(data[index].second),
                             point.x,
-                            point.y - 28f, // increased padding-bottom from line
+                            point.y - 14f, // increased padding-bottom from line
                             textPaint
                         )
                     }
@@ -339,6 +382,8 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>, isDarkTheme: Boolean) {
 @Composable
 fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean) {
     if (data.isEmpty()) return
+    val density = LocalDensity.current
+    val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
     val maxVal = maxOf(
         data.maxOfOrNull { it.second } ?: 1.0,
         1.0
@@ -402,7 +447,7 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
                     ) else android.graphics.Color.BLACK
                     val textPaint = android.graphics.Paint().apply {
                         color = labelColor
-                        textSize = 14f
+                        textSize = labelSmallPx
                         isAntiAlias = true
                         textAlign = android.graphics.Paint.Align.CENTER
                     }
@@ -412,9 +457,9 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
                         drawCircle(color = Color.White, radius = 3.dp.toPx(), center = point)
 
                         drawContext.canvas.nativeCanvas.drawText(
-                            "${data[index].second}",
+                            formatValue(data[index].second),
                             point.x,
-                            point.y - 28f, // increased padding-bottom from line
+                            point.y - 14f, // increased padding-bottom from line
                             textPaint
                         )
                     }
@@ -447,6 +492,8 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
 @Composable
 fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme: Boolean) {
     if (data.isEmpty()) return
+    val density = LocalDensity.current
+    val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
     val maxVal = maxOf(
         data.maxOfOrNull { maxOf(it.second, it.third) } ?: 1.0,
         1.0
@@ -529,13 +576,13 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme:
 
                     val textPaint1 = android.graphics.Paint().apply {
                         color = labelColor1
-                        textSize = 14f
+                        textSize = labelSmallPx
                         isAntiAlias = true
                         textAlign = android.graphics.Paint.Align.CENTER
                     }
                     val textPaint2 = android.graphics.Paint().apply {
                         color = labelColor2
-                        textSize = 14f
+                        textSize = labelSmallPx
                         isAntiAlias = true
                         textAlign = android.graphics.Paint.Align.CENTER
                     }
@@ -545,9 +592,9 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme:
                         drawCircle(color = Color.White, radius = 3.dp.toPx(), center = point)
 
                         drawContext.canvas.nativeCanvas.drawText(
-                            "${data[index].second}",
+                            formatValue(data[index].second),
                             point.x,
-                            point.y - 32f, // increased padding-bottom for upper line
+                            point.y - 14f, // increased padding-bottom for upper line
                             textPaint1
                         )
                     }
@@ -556,9 +603,9 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme:
                         drawCircle(color = Color.White, radius = 3.dp.toPx(), center = point)
 
                         drawContext.canvas.nativeCanvas.drawText(
-                            "${data[index].third}",
+                            formatValue(data[index].third),
                             point.x,
-                            point.y + 40f, // increased padding-bottom for lower line
+                            point.y + 21f, // increased padding-bottom for lower line
                             textPaint2
                         )
                     }

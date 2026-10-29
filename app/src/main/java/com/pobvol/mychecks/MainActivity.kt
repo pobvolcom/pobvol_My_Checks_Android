@@ -160,6 +160,7 @@ class MainActivity : AppCompatActivity() {
                             checklist = chartChecklist,
                             uiState = uiState,
                             onBackClick = viewModel::closeChartScreen,
+                            onLoadMoreClick = viewModel::loadMoreSubmissions,
                             modifier = Modifier.fillMaxSize(),
                         )
                     } else if (uiState.isHelpVisible) {
@@ -260,6 +261,7 @@ class MainActivity : AppCompatActivity() {
                             onPdfPictureSizeLargeChanged = viewModel::updatePdfPictureSizeLarge,
                             onSignatureCaptured = viewModel::updateSignaturePath,
                             onAddSubmissionClick = viewModel::openFillChecklist,
+                            onLoadMoreClick = viewModel::loadMoreSubmissions,
                             onExportPdfClick = { submission ->
                                 viewModel.exportSubmissionPdf(this, submission)
                             },

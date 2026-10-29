@@ -33,6 +33,7 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -119,6 +120,7 @@ fun SubmissionsOverviewScreen(
     onPdfPictureSizeLargeChanged: (Int) -> Unit = {},
     onSignatureCaptured: (String) -> Unit = {},
     onAddSubmissionClick: (ChecklistEntity) -> Unit = {},
+    onLoadMoreClick: () -> Unit = {},
     onExportPdfClick: (ChecklistSubmissionEntity) -> Unit = {},
     onExportSqlClick: (ChecklistSubmissionEntity) -> Unit = {},
     onEditSubmissionClick: (ChecklistSubmissionEntity) -> Unit,
@@ -356,6 +358,26 @@ fun SubmissionsOverviewScreen(
                                 onEditClick = { onEditSubmissionClick(submission) },
                                 onDeleteClick = { onDeleteSubmissionClick(submission) },
                             )
+                        }
+
+                        if (uiState.totalMatchingSubmissionsCount > uiState.submissions.size) {
+                            item {
+                                Button(
+                                    onClick = onLoadMoreClick,
+                                    shape = RoundedCornerShape(12.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp),
+                                ) {
+                                    Text(
+                                        text = stringResource(
+                                            R.string.load_more_submissions,
+                                            uiState.submissions.size,
+                                            uiState.totalMatchingSubmissionsCount
+                                        )
+                                    )
+                                }
+                            }
                         }
                     }
                 }

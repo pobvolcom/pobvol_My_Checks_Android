@@ -131,6 +131,9 @@ class ChecklistViewModel(
     private val _selectedChecklistForSubmissions = MutableStateFlow<ChecklistEntity?>(null)
     val selectedChecklistForSubmissions: StateFlow<ChecklistEntity?> = _selectedChecklistForSubmissions.asStateFlow()
 
+    private val _submissionLimit = MutableStateFlow(30)
+    val submissionLimit: StateFlow<Int> = _submissionLimit.asStateFlow()
+
     private val _selectedChecklistForChart = MutableStateFlow<ChecklistEntity?>(null)
     val selectedChecklistForChart: StateFlow<ChecklistEntity?> =
         _selectedChecklistForChart.asStateFlow()
@@ -355,6 +358,7 @@ class ChecklistViewModel(
         _globalState,
         _textBlockState,
         _selectedChecklistForSubmissions,
+        _submissionLimit,
     ) { flows ->
         val checklists = flows[0] as List<ChecklistEntity>
         val query = flows[1] as String
@@ -363,6 +367,7 @@ class ChecklistViewModel(
         val globalState = flows[4] as GlobalState
         val textBlockState = flows[5] as TextBlockState
         val selectedChecklistSub = flows[6] as ChecklistEntity?
+        val limit = flows[7] as Int
         val selectedStatus = globalState.selectedSubmissionStatus
         val preferredLang = globalState.settingsState.settings.preferredLanguage
         val checklistsInLang = checklists.filter { it.language.equals(preferredLang, ignoreCase = true) }
@@ -400,6 +405,9 @@ class ChecklistViewModel(
             matchesChecklist && matchesSearch && matchesStatus
         }
 
+        val totalMatchingCount = filteredSubmissions.size
+        val displayedSubmissions = filteredSubmissions.take(limit)
+
         ChecklistUiState(
             checklists = filteredChecklists,
             searchQuery = query,
@@ -421,7 +429,9 @@ class ChecklistViewModel(
             isPdfSettingsVisible = globalState.settingsState.isPdfVisible,
             categories = globalState.settingsState.categories,
             selectedChecklistToAnswer = dialogState.selectedChecklistToAnswer,
-            submissions = filteredSubmissions,
+            submissions = displayedSubmissions,
+            totalMatchingSubmissionsCount = totalMatchingCount,
+            submissionLimit = limit,
             allSubmissions = globalState.submissionState.submissions,
             answers = globalState.submissionState.answers,
             isSubmissionsOverviewVisible = globalState.submissionState.isOverviewVisible,
@@ -724,12 +734,17 @@ class ChecklistViewModel(
 
             submissionRepository.insertChecklistSubmission(submission)
 
+            val questionsMap = questions.associateBy { it.id }
             answers.forEach { (questionId, answerInput) ->
                 if (answerInput.value.isNotBlank() || !answerInput.notes.isNullOrBlank() || !answerInput.imageUri.isNullOrBlank()) {
+                    val q = questionsMap[questionId]
+                    val normalizedVal =
+                        if (q?.type?.lowercase() == "number") answerInput.value.trim()
+                            .replace(',', '.') else answerInput.value
                     val answer = ChecklistAnswerEntity(
                         submissionid = submission.id,
                         questionid = questionId,
-                        value = answerInput.value,
+                        value = normalizedVal,
                         notes = answerInput.notes?.ifBlank { null },
                         imagePath = answerInput.imagePath,
                         pictureSize = answerInput.pictureSize,
@@ -773,11 +788,21 @@ class ChecklistViewModel(
         }
     }
 
+    fun loadMoreSubmissions() {
+        _submissionLimit.value += 30
+    }
+
+    fun resetSubmissionLimit() {
+        _submissionLimit.value = 30
+    }
+
     fun openSubmissionsOverview() {
+        resetSubmissionLimit()
         _isSubmissionsOverviewVisible.value = true
     }
 
     fun openSubmissionsForChecklist(checklist: ChecklistEntity) {
+        resetSubmissionLimit()
         _selectedChecklistForSubmissions.value = checklist
         _isSubmissionsOverviewVisible.value = true
     }
@@ -787,6 +812,7 @@ class ChecklistViewModel(
     }
 
     fun openChartForChecklist(checklist: ChecklistEntity) {
+        resetSubmissionLimit()
         _selectedChecklistForChart.value = checklist
         questionsJob?.cancel()
         questionsJob = viewModelScope.launch {
@@ -876,9 +902,15 @@ class ChecklistViewModel(
 
             val existingAnswers = answerRepository.getChecklistAnswersListBySubmissionId(finalSubmission.id)
             val existingAnswerByQuestionMap = existingAnswers.associateBy { it.questionid }
+            val questionsMap = questions.associateBy { it.id }
 
             updatedAnswersMap.forEach { (questionId, newAnswerInput) ->
                 val existingAnswer = existingAnswerByQuestionMap[questionId]
+                val q = questionsMap[questionId]
+                val normalizedVal =
+                    if (q?.type?.lowercase() == "number") newAnswerInput.value.trim()
+                        .replace(',', '.') else newAnswerInput.value
+
                 if (existingAnswer != null) {
                     var imagePathToUse = existingAnswer.imagePath
                     if (!newAnswerInput.imageUri.isNullOrBlank() && newAnswerInput.imageUri != existingAnswer.imagePath) {
@@ -894,9 +926,9 @@ class ChecklistViewModel(
                     } else if (newAnswerInput.imageUri == null && existingAnswer.imagePath != null && newAnswerInput.imagePath == null) {
                         imagePathToUse = null
                     }
-                    if (newAnswerInput.value != existingAnswer.value || newAnswerInput.notes != existingAnswer.notes || imagePathToUse != existingAnswer.imagePath || newAnswerInput.pictureSize != existingAnswer.pictureSize) {
+                    if (normalizedVal != existingAnswer.value || newAnswerInput.notes != existingAnswer.notes || imagePathToUse != existingAnswer.imagePath || newAnswerInput.pictureSize != existingAnswer.pictureSize) {
                         val modifiedAnswer = existingAnswer.copy(
-                            value = newAnswerInput.value,
+                            value = normalizedVal,
                             notes = newAnswerInput.notes?.ifBlank { null },
                             imagePath = imagePathToUse,
                             pictureSize = newAnswerInput.pictureSize,
@@ -904,11 +936,11 @@ class ChecklistViewModel(
                         )
                         answerRepository.updateChecklistAnswer(modifiedAnswer)
                     }
-                } else if (newAnswerInput.value.isNotBlank() || !newAnswerInput.notes.isNullOrBlank() || !newAnswerInput.imageUri.isNullOrBlank()) {
+                } else if (normalizedVal.isNotBlank() || !newAnswerInput.notes.isNullOrBlank() || !newAnswerInput.imageUri.isNullOrBlank()) {
                     val newAnswer = ChecklistAnswerEntity(
                         submissionid = finalSubmission.id,
                         questionid = questionId,
-                        value = newAnswerInput.value,
+                        value = normalizedVal,
                         notes = newAnswerInput.notes?.ifBlank { null },
                         pictureSize = newAnswerInput.pictureSize,
                         timestamp = System.currentTimeMillis(),
