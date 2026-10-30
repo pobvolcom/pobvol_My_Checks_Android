@@ -52,10 +52,6 @@ object PdfExporter {
         val file = File(sqlDir, imagePath)
         if (file.exists()) return file
 
-        val sendDir = SqlExporter.getSendDir(context)
-        val sendFile = File(sendDir, imagePath)
-        if (sendFile.exists()) return sendFile
-
         val rootDir = SqlExporter.getPdfDir(context)
         val rootFile = File(rootDir, imagePath)
         if (rootFile.exists()) return rootFile

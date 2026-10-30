@@ -43,11 +43,15 @@ fun AddEditChecklistDialog(
     checklistToEdit: ChecklistEntity?,
     availableCategories: List<CategoryEntity> = emptyList(),
     availableChecklists: List<ChecklistEntity> = emptyList(),
+    preferredLanguage: String = "en",
     onDismiss: () -> Unit,
     onSave: (title: String, language: String, description: String, category: String, icon: String, templateChecklistId: String?) -> Unit
 ) {
     var title by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.title ?: "") }
-    var language by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.language ?: "English") }
+    var language by remember(
+        checklistToEdit,
+        preferredLanguage
+    ) { mutableStateOf(checklistToEdit?.language ?: preferredLanguage) }
     var description by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.description ?: "") }
     var category by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.category ?: "UVV") }
     var icon by remember(checklistToEdit) { mutableStateOf(checklistToEdit?.icon ?: "") }

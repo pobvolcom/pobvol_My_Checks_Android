@@ -1,8 +1,18 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.jetbrains.kotlin.plugin.serialization)
+}
+
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        load(FileInputStream(file))
+    }
 }
 
 android {
@@ -16,7 +26,7 @@ android {
         minSdk = 24
         targetSdk = 37
         versionCode = 7
-        versionName = "1.7.2910.1"
+        versionName = "1.7.3010.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,6 +46,33 @@ android {
         compose = true
         buildConfig = true
     }
+
+    val releaseStoreFile = file("my-release-key.jks")
+    if (releaseStoreFile.exists()) {
+        signingConfigs {
+            create("release") {
+                storeFile = releaseStoreFile
+                storePassword = localProperties.getProperty("MYCHECKS_STORE_PASSWORD")
+                keyAlias = localProperties.getProperty("MYCHECKS_KEY_ALIAS")
+                keyPassword = localProperties.getProperty("MYCHECKS_KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            if (file("my-release-key.jks").exists()) {
+                signingConfig = signingConfigs.findByName("release")
+            }
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+
 }
 
 dependencies {
@@ -77,7 +114,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.moshi.kotlin)
     implementation(libs.okhttp)
-    implementation(libs.play.services.location)
     implementation(libs.retrofit)
     testImplementation(libs.androidx.core)
     testImplementation(libs.androidx.junit)

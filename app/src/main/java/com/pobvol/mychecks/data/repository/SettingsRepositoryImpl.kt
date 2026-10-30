@@ -42,11 +42,6 @@ class SettingsRepositoryImpl(
         val PDF_FOOTER_TEXT = stringPreferencesKey("pdf_footer_text")
         val PDF_TEMPLATE_VERSION = stringPreferencesKey("pdf_template_version")
         val AUDIO_FEEDBACK = booleanPreferencesKey("audio_feedback")
-        val FTP_SERVER = stringPreferencesKey("ftp_server")
-        val FTP_PORT = intPreferencesKey("ftp_port")
-        val FTP_USE_TLS = booleanPreferencesKey("ftp_use_tls")
-        val FTP_USER = stringPreferencesKey("ftp_user")
-        val FTP_PASSWORD = stringPreferencesKey("ftp_password")
         val IS_LICENSE_ACCEPTED = booleanPreferencesKey("is_license_accepted")
         val PICTURE_SIZE = stringPreferencesKey("picture_size")
         val PDF_PICTURE_SIZE = stringPreferencesKey("pdf_picture_size")
@@ -101,11 +96,6 @@ class SettingsRepositoryImpl(
             val pdfFooterText = preferences[PreferencesKeys.PDF_FOOTER_TEXT] ?: ""
             val pdfTemplateVersion = preferences[PreferencesKeys.PDF_TEMPLATE_VERSION] ?: "V1"
             val audioFeedback = preferences[PreferencesKeys.AUDIO_FEEDBACK] ?: false
-            val ftpServer = preferences[PreferencesKeys.FTP_SERVER] ?: ""
-            val ftpPort = preferences[PreferencesKeys.FTP_PORT] ?: 21
-            val ftpUseTls = preferences[PreferencesKeys.FTP_USE_TLS] ?: false
-            val ftpUser = preferences[PreferencesKeys.FTP_USER] ?: ""
-            val ftpPassword = preferences[PreferencesKeys.FTP_PASSWORD] ?: ""
             val isLicenseAccepted = preferences[PreferencesKeys.IS_LICENSE_ACCEPTED] ?: false
             val pdfPictureSize = preferences[PreferencesKeys.PDF_PICTURE_SIZE] ?: "medium"
             val pdfPictureSizeSmall = preferences[PreferencesKeys.PDF_PICTURE_SIZE_SMALL] ?: 75
@@ -136,11 +126,6 @@ class SettingsRepositoryImpl(
                 pdfFooterText = pdfFooterText,
                 pdfTemplateVersion = pdfTemplateVersion,
                 audioFeedback = audioFeedback,
-                ftpServer = ftpServer,
-                ftpPort = ftpPort,
-                ftpUseTls = ftpUseTls,
-                ftpUser = ftpUser,
-                ftpPassword = ftpPassword,
                 isLicenseAccepted = isLicenseAccepted,
                 pdfPictureSize = pdfPictureSize,
                 pdfPictureSizeSmall = pdfPictureSizeSmall,
@@ -287,36 +272,6 @@ class SettingsRepositoryImpl(
     override suspend fun updateAudioFeedback(audioFeedback: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.AUDIO_FEEDBACK] = audioFeedback
-        }
-    }
-
-    override suspend fun updateFtpServer(server: String) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.FTP_SERVER] = server
-        }
-    }
-
-    override suspend fun updateFtpPort(port: Int) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.FTP_PORT] = port
-        }
-    }
-
-    override suspend fun updateFtpUseTls(useTls: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.FTP_USE_TLS] = useTls
-        }
-    }
-
-    override suspend fun updateFtpUser(user: String) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.FTP_USER] = user
-        }
-    }
-
-    override suspend fun updateFtpPassword(password: String) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.FTP_PASSWORD] = password
         }
     }
 

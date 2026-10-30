@@ -405,7 +405,8 @@ fun ChecklistListScreen(
             AddEditChecklistDialog(
                 checklistToEdit = uiState.checklistToEdit,
                 availableCategories = uiState.categories,
-                availableChecklists = uiState.checklists,
+                availableChecklists = uiState.allChecklists,
+                preferredLanguage = uiState.userSettings.preferredLanguage,
                 onDismiss = onDismissAddEditDialog,
                 onSave = onSaveChecklist
             )

@@ -9,8 +9,10 @@ import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -139,6 +141,37 @@ class MainActivity : AppCompatActivity() {
             }
 
             mychecksTheme(darkTheme = darkTheme) {
+                val importDbLauncher =
+                    rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                        if (uri != null) {
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                val success =
+                                    viewModel.importDatabaseFromUri(this@MainActivity, uri)
+                                withContext(Dispatchers.Main) {
+                                    if (success) {
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            R.string.msg_db_imported,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        val intent =
+                                            packageManager.getLaunchIntentForPackage(packageName)
+                                        if (intent != null) {
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                            startActivity(intent)
+                                            Runtime.getRuntime().exit(0)
+                                        }
+                                    } else {
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            R.string.msg_db_import_failed,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+                            }
+                        }
+                    }
                 if (isSplashVisible) {
                     SplashScreen(onTimeout = { isSplashVisible = false })
                 } else if (!uiState.userSettings.isLicenseAccepted || uiState.isLicenseScreenVisible) {
@@ -399,31 +432,7 @@ class MainActivity : AppCompatActivity() {
                                 }
                             },
                             onImportDbClick = {
-                                lifecycleScope.launch(Dispatchers.IO) {
-                                    val success = SqlExporter.importDatabase(this@MainActivity)
-                                    withContext(Dispatchers.Main) {
-                                        if (success) {
-                                            Toast.makeText(
-                                                this@MainActivity,
-                                                R.string.msg_db_imported,
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                            val intent =
-                                                packageManager.getLaunchIntentForPackage(packageName)
-                                            if (intent != null) {
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                                startActivity(intent)
-                                                Runtime.getRuntime().exit(0)
-                                            }
-                                        } else {
-                                            Toast.makeText(
-                                                this@MainActivity,
-                                                R.string.msg_db_import_failed,
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
-                                    }
-                                }
+                                importDbLauncher.launch(arrayOf("*/*"))
                             },
                             onCloseAppClick = {
                                 finishAffinity()

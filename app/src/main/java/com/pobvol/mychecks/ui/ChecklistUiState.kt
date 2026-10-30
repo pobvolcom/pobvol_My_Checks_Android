@@ -12,6 +12,7 @@ import com.pobvol.mychecks.data.repository.UserSettings
 
 data class ChecklistUiState(
     val checklists: List<ChecklistEntity> = emptyList(),
+    val allChecklists: List<ChecklistEntity> = emptyList(),
     val searchQuery: String = "",
     val checklistSearchQuery: String = "",
     val submissionSearchQuery: String = "",

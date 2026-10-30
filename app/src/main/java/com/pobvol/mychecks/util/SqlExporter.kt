@@ -51,24 +51,6 @@ object SqlExporter {
         return dir
     }
 
-    fun getSendDir(context: Context): File {
-        val dir = File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-            "${getDeviceFolder(context)}/send"
-        )
-        if (!dir.exists()) dir.mkdirs()
-        return dir
-    }
-
-    fun getReceiveDir(context: Context): File {
-        val dir = File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-            "${getDeviceFolder(context)}/receive"
-        )
-        if (!dir.exists()) dir.mkdirs()
-        return dir
-    }
-
     fun getSqlDir(context: Context): File {
         val dir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
@@ -342,7 +324,24 @@ object SqlExporter {
             }
 
             val latestBackup = backupFiles.maxByOrNull { it.lastModified() } ?: return false
-            latestBackup.copyTo(dbFile, overwrite = true)
+
+            // Close Room database connections
+            try {
+                AppDatabase.getDatabase(context).close()
+            } catch (_: Exception) {
+            }
+
+            // Delete SQLite WAL and SHM cache files if present
+            val walFile = context.getDatabasePath("mychecksdb.sqlite3-wal")
+            if (walFile.exists()) walFile.delete()
+            val shmFile = context.getDatabasePath("mychecksdb.sqlite3-shm")
+            if (shmFile.exists()) shmFile.delete()
+
+            latestBackup.inputStream().use { input ->
+                dbFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
             return true
         } catch (e: Exception) {
             e.printStackTrace()

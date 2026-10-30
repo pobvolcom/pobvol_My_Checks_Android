@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.pobvol.mychecks.R
+import com.pobvol.mychecks.data.local.AppDatabase
 import com.pobvol.mychecks.data.local.CategoryEntity
 import com.pobvol.mychecks.data.local.ChecklistAnswerEntity
 import com.pobvol.mychecks.data.local.ChecklistEntity
@@ -387,8 +388,10 @@ class ChecklistViewModel(
         val limit = flows[8] as Int
         val selectedStatus = globalState.selectedSubmissionStatus
         val preferredLang = globalState.settingsState.settings.preferredLanguage
-        val checklistsInLang = checklists.filter { it.language.equals(preferredLang, ignoreCase = true) }
-        val effectiveChecklists = if (checklistsInLang.isNotEmpty()) checklistsInLang else checklists
+        val targetLangCode = normalizeLanguage(preferredLang)
+        val effectiveChecklists =
+            checklists.filter { normalizeLanguage(it.language) == targetLangCode }
+        val languageChecklistIds = effectiveChecklists.map { it.id }.toSet()
 
         val filteredChecklists = effectiveChecklists.filter { checklist ->
             val matchesQuery = checklistQuery.isBlank() ||
@@ -408,7 +411,11 @@ class ChecklistViewModel(
 
         val checklistMap = checklists.associateBy { it.id }
         val filteredSubmissions = globalState.submissionState.submissions.filter { submission ->
-            val matchesChecklist = selectedChecklistSub == null || submission.checklistid == selectedChecklistSub.id
+            val matchesChecklist = if (selectedChecklistSub != null) {
+                submission.checklistid == selectedChecklistSub.id
+            } else {
+                submission.checklistid in languageChecklistIds
+            }
 
             val matchesSearch = submissionQuery.isBlank() ||
                     submission.inspector?.contains(submissionQuery, ignoreCase = true) == true ||
@@ -430,6 +437,7 @@ class ChecklistViewModel(
 
         ChecklistUiState(
             checklists = filteredChecklists,
+            allChecklists = checklists,
             searchQuery = checklistQuery,
             checklistSearchQuery = checklistQuery,
             submissionSearchQuery = submissionQuery,
@@ -498,6 +506,7 @@ class ChecklistViewModel(
     fun closeChecklistsScreen() {
         _isChecklistListVisible.value = false
         _checklistSearchQuery.value = ""
+        _selectedCategory.value = null
     }
 
     fun closeHelpScreen() {
@@ -1148,6 +1157,31 @@ class ChecklistViewModel(
         }
     }
 
+    fun importDatabaseFromUri(context: Context, uri: Uri): Boolean {
+        try {
+            val dbFile = context.getDatabasePath("mychecksdb.sqlite3")
+            try {
+                AppDatabase.getDatabase(context).close()
+            } catch (_: Exception) {
+            }
+
+            val walFile = context.getDatabasePath("mychecksdb.sqlite3-wal")
+            if (walFile.exists()) walFile.delete()
+            val shmFile = context.getDatabasePath("mychecksdb.sqlite3-shm")
+            if (shmFile.exists()) shmFile.delete()
+
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                dbFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return false
+    }
+
     fun openSettingsDialog() {
         _isSettingsDialogVisible.value = true
     }
@@ -1305,26 +1339,6 @@ class ChecklistViewModel(
         closeLicenseScreen()
     }
 
-    fun updateFtpServer(server: String) {
-        viewModelScope.launch { settingsRepository.updateFtpServer(server) }
-    }
-
-    fun updateFtpPort(port: Int) {
-        viewModelScope.launch { settingsRepository.updateFtpPort(port) }
-    }
-
-    fun updateFtpUseTls(useTls: Boolean) {
-        viewModelScope.launch { settingsRepository.updateFtpUseTls(useTls) }
-    }
-
-    fun updateFtpUser(user: String) {
-        viewModelScope.launch { settingsRepository.updateFtpUser(user) }
-    }
-
-    fun updateFtpPassword(password: String) {
-        viewModelScope.launch { settingsRepository.updateFtpPassword(password) }
-    }
-
     fun userMessageShown() {
         _userMessage.value = null
     }
@@ -1417,6 +1431,18 @@ class ChecklistViewModel(
                 textBlockRepository.updateTextBlock(textBlock.copy(sortno = next.sortno))
                 textBlockRepository.updateTextBlock(next.copy(sortno = tempSort))
             }
+        }
+    }
+
+    private fun normalizeLanguage(lang: String?): String {
+        if (lang.isNullOrBlank()) return "en"
+        val trimmed = lang.trim().lowercase()
+        return when {
+            trimmed.startsWith("de") || trimmed.contains("deutsch") || trimmed.contains("german") -> "de"
+            trimmed.startsWith("en") || trimmed.contains("english") -> "en"
+            trimmed.startsWith("es") || trimmed.contains("español") || trimmed.contains("spanish") -> "es"
+            trimmed.startsWith("fr") || trimmed.contains("french") || trimmed.contains("français") -> "fr"
+            else -> trimmed
         }
     }
 
