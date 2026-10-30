@@ -69,7 +69,8 @@ data class TextBlockEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val sortno: Int = 0,
-    val text: String
+    val text: String,
+    val language: String = "de"
 )
 
 /*

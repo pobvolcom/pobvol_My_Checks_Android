@@ -472,7 +472,7 @@ class ChecklistViewModel(
             scannedNfcTag = _scannedNfcTag.value,
             selectedChecklistForSubmissions = selectedChecklistSub,
             selectedChecklistForChart = _selectedChecklistForChart.value,
-            textBlocks = textBlockState.textBlocks,
+            textBlocks = textBlockState.textBlocks.filter { normalizeLanguage(it.language) == targetLangCode },
             isTextBlocksVisible = textBlockState.isVisible,
             isAddEditTextBlockDialogVisible = textBlockState.isAddEditVisible,
             textBlockToEdit = textBlockState.textBlockToEdit,
@@ -1367,10 +1367,17 @@ class ChecklistViewModel(
     }
 
     fun saveTextBlock(text: String, sortno: Int) {
+        val preferredLang = normalizeLanguage(uiState.value.userSettings.preferredLanguage)
         viewModelScope.launch(Dispatchers.IO) {
             val editing = _textBlockToEdit.value
             if (editing != null) {
-                textBlockRepository.updateTextBlock(editing.copy(text = text, sortno = sortno))
+                textBlockRepository.updateTextBlock(
+                    editing.copy(
+                        text = text,
+                        sortno = sortno,
+                        language = preferredLang
+                    )
+                )
             } else {
                 val currentList = textBlocks.value
                 val nextSortno =
@@ -1378,7 +1385,8 @@ class ChecklistViewModel(
                 textBlockRepository.insertTextBlock(
                     TextBlockEntity(
                         text = text,
-                        sortno = nextSortno
+                        sortno = nextSortno,
+                        language = preferredLang,
                     )
                 )
             }

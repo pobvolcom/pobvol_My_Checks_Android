@@ -1,8 +1,13 @@
 # pobvol My Checks
 Create checklists quickly and easily | Log results | Free Software | Open Source | Android Smartphones and Tablets
 
-With the app ** pobvol My Checks ** you can easily and quickly create custom checklists with checkpoints and questions, and then record, analyze, and output the results of inspections and other activities in PDF reports. All captured data is automatically backed up in SQL files. Data structures do not need to be programmed in databases with great effort. German, English, Spanish, and French are supported.
-The app is Free Software, delivered as open source. The app was developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash. The source code is published at GitHub.
+With the app ** pobvol My Checks ** you can easily and quickly create custom checklists with
+checkpoints and questions, and then record, analyze, and output the results of inspections and other
+activities in PDF reports. All captured data is automatically backed up in SQL files. Data
+structures do not need to be programmed in databases with great effort. German, English, Spanish,
+and French are supported. The app is Free Software, delivered as open source. The app was developed
+with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash. The source code is
+published at GitHub.
 
 # Dashboard & Navigation
 
@@ -86,17 +91,24 @@ View recorded logs, filter lists, edit answers, and generate A4 PDF reports.
 Search & Filter: Search logs by date, title, or notes, and filter by status.
 Edit / Delete Logs: Modify answers or delete logs as needed.
 
-View PDF: Tap the PDF icon on a log card to open, print, or share the generated PDF report.
-PDF reports are automatically saved to the device folder Downloads/pobvolMyChecks/pdf with filename Submission_id_Report.pdf.
+View PDF: Tap the PDF icon on a log card to open, print, or share the generated PDF report. PDF
+reports are automatically saved to the device folder Downloads/pobvolMyChecks/pdf with filename
+Submission_id_Report.pdf.
 
 # Data Security & Privacy
 
 The app is designed with privacy at its core.
 
-- No Personal Data Collection: The app does not collect, transmit, store, or share any personal information, analytics, telemetry.
-- Device id: A unique device id is generated automatically in the SQLite db. This is currently not used but can be necessary for upcoming data exchange features.
-- Local Storage Only: All checklists, questions, submissions, answers, and user settings are stored locally on your device in a secure app-private database (/data/data/com.pobvol.mychecks) and local export directories (Download/pobvolMyChecks).
-- No Cloud Transmission: The app does not transmit any data to external cloud servers or third parties. Data transfers (such as database backups or SQL/PDF exports) occur strictly locally on your device.
+- No Personal Data Collection: The app does not collect, transmit, store, or share any personal
+  information, analytics, telemetry.
+- Device id: A unique device id is generated automatically in the SQLite db. This is currently not
+  used but can be necessary for upcoming data exchange features.
+- Local Storage Only: All checklists, questions, submissions, answers, and user settings are stored
+  locally on your device in a secure app-private database (/data/data/com.pobvol.mychecks) and local
+  export directories (Download/pobvolMyChecks).
+- No Cloud Transmission: The app does not transmit any data to external cloud servers or third
+  parties. Data transfers (such as database backups or SQL/PDF exports) occur strictly locally on
+  your device.
 
 # Technology / Architecture
 
@@ -113,17 +125,22 @@ The app is designed with privacy at its core.
 
 The app requests certain device permissions solely to provide core functionality:
 
-- Camera: Used strictly on-device for scanning QR codes/barcodes and taking optional photo attachments for checklist answers. Photos are stored locally.
-- Location: Used when location tagging is required by specific checklists. Location data is stored locally.
-- Storage / Media: Used for saving generated PDF reports, SQL exports, and database backups to your device's public Download folder.
+- Camera: Used strictly on-device for scanning QR codes/barcodes and taking optional photo
+  attachments for checklist answers. Photos are stored locally.
+- Location: Used when location tagging is required by specific checklists. Location data is stored
+  locally.
+- Storage / Media: Used for saving generated PDF reports, SQL exports, and database backups to your
+  device's public Download folder.
 
-# License 
+# License
 
-You can download, install, operate, modify, and redistribute the app under the terms of the GNU General Public License v3. See https://www.gnu.org/licenses/gpl-3.0
+You can download, install, operate, modify, and redistribute the app under the terms of the GNU
+General Public License v3. See https://www.gnu.org/licenses/gpl-3.0
 
 # Third-Party Services
 
-The app does not integrate any third-party advertising networks, analytics trackers, or commercial SDKs.
+The app does not integrate any third-party advertising networks, analytics trackers, or commercial
+SDKs.
 
 # Copyright
 
@@ -131,7 +148,9 @@ Copyright © 2026 Volker Pobloth, pobvol Software Services
 
 # Disclaimer
 
-The App is provided in the hope that it will be useful, but WITHOUT WARRANTY OF ANY KIND; even without the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. The Developer is not liable for any loss of data or erroneous logs.
+The App is provided in the hope that it will be useful, but WITHOUT WARRANTY OF ANY KIND; even
+without the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. The Developer
+is not liable for any loss of data or erroneous logs.
 
 # Contact
 

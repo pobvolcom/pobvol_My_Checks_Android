@@ -349,7 +349,7 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>, isDarkTheme: Boolean) {
                         drawContext.canvas.nativeCanvas.drawText(
                             formatValue(data[index].second),
                             point.x,
-                            point.y - 21f, // increased padding-bottom from line
+                            point.y - 28f, // increased padding-bottom from line
                             textPaint
                         )
                     }
@@ -459,7 +459,7 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
                         drawContext.canvas.nativeCanvas.drawText(
                             formatValue(data[index].second),
                             point.x,
-                            point.y - 21f, // increased padding-bottom from line
+                            point.y - 28f, // increased padding-bottom from line
                             textPaint
                         )
                     }
@@ -595,7 +595,7 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme:
                         drawContext.canvas.nativeCanvas.drawText(
                             formatValue(data[index].second),
                             point.x,
-                            point.y - 21f, // increased padding-bottom for upper line
+                            point.y - 28f, // increased padding-bottom for upper line
                             textPaint1
                         )
                     }
@@ -606,7 +606,7 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme:
                         drawContext.canvas.nativeCanvas.drawText(
                             formatValue(data[index].third),
                             point.x,
-                            point.y + 21f, // increased padding-bottom for lower line
+                            point.y + 35f, // increased padding-bottom for lower line
                             textPaint2
                         )
                     }
