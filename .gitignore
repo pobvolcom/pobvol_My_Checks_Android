@@ -13,3 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# User requested ignore patterns
+*.apk
+*.jar
+*.json
+*.aab
+mapping.txt
+*.pro

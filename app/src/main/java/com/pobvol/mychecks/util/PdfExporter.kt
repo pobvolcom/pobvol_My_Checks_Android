@@ -335,11 +335,12 @@ object PdfExporter {
                 y += 20f
             }
 
-            if (settings.pdfIncludeChecklistDescription && headerDescriptionParts.isNotEmpty()) {
+            val descriptionText = headerDescriptionParts.joinToString(" ").trim()
+            if (settings.pdfIncludeChecklistDescription && descriptionText.isNotBlank()) {
                 paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                 paint.textSize = 11f
                 paint.color = Color.DKGRAY
-                canvas.drawText(headerDescriptionParts.joinToString(" "), startX, y, paint)
+                canvas.drawText(descriptionText, startX, y, paint)
                 y += 20f
             }
 
@@ -425,11 +426,12 @@ object PdfExporter {
         paint.textSize = 11f
         paint.color = Color.DKGRAY
 
-        if (settings.pdfIncludeChecklistDescription && headerDescriptionParts.isNotEmpty()) {
+        val descriptionText = headerDescriptionParts.joinToString(" ").trim()
+        if (settings.pdfIncludeChecklistDescription && descriptionText.isNotBlank()) {
             //hasHeaderContent = true
             y = drawMultiLineText(
                 canvas = canvas,
-                text = headerDescriptionParts.joinToString(" "),
+                text = descriptionText,
                 startX = startX,
                 startY = y,
                 paint = paint,

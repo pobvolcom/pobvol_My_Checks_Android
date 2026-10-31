@@ -172,6 +172,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }
+
                 if (isSplashVisible) {
                     SplashScreen(onTimeout = { isSplashVisible = false })
                 } else if (!uiState.userSettings.isLicenseAccepted || uiState.isLicenseScreenVisible) {
@@ -269,6 +270,7 @@ class MainActivity : AppCompatActivity() {
                             onAudioFeedbackChanged = viewModel::updateAudioFeedback,
                             onAddCategory = viewModel::addCategory,
                             onDeleteCategory = viewModel::deleteCategory,
+                            onLoadDemoClick = { viewModel.loadDemoDatabase(this@MainActivity) },
                             onOpenPdfSettingsClick = viewModel::openPdfSettings,
                             onDismissPdfSettingsDialog = viewModel::closePdfSettings,
                             onPdfHeaderTitleChanged = viewModel::updatePdfHeaderTitle,
@@ -378,6 +380,7 @@ class MainActivity : AppCompatActivity() {
                             onPdfPictureSizeMediumChanged = viewModel::updatePdfPictureSizeMedium,
                             onPdfPictureSizeLargeChanged = viewModel::updatePdfPictureSizeLarge,
                             onAddCategory = viewModel::addCategory,
+                            onLoadDemoClick = { viewModel.loadDemoDatabase(this@MainActivity) },
                             modifier = Modifier.fillMaxSize(),
                         )
                     } else {
@@ -420,6 +423,7 @@ class MainActivity : AppCompatActivity() {
                             onPdfPictureSizeLargeChanged = viewModel::updatePdfPictureSizeLarge,
                             onAddCategory = viewModel::addCategory,
                             onDeleteCategory = viewModel::deleteCategory,
+                            onLoadDemoClick = { viewModel.loadDemoDatabase(this@MainActivity) },
                             onExportDbClick = {
                                 lifecycleScope.launch(Dispatchers.IO) {
                                     val success = SqlExporter.exportDatabaseCopy(this@MainActivity)

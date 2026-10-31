@@ -287,4 +287,11 @@ Al hacer clic en [Aceptar y Aceptar], confirmas que has leído, entendido y acep
     <string name="number_out_of_range">El valor debe estar entre %1$s y %2$s</string>
     <string name="number_min_value_error">El valor debe ser al menos %1$s</string>
     <string name="number_max_value_error">El valor no puede superar %1$s</string>
+    <string name="menu_import_sql">Importar archivos SQL</string>
+    <string name="msg_sql_files_imported">%1$d archivo(s) SQL importado(s) desde Download/pobvolMyChecks/import</string>
+    <string name="msg_no_sql_files_found">No se encontraron archivos .sql en Download/pobvolMyChecks/import</string>
+    <string name="load_demo_data">Cargar datos de demostración</string>
+    <string name="load_demo_data_confirm_title">¿Cargar datos de demostración?</string>
+    <string name="load_demo_data_confirm_message">Esto restablecerá su base de datos y cargará listas de control, preguntas e informes de ejemplo.</string>
+    <string name="msg_demo_data_loaded">Datos de demostración cargados con éxito.</string>
 </resources>

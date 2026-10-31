@@ -185,6 +185,8 @@ object SqlExporter {
             append("-- Submission ID: ${submission.id}\n")
             append("-- Generated at: ${Date()}\n\n")
 
+            // We don't need the device id at the moment
+            /*
             if (devices.isNotEmpty()) {
                 append("-- Device\n")
                 devices.forEach { d ->
@@ -192,6 +194,7 @@ object SqlExporter {
                     append("  '${d.id}', '${escapeSql(d.notes ?: "")}'\n);\n\n")
                 }
             }
+            */
 
             if (checklist != null) {
                 append("INSERT OR REPLACE INTO `checklists` (`id`, `title`, `language`, `description`, `category`, `icon`, `timestamp`) VALUES (\n")
@@ -207,7 +210,8 @@ object SqlExporter {
             if (questions.isNotEmpty()) {
                 append("-- Questions\n")
                 questions.forEach { q ->
-                    append("INSERT OR REPLACE INTO `checklist_questions` (`id`, `checklistid`, `title`, `description`, `type`, `options`, `required`, `sortno`, `min_value`, `max_value`) VALUES (\n")
+                    // minValue, not min_value
+                    append("INSERT OR REPLACE INTO `checklist_questions` (`id`, `checklistid`, `title`, `description`, `type`, `options`, `required`, `sortno`, `minValue`, `maxValue`) VALUES (\n")
                     append(
                         "  '${q.id}', '${q.checklistid}', '${escapeSql(q.title)}', '${escapeSql(q.description ?: "")}', '${
                             escapeSql(
@@ -276,6 +280,16 @@ object SqlExporter {
 
     fun exportDatabaseCopy(context: Context): Boolean {
         try {
+            // Flush SQLite WAL checkpoint before copying db bytes
+            try {
+                val db = AppDatabase.getDatabase(context).openHelper.writableDatabase
+                val cursor = db.query("PRAGMA wal_checkpoint(FULL)")
+                cursor.moveToFirst()
+                cursor.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
             val dbFile = context.getDatabasePath("mychecksdb.sqlite3")
             if (!dbFile.exists()) return false
 
@@ -325,11 +339,8 @@ object SqlExporter {
 
             val latestBackup = backupFiles.maxByOrNull { it.lastModified() } ?: return false
 
-            // Close Room database connections
-            try {
-                AppDatabase.getDatabase(context).close()
-            } catch (_: Exception) {
-            }
+            // Close Room database connections and reset instance
+            AppDatabase.resetDatabaseInstance()
 
             // Delete SQLite WAL and SHM cache files if present
             val walFile = context.getDatabasePath("mychecksdb.sqlite3-wal")
@@ -342,6 +353,26 @@ object SqlExporter {
                     input.copyTo(output)
                 }
             }
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return false
+    }
+
+    fun generateDemoDbAsset(context: Context): Boolean {
+        try {
+            val db = AppDatabase.getDatabase(context).openHelper.writableDatabase
+            db.query("PRAGMA wal_checkpoint(FULL)").close()
+
+            val dbFile = context.getDatabasePath("mychecksdb.sqlite3")
+            if (!dbFile.exists()) return false
+
+            val dbBytes = dbFile.readBytes()
+            val targetAssetFile =
+                File("C:/Users/Volker/AndroidStudioProjects/MyChecks/app/src/main/assets/demo_db.sqlite3")
+            targetAssetFile.parentFile?.mkdirs()
+            targetAssetFile.writeBytes(dbBytes)
             return true
         } catch (e: Exception) {
             e.printStackTrace()

@@ -289,4 +289,11 @@ By clicking [Accept &amp; Agree], you confirm that you have read, understood and
     <string name="number_out_of_range">Value must be between %1$s and %2$s</string>
     <string name="number_min_value_error">Value must be at least %1$s</string>
     <string name="number_max_value_error">Value cannot exceed %1$s</string>
+    <string name="menu_import_sql">Import SQL Files</string>
+    <string name="msg_sql_files_imported">Imported %1$d SQL file(s) from Download/pobvolMyChecks/import</string>
+    <string name="msg_no_sql_files_found">No .sql files found in Download/pobvolMyChecks/import</string>
+    <string name="load_demo_data">Load Demo Data</string>
+    <string name="load_demo_data_confirm_title">Load Demo Data?</string>
+    <string name="load_demo_data_confirm_message">This will reset your database and load sample checklists, questions, and submissions.</string>
+    <string name="msg_demo_data_loaded">Demo data loaded successfully.</string>
 </resources>

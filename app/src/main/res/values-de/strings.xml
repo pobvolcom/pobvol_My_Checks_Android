@@ -287,4 +287,11 @@ Durch Klicken auf [Akzeptieren &amp; Zustimmen] bestätigen Sie, dass Sie diese 
     <string name="number_out_of_range">Wert muss zwischen %1$s und %2$s liegen</string>
     <string name="number_min_value_error">Wert muss mindestens %1$s sein</string>
     <string name="number_max_value_error">Wert darf maximal %1$s sein</string>
+    <string name="menu_import_sql">SQL-Dateien importieren</string>
+    <string name="msg_sql_files_imported">%1$d SQL-Datei(en) aus Download/pobvolMyChecks/import importiert</string>
+    <string name="msg_no_sql_files_found">Keine .sql-Dateien in Download/pobvolMyChecks/import gefunden</string>
+    <string name="load_demo_data">Demo-Daten laden</string>
+    <string name="load_demo_data_confirm_title">Demo-Daten laden?</string>
+    <string name="load_demo_data_confirm_message">Dadurch wird Ihre Datenbank zurückgesetzt und es werden Beispiel-Checklisten und Prüfberichte geladen.</string>
+    <string name="msg_demo_data_loaded">Demo-Daten erfolgreich geladen.</string>
 </resources>

@@ -107,6 +107,7 @@ fun StartScreen(
     onSignatureCaptured: (String) -> Unit = {},
     onExportDbClick: () -> Unit = {},
     onImportDbClick: () -> Unit = {},
+    onLoadDemoClick: () -> Unit = {},
     onCloseAppClick: () -> Unit = {},
     onUserMessageShown: () -> Unit,
     modifier: Modifier = Modifier,
@@ -339,6 +340,7 @@ fun StartScreen(
                 onOpenPdfSettingsClick = onOpenPdfSettingsClick,
                 onAddCategory = onAddCategory,
                 onDeleteCategory = onDeleteCategory,
+                onLoadDemoClick = onLoadDemoClick,
                 onDismissRequest = onDismissSettingsDialog,
             )
         }

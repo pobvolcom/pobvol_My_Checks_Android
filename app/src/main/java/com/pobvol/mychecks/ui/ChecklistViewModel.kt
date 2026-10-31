@@ -1,7 +1,9 @@
 package com.pobvol.mychecks.ui
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -656,9 +658,11 @@ class ChecklistViewModel(
     }
 
     fun deleteCategory(category: CategoryEntity) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             categoryRepository.deleteCategory(category)
-            _userMessage.value = context.getString(R.string.msg_category_deleted)
+            withContext(Dispatchers.Main) {
+                _userMessage.value = context.getString(R.string.msg_category_deleted)
+            }
         }
     }
 
@@ -1160,10 +1164,7 @@ class ChecklistViewModel(
     fun importDatabaseFromUri(context: Context, uri: Uri): Boolean {
         try {
             val dbFile = context.getDatabasePath("mychecksdb.sqlite3")
-            try {
-                AppDatabase.getDatabase(context).close()
-            } catch (_: Exception) {
-            }
+            AppDatabase.resetDatabaseInstance()
 
             val walFile = context.getDatabasePath("mychecksdb.sqlite3-wal")
             if (walFile.exists()) walFile.delete()
@@ -1451,6 +1452,48 @@ class ChecklistViewModel(
             trimmed.startsWith("es") || trimmed.contains("español") || trimmed.contains("spanish") -> "es"
             trimmed.startsWith("fr") || trimmed.contains("french") || trimmed.contains("français") -> "fr"
             else -> trimmed
+        }
+    }
+
+    fun loadDemoDatabase(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val dbFile = context.getDatabasePath("mychecksdb.sqlite3")
+                AppDatabase.resetDatabaseInstance()
+
+                val walFile = context.getDatabasePath("mychecksdb.sqlite3-wal")
+                if (walFile.exists()) walFile.delete()
+                val shmFile = context.getDatabasePath("mychecksdb.sqlite3-shm")
+                if (shmFile.exists()) shmFile.delete()
+
+                try {
+                    context.assets.open("demo_db.sqlite3").use { input ->
+                        dbFile.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                } catch (e: Exception) {
+                    SqlExporter.generateDemoDbAsset(context)
+                    context.assets.open("demo_db.sqlite3").use { input ->
+                        dbFile.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                }
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, R.string.msg_demo_data_loaded, Toast.LENGTH_LONG).show()
+                    val intent =
+                        context.packageManager.getLaunchIntentForPackage(context.packageName)
+                    if (intent != null) {
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        context.startActivity(intent)
+                        Runtime.getRuntime().exit(0)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

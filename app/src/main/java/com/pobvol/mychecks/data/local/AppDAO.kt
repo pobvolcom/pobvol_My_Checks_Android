@@ -100,6 +100,9 @@ interface CategoryDAO {
     @Delete
     suspend fun deleteCategory(category: CategoryEntity)
 
+    @Query("DELETE FROM categories WHERE id = :id OR category = :name OR title = :name")
+    suspend fun deleteCategoryByName(id: Int, name: String)
+
 }
 
 @Dao

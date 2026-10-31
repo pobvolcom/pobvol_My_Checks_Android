@@ -95,6 +95,7 @@ fun SubmissionsOverviewScreen(
     onAudioFeedbackChanged: (Boolean) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
+    onLoadDemoClick: () -> Unit = {},
     onOpenPdfSettingsClick: () -> Unit = {},
     onDismissPdfSettingsDialog: () -> Unit = {},
     onPdfHeaderTitleChanged: (String) -> Unit = {},
@@ -433,6 +434,7 @@ fun SubmissionsOverviewScreen(
                 onOpenPdfSettingsClick = onOpenPdfSettingsClick,
                 onAddCategory = onAddCategory,
                 onDeleteCategory = onDeleteCategory,
+                onLoadDemoClick = onLoadDemoClick,
                 onDismissRequest = onDismissSettingsDialog,
             )
         }
