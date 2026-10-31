@@ -126,7 +126,6 @@ fun ChecklistListScreen(
     onPdfPictureSizeLargeChanged: (Int) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
-    onLoadDemoClick: () -> Unit = {},
     onSignatureCaptured: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -443,7 +442,6 @@ fun ChecklistListScreen(
                 onOpenPdfSettingsClick = onOpenPdfSettingsClick,
                 onAddCategory = onAddCategory,
                 onDeleteCategory = onDeleteCategory,
-                onLoadDemoClick = onLoadDemoClick,
                 onDismissRequest = onDismissSettingsDialog,
             )
         }

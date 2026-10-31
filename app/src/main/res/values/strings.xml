@@ -296,4 +296,15 @@ By clicking [Accept &amp; Agree], you confirm that you have read, understood and
     <string name="load_demo_data_confirm_title">Load Demo Data?</string>
     <string name="load_demo_data_confirm_message">This will reset your database and load sample checklists, questions, and submissions.</string>
     <string name="msg_demo_data_loaded">Demo data loaded successfully.</string>
+    <string name="menu_manage_database">Manage database</string>
+    <string name="manage_database_title">Manage Database</string>
+    <string name="manage_db_subtitle">Export, import, or reset local database data.</string>
+    <string name="import_db_warning">Warning: Importing a database backup will overwrite your current local database with the selected backup file.</string>
+    <string name="demo_db_warning">Warning: Loading the demo database will reset your current database and load sample checklists and submissions. All current data will be lost.</string>
+    <string name="menu_reset_database">Reset Database</string>
+    <string name="reset_db_warning">Warning: Resetting the database will delete all current data and re-initialize it with the default factory state. All custom checklists, submissions, and answers will be lost.</string>
+    <string name="msg_db_reset">Database reset successfully.</string>
+    <string name="chart_mode_daily">Daily</string>
+    <string name="chart_mode_monthly">Monthly</string>
+    <string name="chart_mode_yearly">Yearly</string>
 </resources>

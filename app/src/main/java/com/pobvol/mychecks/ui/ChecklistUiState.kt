@@ -31,6 +31,7 @@ data class ChecklistUiState(
     val availableLanguages: List<LanguageEntity> = emptyList(),
     val availableDevices: List<DeviceEntity> = emptyList(),
     val isSettingsDialogVisible: Boolean = false,
+    val isManageDatabaseDialogVisible: Boolean = false,
     val isPdfSettingsVisible: Boolean = false,
     val isHelpVisible: Boolean = false,
     val isChecklistHelpVisible: Boolean = false,

@@ -294,4 +294,15 @@ En cliquant sur « Accepter et Accepter », vous confirmez avoir lu, compris et 
     <string name="load_demo_data_confirm_title">Charger les données de démo ?</string>
     <string name="load_demo_data_confirm_message">Cela réinitialisera votre base de données et chargera des listes de contrôle, des questions et des rapports d\'exemple.</string>
     <string name="msg_demo_data_loaded">Données de démo chargées avec succès.</string>
+    <string name="menu_manage_database">Gérer la base de données</string>
+    <string name="manage_database_title">Gérer la Base de Données</string>
+    <string name="manage_db_subtitle">Exporter, importer ou réinitialiser les données de la base de données locale.</string>
+    <string name="import_db_warning">Attention : L\'importation d\'une sauvegarde écrasera votre base de données locale actuelle avec le fichier sélectionné.</string>
+    <string name="demo_db_warning">Attention : Le chargement de la base de données de démo réinitialisera votre base de données actuelle et chargera des listes de contrôle d\'exemple. Toutes les données actuelles seront perdues.</string>
+    <string name="menu_reset_database">Réinitialiser la base de données</string>
+    <string name="reset_db_warning">Attention : La réinitialisation de la base de données supprimera toutes les données actuelles et la réinitialisera avec l\'état d\'usine. Toutes les listes de contrôle et rapports personnalisés seront perdus.</string>
+    <string name="msg_db_reset">Base de données réinitialisée avec succès.</string>
+    <string name="chart_mode_daily">Quotidien</string>
+    <string name="chart_mode_monthly">Mensuel</string>
+    <string name="chart_mode_yearly">Annuel</string>
 </resources>

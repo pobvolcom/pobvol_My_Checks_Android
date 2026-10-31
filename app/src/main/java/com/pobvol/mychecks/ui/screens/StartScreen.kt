@@ -60,6 +60,7 @@ import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.CategoryEntity
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.ui.ChecklistUiState
+import com.pobvol.mychecks.ui.components.ManageDatabaseDialog
 import com.pobvol.mychecks.ui.components.PdfSettingsDialog
 import com.pobvol.mychecks.ui.components.SettingsDialog
 import com.pobvol.mychecks.ui.theme.mychecksTheme
@@ -108,6 +109,9 @@ fun StartScreen(
     onExportDbClick: () -> Unit = {},
     onImportDbClick: () -> Unit = {},
     onLoadDemoClick: () -> Unit = {},
+    onResetDbClick: () -> Unit = {},
+    onOpenManageDatabaseClick: () -> Unit = {},
+    onDismissManageDatabaseDialog: () -> Unit = {},
     onCloseAppClick: () -> Unit = {},
     onUserMessageShown: () -> Unit,
     modifier: Modifier = Modifier,
@@ -198,17 +202,10 @@ fun StartScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text(stringResource(R.string.menu_create_db_copy)) },
+                            text = { Text(stringResource(R.string.menu_manage_database)) },
                             onClick = {
                                 menuExpanded = false
-                                onExportDbClick()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.menu_import_db)) },
-                            onClick = {
-                                menuExpanded = false
-                                showImportWarningDialog = true
+                                onOpenManageDatabaseClick()
                             }
                         )
                         DropdownMenuItem(
@@ -340,8 +337,17 @@ fun StartScreen(
                 onOpenPdfSettingsClick = onOpenPdfSettingsClick,
                 onAddCategory = onAddCategory,
                 onDeleteCategory = onDeleteCategory,
-                onLoadDemoClick = onLoadDemoClick,
                 onDismissRequest = onDismissSettingsDialog,
+            )
+        }
+
+        if (uiState.isManageDatabaseDialogVisible) {
+            ManageDatabaseDialog(
+                onExportDbClick = onExportDbClick,
+                onImportDbClick = onImportDbClick,
+                onLoadDemoClick = onLoadDemoClick,
+                onResetDbClick = onResetDbClick,
+                onDismissRequest = onDismissManageDatabaseDialog,
             )
         }
 

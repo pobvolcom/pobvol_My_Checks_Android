@@ -294,8 +294,8 @@ object SqlExporter {
             if (!dbFile.exists()) return false
 
             val timeStamp =
-                SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "MyChecks_Database_Backup_$timeStamp.sqlite3"
+                SimpleDateFormat("yyyy-MM-dd-HHmmss", Locale.getDefault()).format(Date())
+            val fileName = "$timeStamp-mychecks-dbbackup.sqlite3"
             val dbBytes = dbFile.readBytes()
             val backupDir = getDbBackupDir(context)
 

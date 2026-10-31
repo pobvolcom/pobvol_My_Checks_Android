@@ -75,7 +75,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        ttsHelper = TtsHelper(applicationContext)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val helper = TtsHelper(applicationContext)
+            withContext(Dispatchers.Main) {
+                ttsHelper = helper
+            }
+        }
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         if (nfcAdapter != null) {
@@ -270,7 +275,6 @@ class MainActivity : AppCompatActivity() {
                             onAudioFeedbackChanged = viewModel::updateAudioFeedback,
                             onAddCategory = viewModel::addCategory,
                             onDeleteCategory = viewModel::deleteCategory,
-                            onLoadDemoClick = { viewModel.loadDemoDatabase(this@MainActivity) },
                             onOpenPdfSettingsClick = viewModel::openPdfSettings,
                             onDismissPdfSettingsDialog = viewModel::closePdfSettings,
                             onPdfHeaderTitleChanged = viewModel::updatePdfHeaderTitle,
@@ -380,7 +384,7 @@ class MainActivity : AppCompatActivity() {
                             onPdfPictureSizeMediumChanged = viewModel::updatePdfPictureSizeMedium,
                             onPdfPictureSizeLargeChanged = viewModel::updatePdfPictureSizeLarge,
                             onAddCategory = viewModel::addCategory,
-                            onLoadDemoClick = { viewModel.loadDemoDatabase(this@MainActivity) },
+                            onDeleteCategory = viewModel::deleteCategory,
                             modifier = Modifier.fillMaxSize(),
                         )
                     } else {
@@ -424,6 +428,9 @@ class MainActivity : AppCompatActivity() {
                             onAddCategory = viewModel::addCategory,
                             onDeleteCategory = viewModel::deleteCategory,
                             onLoadDemoClick = { viewModel.loadDemoDatabase(this@MainActivity) },
+                            onOpenManageDatabaseClick = viewModel::openManageDatabaseDialog,
+                            onDismissManageDatabaseDialog = viewModel::closeManageDatabaseDialog,
+                            onResetDbClick = { viewModel.resetDatabase(this@MainActivity) },
                             onExportDbClick = {
                                 lifecycleScope.launch(Dispatchers.IO) {
                                     val success = SqlExporter.exportDatabaseCopy(this@MainActivity)

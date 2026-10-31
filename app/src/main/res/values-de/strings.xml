@@ -294,4 +294,15 @@ Durch Klicken auf [Akzeptieren &amp; Zustimmen] bestätigen Sie, dass Sie diese 
     <string name="load_demo_data_confirm_title">Demo-Daten laden?</string>
     <string name="load_demo_data_confirm_message">Dadurch wird Ihre Datenbank zurückgesetzt und es werden Beispiel-Checklisten und Prüfberichte geladen.</string>
     <string name="msg_demo_data_loaded">Demo-Daten erfolgreich geladen.</string>
+    <string name="menu_manage_database">Datenbank verwalten</string>
+    <string name="manage_database_title">Datenbank verwalten</string>
+    <string name="manage_db_subtitle">Lokale Datenbank exportieren, importieren oder zurücksetzen.</string>
+    <string name="import_db_warning">Warnung: Das Importieren eines Datenbank-Backups überschreibt Ihre aktuelle lokale Datenbank mit der ausgewählten Backup-Datei.</string>
+    <string name="demo_db_warning">Warnung: Das Laden der Demo-Datenbank setzt Ihre aktuelle Datenbank zurück und lädt Beispiel-Checklisten und Prüfberichte. Alle aktuellen Daten gehen verloren.</string>
+    <string name="menu_reset_database">Datenbank zurücksetzen</string>
+    <string name="reset_db_warning">Warnung: Das Zurücksetzen der Datenbank löscht alle aktuellen Daten und stellt den Auslieferungszustand wieder her. Alle eigenen Checklisten und Prüfberichte gehen verloren.</string>
+    <string name="msg_db_reset">Datenbank erfolgreich zurückgesetzt.</string>
+    <string name="chart_mode_daily">Täglich</string>
+    <string name="chart_mode_monthly">Monatlich</string>
+    <string name="chart_mode_yearly">Jährlich</string>
 </resources>

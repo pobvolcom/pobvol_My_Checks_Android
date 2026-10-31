@@ -179,6 +179,10 @@ class ChecklistViewModel(
     private val _isSettingsDialogVisible = MutableStateFlow(false)
     val isSettingsDialogVisible: StateFlow<Boolean> = _isSettingsDialogVisible.asStateFlow()
 
+    private val _isManageDatabaseDialogVisible = MutableStateFlow(false)
+    val isManageDatabaseDialogVisible: StateFlow<Boolean> =
+        _isManageDatabaseDialogVisible.asStateFlow()
+
     private val _isPdfSettingsVisible = MutableStateFlow(false)
     val isPdfSettingsVisible: StateFlow<Boolean> = _isPdfSettingsVisible.asStateFlow()
 
@@ -317,6 +321,7 @@ class ChecklistViewModel(
         val isHelpVisible: Boolean,
         val isChecklistHelpVisible: Boolean,
         val isLicenseScreenVisible: Boolean,
+        val isManageDatabaseDialogVisible: Boolean,
         val selectedSubmissionStatus: String?,
     )
 
@@ -326,6 +331,7 @@ class ChecklistViewModel(
         _isHelpVisible,
         _isChecklistHelpVisible,
         _isLicenseScreenVisible,
+        _isManageDatabaseDialogVisible,
         _selectedSubmissionStatus,
     ) { flows ->
         val settings = flows[0] as SettingsState
@@ -333,13 +339,15 @@ class ChecklistViewModel(
         val isHelpVisible = flows[2] as Boolean
         val isChecklistHelpVisible = flows[3] as Boolean
         val isLicenseScreenVisible = flows[4] as Boolean
-        val selectedStatus = flows[5] as String?
+        val isManageDbVisible = flows[5] as Boolean
+        val selectedStatus = flows[6] as String?
         GlobalState(
             settings,
             submissions,
             isHelpVisible,
             isChecklistHelpVisible,
             isLicenseScreenVisible,
+            isManageDbVisible,
             selectedStatus
         )
     }
@@ -482,6 +490,7 @@ class ChecklistViewModel(
             isHelpVisible = globalState.isHelpVisible,
             isChecklistHelpVisible = globalState.isChecklistHelpVisible,
             isLicenseScreenVisible = globalState.isLicenseScreenVisible,
+            isManageDatabaseDialogVisible = globalState.isManageDatabaseDialogVisible,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -1199,6 +1208,14 @@ class ChecklistViewModel(
         _isPdfSettingsVisible.value = false
     }
 
+    fun openManageDatabaseDialog() {
+        _isManageDatabaseDialogVisible.value = true
+    }
+
+    fun closeManageDatabaseDialog() {
+        _isManageDatabaseDialogVisible.value = false
+    }
+
     fun updateThemeMode(themeMode: ThemeMode) {
         viewModelScope.launch {
             settingsRepository.updateThemeMode(themeMode)
@@ -1483,6 +1500,39 @@ class ChecklistViewModel(
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, R.string.msg_demo_data_loaded, Toast.LENGTH_LONG).show()
+                    val intent =
+                        context.packageManager.getLaunchIntentForPackage(context.packageName)
+                    if (intent != null) {
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        context.startActivity(intent)
+                        Runtime.getRuntime().exit(0)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun resetDatabase(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val dbFile = context.getDatabasePath("mychecksdb.sqlite3")
+                AppDatabase.resetDatabaseInstance()
+
+                val walFile = context.getDatabasePath("mychecksdb.sqlite3-wal")
+                if (walFile.exists()) walFile.delete()
+                val shmFile = context.getDatabasePath("mychecksdb.sqlite3-shm")
+                if (shmFile.exists()) shmFile.delete()
+
+                if (dbFile.exists()) {
+                    dbFile.delete()
+                }
+
+                AppDatabase.getDatabase(context)
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, R.string.msg_db_reset, Toast.LENGTH_LONG).show()
                     val intent =
                         context.packageManager.getLaunchIntentForPackage(context.packageName)
                     if (intent != null) {

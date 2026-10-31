@@ -26,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +34,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -49,6 +54,42 @@ import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistEntity
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.ui.ChecklistUiState
+
+enum class ChartTimeMode {
+    DAILY, MONTHLY, YEARLY
+}
+
+private fun formatSubmissionDate(dateStr: String, mode: ChartTimeMode): String {
+    if (dateStr.isBlank()) return "Unknown"
+    val normalized = if (dateStr.contains(".") && dateStr.length >= 10) {
+        val parts = dateStr.split(".")
+        if (parts.size >= 3) {
+            val day = parts[0].padStart(2, '0')
+            val month = parts[1].padStart(2, '0')
+            val year = parts[2].take(4)
+            "$year-$month-$day"
+        } else {
+            dateStr
+        }
+    } else {
+        dateStr
+    }
+
+    return when (mode) {
+        ChartTimeMode.DAILY -> if (normalized.length >= 10) normalized.take(10) else normalized
+        ChartTimeMode.MONTHLY -> if (normalized.length >= 7) normalized.take(7) else normalized
+        ChartTimeMode.YEARLY -> if (normalized.length >= 4) normalized.take(4) else normalized
+    }
+}
+
+private fun shortDate(dateStr: String, mode: ChartTimeMode): String {
+    if (dateStr.length < 4) return dateStr
+    return when (mode) {
+        ChartTimeMode.DAILY -> if (dateStr.length >= 10) dateStr.takeLast(5) else dateStr
+        ChartTimeMode.MONTHLY -> dateStr
+        ChartTimeMode.YEARLY -> dateStr
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,15 +109,17 @@ fun ChecklistChartScreen(
         ThemeMode.SYSTEM -> systemDark
     }
 
+    var chartTimeMode by remember { mutableStateOf(ChartTimeMode.DAILY) }
+
     val totalSubmissions = uiState.allSubmissions.filter { it.checklistid == checklist.id }
         .sortedBy { it.date }
     val submissions = totalSubmissions.takeLast(uiState.submissionLimit)
     val questions = uiState.questionsForSelectedChecklist.filter { it.checklistid == checklist.id }
     val numberQuestions = questions.filter { it.type.lowercase() == "number" }
 
-    val submissionsPerDay = submissions.groupingBy {
-        if (it.date.isNotBlank()) it.date.take(10) else "Unknown"
-    }.eachCount().toList().sortedBy { it.first }
+    val submissionsPerPeriod = submissions.groupBy {
+        formatSubmissionDate(it.date, chartTimeMode)
+    }.mapValues { (_, subs) -> subs.size }.toList().sortedBy { it.first }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -104,7 +147,30 @@ fun ChecklistChartScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // 1. Submissions per day chart
+            // Time Mode Selector
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ChartTimeMode.entries.forEach { mode ->
+                        val label = when (mode) {
+                            ChartTimeMode.DAILY -> stringResource(R.string.chart_mode_daily)
+                            ChartTimeMode.MONTHLY -> stringResource(R.string.chart_mode_monthly)
+                            ChartTimeMode.YEARLY -> stringResource(R.string.chart_mode_yearly)
+                        }
+                        FilterChip(
+                            selected = chartTimeMode == mode,
+                            onClick = { chartTimeMode = mode },
+                            label = { Text(label) },
+                            shape = RoundedCornerShape(12.dp),
+                        )
+                    }
+                }
+            }
+
+            // 1. Submissions per period chart
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -129,7 +195,7 @@ fun ChecklistChartScreen(
                             )
                         }
                         Spacer(modifier = Modifier.height(16.dp))
-                        if (submissionsPerDay.isEmpty()) {
+                        if (submissionsPerPeriod.isEmpty()) {
                             Text(
                                 text = "No submissions recorded yet.",
                                 style = MaterialTheme.typography.bodyMedium,
@@ -137,15 +203,16 @@ fun ChecklistChartScreen(
                             )
                         } else {
                             SubmissionsLineChart(
-                                data = submissionsPerDay,
-                                isDarkTheme = isDarkTheme
+                                data = submissionsPerPeriod,
+                                isDarkTheme = isDarkTheme,
+                                chartTimeMode = chartTimeMode
                             )
                         }
                     }
                 }
             }
 
-            // 2. New Single-Series Numeric Value Chart (Shown if >= 1 number question exists)
+            // 2. Single-Series Numeric Value Area Chart
             if (numberQuestions.isNotEmpty()) {
                 val q1 = numberQuestions[0]
 
@@ -164,13 +231,19 @@ fun ChecklistChartScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            val singleSeriesData = submissions.map { sub ->
-                                val subAnswers =
-                                    uiState.answers.filter { it.submissionid == sub.id }
-                                val rawV1 = subAnswers.find { it.questionid == q1.id }?.value ?: ""
-                                val v1 = rawV1.replace(',', '.').toDoubleOrNull() ?: 0.0
-                                Pair(sub.date.ifBlank { "Sub #${sub.id}" }, v1)
-                            }
+                            val singleSeriesData = submissions.groupBy {
+                                formatSubmissionDate(it.date, chartTimeMode)
+                            }.map { (period, subs) ->
+                                val avgVal = subs.mapNotNull { sub ->
+                                    val subAnswers =
+                                        uiState.answers.filter { it.submissionid == sub.id }
+                                    subAnswers.find { it.questionid == q1.id }?.value?.replace(
+                                        ',',
+                                        '.'
+                                    )?.toDoubleOrNull()
+                                }.let { if (it.isNotEmpty()) it.average() else 0.0 }
+                                Pair(period, avgVal)
+                            }.sortedBy { it.first }
 
                             if (singleSeriesData.isEmpty()) {
                                 Text(
@@ -179,9 +252,10 @@ fun ChecklistChartScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             } else {
-                                SingleSeriesLineChart(
+                                SingleSeriesAreaChart(
                                     data = singleSeriesData,
-                                    isDarkTheme = isDarkTheme
+                                    isDarkTheme = isDarkTheme,
+                                    chartTimeMode = chartTimeMode
                                 )
                             }
                         }
@@ -189,7 +263,7 @@ fun ChecklistChartScreen(
                 }
             }
 
-            // 3. If >= 2 number questions exist, plot Dual-Series chart
+            // 3. Dual-Series Line Chart
             if (numberQuestions.size >= 2) {
                 val q1 = numberQuestions[0]
                 val q2 = numberQuestions[1]
@@ -215,15 +289,29 @@ fun ChecklistChartScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            val seriesData = submissions.map { sub ->
-                                val subAnswers =
-                                    uiState.answers.filter { it.submissionid == sub.id }
-                                val rawV1 = subAnswers.find { it.questionid == q1.id }?.value ?: ""
-                                val v1 = rawV1.replace(',', '.').toDoubleOrNull() ?: 0.0
-                                val rawV2 = subAnswers.find { it.questionid == q2.id }?.value ?: ""
-                                val v2 = rawV2.replace(',', '.').toDoubleOrNull() ?: 0.0
-                                Triple(sub.date.ifBlank { "Sub #${sub.id}" }, v1, v2)
-                            }
+                            val seriesData = submissions.groupBy {
+                                formatSubmissionDate(it.date, chartTimeMode)
+                            }.map { (period, subs) ->
+                                val avgV1 = subs.mapNotNull { sub ->
+                                    val subAnswers =
+                                        uiState.answers.filter { it.submissionid == sub.id }
+                                    subAnswers.find { it.questionid == q1.id }?.value?.replace(
+                                        ',',
+                                        '.'
+                                    )?.toDoubleOrNull()
+                                }.let { if (it.isNotEmpty()) it.average() else 0.0 }
+
+                                val avgV2 = subs.mapNotNull { sub ->
+                                    val subAnswers =
+                                        uiState.answers.filter { it.submissionid == sub.id }
+                                    subAnswers.find { it.questionid == q2.id }?.value?.replace(
+                                        ',',
+                                        '.'
+                                    )?.toDoubleOrNull()
+                                }.let { if (it.isNotEmpty()) it.average() else 0.0 }
+
+                                Triple(period, avgV1, avgV2)
+                            }.sortedBy { it.first }
 
                             if (seriesData.isEmpty()) {
                                 Text(
@@ -232,7 +320,11 @@ fun ChecklistChartScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             } else {
-                                DualSeriesLineChart(data = seriesData, isDarkTheme = isDarkTheme)
+                                DualSeriesLineChart(
+                                    data = seriesData,
+                                    isDarkTheme = isDarkTheme,
+                                    chartTimeMode = chartTimeMode
+                                )
                             }
                         }
                     }
@@ -262,10 +354,6 @@ fun ChecklistChartScreen(
     }
 }
 
-private fun shortDate(dateStr: String): String {
-    return if (dateStr.length >= 5) dateStr.take(5) else dateStr
-}
-
 private fun formatValue(value: Double): String {
     return if (value % 1.0 == 0.0) {
         value.toLong().toString()
@@ -280,20 +368,22 @@ private fun formatValue(value: Double): String {
 private fun formatValue(value: Int): String = value.toString()
 
 @Composable
-fun SubmissionsLineChart(data: List<Pair<String, Int>>, isDarkTheme: Boolean) {
+fun SubmissionsLineChart(
+    data: List<Pair<String, Int>>,
+    isDarkTheme: Boolean,
+    chartTimeMode: ChartTimeMode
+) {
     if (data.isEmpty()) return
     val density = LocalDensity.current
-
-    // textSize for values in the charts
-    // same size as labels (labelSmall)
     val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
 
     val maxCount = data.maxOfOrNull { it.second }?.toFloat() ?: 1f
     val primaryColor = MaterialTheme.colorScheme.primary
     val scrollState = rememberScrollState()
 
-    val itemWidth = 65.dp
+    val itemWidth = 55.dp
     val totalWidth = maxOf(320.dp, itemWidth * data.size)
+    val skipInterval = if (data.size > 8) data.size / 5 else 1
 
     Column(
         modifier = Modifier
@@ -343,13 +433,13 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>, isDarkTheme: Boolean) {
                     }
 
                     points.forEachIndexed { index, point ->
-                        drawCircle(color = primaryColor, radius = 6.dp.toPx(), center = point)
-                        drawCircle(color = Color.White, radius = 3.dp.toPx(), center = point)
+                        drawCircle(color = primaryColor, radius = 5.dp.toPx(), center = point)
+                        drawCircle(color = Color.White, radius = 2.5.dp.toPx(), center = point)
 
                         drawContext.canvas.nativeCanvas.drawText(
-                            formatValue(data[index].second),
+                            "${data[index].second}",
                             point.x,
-                            point.y - 28f, // increased padding-bottom from line
+                            point.y - 14f,
                             textPaint
                         )
                     }
@@ -359,18 +449,22 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>, isDarkTheme: Boolean) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    data.forEach { pair ->
+                    data.forEachIndexed { index, pair ->
+                        val shouldShowLabel =
+                            index == 0 || index == data.size - 1 || index % skipInterval == 0
                         Column(
-                            modifier = Modifier.width(60.dp),
+                            modifier = Modifier.width(55.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                text = shortDate(pair.first),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
+                            if (shouldShowLabel) {
+                                Text(
+                                    text = shortDate(pair.first, chartTimeMode),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
                         }
                     }
                 }
@@ -380,7 +474,11 @@ fun SubmissionsLineChart(data: List<Pair<String, Int>>, isDarkTheme: Boolean) {
 }
 
 @Composable
-fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean) {
+fun SingleSeriesAreaChart(
+    data: List<Pair<String, Double>>,
+    isDarkTheme: Boolean,
+    chartTimeMode: ChartTimeMode
+) {
     if (data.isEmpty()) return
     val density = LocalDensity.current
     val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
@@ -390,10 +488,14 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
     ).toFloat()
 
     val seriesColor = Color(0xFFD4AF37) // Gold
+    val fillColor = seriesColor.copy(alpha = 0.25f)
+    val gridColor =
+        if (isDarkTheme) Color.DarkGray.copy(alpha = 0.4f) else Color.LightGray.copy(alpha = 0.6f)
     val scrollState = rememberScrollState()
 
-    val itemWidth = 75.dp
+    val itemWidth = 55.dp
     val totalWidth = maxOf(320.dp, itemWidth * data.size)
+    val skipInterval = if (data.size > 8) data.size / 5 else 1
 
     Column(
         modifier = Modifier
@@ -405,7 +507,7 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
                 Canvas(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
+                        .height(220.dp)
                         .padding(8.dp)
                 ) {
                     val width = size.width
@@ -413,16 +515,51 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
                     val horizontalPadding = 36f
                     val effectiveWidth = width - (horizontalPadding * 2f)
                     val stepX = if (data.size > 1) effectiveWidth / (data.size - 1) else 0f
+                    val bottomBaseline = height - 25f
+
+                    val gridSteps = 4
+                    for (i in 0..gridSteps) {
+                        val y = 20f + (i * (bottomBaseline - 20f) / gridSteps)
+                        drawLine(
+                            color = gridColor,
+                            start = Offset(horizontalPadding, y),
+                            end = Offset(width - horizontalPadding, y),
+                            strokeWidth = 1f
+                        )
+                    }
 
                     val points = data.mapIndexed { index, pair ->
                         val x =
                             horizontalPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
-                        val y = height - (pair.second.toFloat() / maxVal) * (height - 40f) - 20f
+                        val y =
+                            bottomBaseline - (pair.second.toFloat() / maxVal) * (bottomBaseline - 30f)
                         Offset(x, y)
                     }
 
+                    if (points.isNotEmpty()) {
+                        val fillPath = Path().apply {
+                            moveTo(points.first().x, bottomBaseline)
+                            lineTo(points.first().x, points.first().y)
+                            for (i in 0 until points.size - 1) {
+                                val p1 = points[i]
+                                val p2 = points[i + 1]
+                                cubicTo(
+                                    (p1.x + p2.x) / 2f,
+                                    p1.y,
+                                    (p1.x + p2.x) / 2f,
+                                    p2.y,
+                                    p2.x,
+                                    p2.y
+                                )
+                            }
+                            lineTo(points.last().x, bottomBaseline)
+                            close()
+                        }
+                        drawPath(fillPath, color = fillColor)
+                    }
+
                     if (points.size > 1) {
-                        val path = Path().apply {
+                        val linePath = Path().apply {
                             moveTo(points.first().x, points.first().y)
                             for (i in 0 until points.size - 1) {
                                 val p1 = points[i]
@@ -437,7 +574,7 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
                                 )
                             }
                         }
-                        drawPath(path, color = seriesColor, style = Stroke(width = 3.dp.toPx()))
+                        drawPath(linePath, color = seriesColor, style = Stroke(width = 3.dp.toPx()))
                     }
 
                     val labelColor = if (isDarkTheme) android.graphics.Color.rgb(
@@ -453,13 +590,13 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
                     }
 
                     points.forEachIndexed { index, point ->
-                        drawCircle(color = seriesColor, radius = 6.dp.toPx(), center = point)
-                        drawCircle(color = Color.White, radius = 3.dp.toPx(), center = point)
+                        drawCircle(color = seriesColor, radius = 5.dp.toPx(), center = point)
+                        drawCircle(color = Color.White, radius = 2.5.dp.toPx(), center = point)
 
                         drawContext.canvas.nativeCanvas.drawText(
                             formatValue(data[index].second),
                             point.x,
-                            point.y - 28f, // increased padding-bottom from line
+                            point.y - 12f,
                             textPaint
                         )
                     }
@@ -469,18 +606,22 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    data.forEach { pair ->
+                    data.forEachIndexed { index, pair ->
+                        val shouldShowLabel =
+                            index == 0 || index == data.size - 1 || index % skipInterval == 0
                         Column(
-                            modifier = Modifier.width(70.dp),
+                            modifier = Modifier.width(55.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                text = shortDate(pair.first),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
+                            if (shouldShowLabel) {
+                                Text(
+                                    text = shortDate(pair.first, chartTimeMode),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
                         }
                     }
                 }
@@ -490,11 +631,14 @@ fun SingleSeriesLineChart(data: List<Pair<String, Double>>, isDarkTheme: Boolean
 }
 
 @Composable
-fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme: Boolean) {
+fun DualSeriesLineChart(
+    data: List<Triple<String, Double, Double>>,
+    isDarkTheme: Boolean,
+    chartTimeMode: ChartTimeMode
+) {
     if (data.isEmpty()) return
     val density = LocalDensity.current
-    //val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
-    val labelSmallPx = with(density) { MaterialTheme.typography.labelMedium.fontSize.toPx() }
+    val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
     val maxVal = maxOf(
         data.maxOfOrNull { maxOf(it.second, it.third) } ?: 1.0,
         1.0
@@ -504,8 +648,9 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme:
     val series2Color = Color(0xFF29B6F6) // Blue
     val scrollState = rememberScrollState()
 
-    val itemWidth = 75.dp
+    val itemWidth = 65.dp
     val totalWidth = maxOf(320.dp, itemWidth * data.size)
+    val skipInterval = if (data.size > 8) data.size / 5 else 1
 
     Column(
         modifier = Modifier
@@ -595,7 +740,7 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme:
                         drawContext.canvas.nativeCanvas.drawText(
                             formatValue(data[index].second),
                             point.x,
-                            point.y - 28f, // increased padding-bottom for upper line
+                            point.y - 14f,
                             textPaint1
                         )
                     }
@@ -606,7 +751,7 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme:
                         drawContext.canvas.nativeCanvas.drawText(
                             formatValue(data[index].third),
                             point.x,
-                            point.y + 35f, // increased padding-bottom for lower line
+                            point.y + 21f,
                             textPaint2
                         )
                     }
@@ -616,18 +761,22 @@ fun DualSeriesLineChart(data: List<Triple<String, Double, Double>>, isDarkTheme:
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    data.forEach { triple ->
+                    data.forEachIndexed { index, triple ->
+                        val shouldShowLabel =
+                            index == 0 || index == data.size - 1 || index % skipInterval == 0
                         Column(
-                            modifier = Modifier.width(70.dp),
+                            modifier = Modifier.width(65.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                text = shortDate(triple.first),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
+                            if (shouldShowLabel) {
+                                Text(
+                                    text = shortDate(triple.first, chartTimeMode),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
                         }
                     }
                 }

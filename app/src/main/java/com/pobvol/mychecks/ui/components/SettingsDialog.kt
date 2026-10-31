@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -56,45 +55,10 @@ fun SettingsDialog(
     onOpenPdfSettingsClick: () -> Unit = {},
     onAddCategory: (String) -> Unit = {},
     onDeleteCategory: (CategoryEntity) -> Unit = {},
-    onLoadDemoClick: () -> Unit = {},
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    var showDemoConfirmDialog by remember { mutableStateOf(false) }
-
-    if (showDemoConfirmDialog) {
-        AlertDialog(
-            onDismissRequest = { showDemoConfirmDialog = false },
-            title = {
-                Text(
-                    stringResource(R.string.load_demo_data_confirm_title),
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = { Text(stringResource(R.string.load_demo_data_confirm_message)) },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showDemoConfirmDialog = false
-                        onLoadDemoClick()
-                    },
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(stringResource(android.R.string.ok))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDemoConfirmDialog = false },
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-            shape = RoundedCornerShape(20.dp)
-        )
-    }
 
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -280,17 +244,6 @@ fun SettingsDialog(
                             }
                         }
                     }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Load Demo Data Button
-                Button(
-                    onClick = { showDemoConfirmDialog = true },
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(stringResource(R.string.load_demo_data))
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))

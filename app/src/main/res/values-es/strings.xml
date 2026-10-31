@@ -294,4 +294,15 @@ Al hacer clic en [Aceptar y Aceptar], confirmas que has leído, entendido y acep
     <string name="load_demo_data_confirm_title">¿Cargar datos de demostración?</string>
     <string name="load_demo_data_confirm_message">Esto restablecerá su base de datos y cargará listas de control, preguntas e informes de ejemplo.</string>
     <string name="msg_demo_data_loaded">Datos de demostración cargados con éxito.</string>
+    <string name="menu_manage_database">Gestionar base de datos</string>
+    <string name="manage_database_title">Gestionar Base de Datos</string>
+    <string name="manage_db_subtitle">Exportar, importar o restablecer datos de la base de datos local.</string>
+    <string name="import_db_warning">Advertencia: Importar una copia de seguridad sobrescribirá su base de datos local actual con el archivo seleccionado.</string>
+    <string name="demo_db_warning">Advertencia: Cargar la base de datos de demostración restablecerá su base de datos actual y cargará listas de control de ejemplo. Se perderán todos los datos actuales.</string>
+    <string name="menu_reset_database">Restablecer base de datos</string>
+    <string name="reset_db_warning">Advertencia: Restablecer la base de datos eliminará todos los datos actuales y la reiniciará con el estado predeterminado. Se perderán todas las listas de control e informes personalizados.</string>
+    <string name="msg_db_reset">Base de datos restablecida con éxito.</string>
+    <string name="chart_mode_daily">Diario</string>
+    <string name="chart_mode_monthly">Mensual</string>
+    <string name="chart_mode_yearly">Anual</string>
 </resources>
