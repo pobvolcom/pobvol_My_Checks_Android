@@ -39,10 +39,10 @@ object PdfExporter {
     fun getPictureFile(context: Context, imagePath: String?): File? {
         if (imagePath.isNullOrBlank()) return null
 
-        // 1. Always check internal app storage first!
-        val internalDir = File(context.filesDir, "pictures")
-        val internalFile = File(internalDir, imagePath)
-        if (internalFile.exists()) return internalFile
+        // 1. Check primary pictures directory: /download/pobvolMyChecks/pictures
+        val picturesDir = SqlExporter.getPicturesDir(context)
+        val primaryFile = File(picturesDir, imagePath)
+        if (primaryFile.exists()) return primaryFile
 
         val cacheFile = File(context.cacheDir, imagePath)
         if (cacheFile.exists()) return cacheFile
@@ -517,6 +517,8 @@ object PdfExporter {
                 } else {
                     answerValueRaw
                 }
+            } else if (q.type.lowercase() == "number") {
+                DateUtil.formatNumberForPdf(answerValueRaw, settings.preferredLanguage)
             } else {
                 answerValueRaw
             }

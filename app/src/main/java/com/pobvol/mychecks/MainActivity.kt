@@ -56,6 +56,7 @@ import com.pobvol.mychecks.util.TtsHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.nio.charset.Charset
 
 class MainActivity : AppCompatActivity() {
@@ -74,6 +75,17 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val internalPicturesDir = File(filesDir, "pictures")
+                if (internalPicturesDir.exists()) {
+                    internalPicturesDir.deleteRecursively()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
 
         lifecycleScope.launch(Dispatchers.IO) {
             val helper = TtsHelper(applicationContext)
@@ -431,6 +443,7 @@ class MainActivity : AppCompatActivity() {
                             onOpenManageDatabaseClick = viewModel::openManageDatabaseDialog,
                             onDismissManageDatabaseDialog = viewModel::closeManageDatabaseDialog,
                             onResetDbClick = { viewModel.resetDatabase(this@MainActivity) },
+                            onClearCacheClick = { viewModel.clearAppCache(this@MainActivity) },
                             onExportDbClick = {
                                 lifecycleScope.launch(Dispatchers.IO) {
                                     val success = SqlExporter.exportDatabaseCopy(this@MainActivity)

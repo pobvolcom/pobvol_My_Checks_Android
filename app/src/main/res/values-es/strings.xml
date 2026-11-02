@@ -188,7 +188,7 @@
     <string name="pdf_footer_text_label">Texto de Pie de Página / Descargo</string>
     <string name="configure_pdf_settings">Configurar diseño de PDF...</string>
     <string name="checklist_analytics">Análisis</string>
-    <string name="submissions_per_day">Envíos por día</string>
+    <string name="submissions_per_day">Envíos</string>
     <string name="pdf_date_label">Fecha de revisión: %1$s</string>
     <string name="pdf_inspector_label">Inspector: %1$s</string>
     <string name="pdf_status_label">Estado: %1$s</string>
@@ -261,8 +261,8 @@ La aplicación se proporciona con la esperanza de que sea útil, pero SIN NINGUN
 Al hacer clic en [Aceptar y Aceptar], confirmas que has leído, entendido y aceptado estos Términos.
     "</string>
     <string name="pdf_pos">Pos</string>
-    <string name="pdf_checkpoint">Checkpoint/Frage</string>
-    <string name="pdf_status">Ergebnis</string>
+    <string name="pdf_checkpoint">Punto de control/Pregunta</string>
+    <string name="pdf_status">Resultado</string>
     <string name="pdf_picture_size_label">Tamaño de imagen en PDF</string>
     <string name="pdf_picture_size_small">Pequeño (100px)</string>
     <string name="pdf_picture_size_medium">Mediano (200px)</string>
@@ -305,4 +305,8 @@ Al hacer clic en [Aceptar y Aceptar], confirmas que has leído, entendido y acep
     <string name="chart_mode_daily">Diario</string>
     <string name="chart_mode_monthly">Mensual</string>
     <string name="chart_mode_yearly">Anual</string>
+    <string name="menu_clear_cache">Borrar caché de la app</string>
+    <string name="clear_cache_confirm_title">¿Borrar caché de la app?</string>
+    <string name="clear_cache_confirm_message">Esto eliminará los archivos temporales en caché (como fotos de cámara temporales y vistas previas de PDF).</string>
+    <string name="msg_cache_cleared">Caché de la aplicación borrada con éxito.</string>
 </resources>

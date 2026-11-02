@@ -151,7 +151,7 @@ interface ChecklistQuestionDAO {
 @Dao
 interface ChecklistSubmissionDAO {
 
-    @Query("SELECT * FROM checklist_submissions ORDER BY date DESC")
+    @Query("SELECT * FROM checklist_submissions ORDER BY timestamp DESC")
     fun getAllChecklistSubmissions(): Flow<List<ChecklistSubmissionEntity>>
 
     @Query("SELECT * FROM checklist_submissions WHERE id = :id")

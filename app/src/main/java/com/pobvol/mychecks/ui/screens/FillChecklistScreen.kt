@@ -89,11 +89,11 @@ import com.pobvol.mychecks.ui.AnswerInput
 import com.pobvol.mychecks.ui.ChecklistUiState
 import com.pobvol.mychecks.ui.components.QrCodeScannerDialog
 import com.pobvol.mychecks.ui.theme.mychecksTheme
+import com.pobvol.mychecks.util.DateUtil
 import com.pobvol.mychecks.util.PdfExporter
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
@@ -114,7 +114,19 @@ fun FillChecklistScreen(
         mutableStateOf(uiState.userSettings.userName)
     }
     var notes by remember { mutableStateOf("") }
-    var checkDate by remember { mutableStateOf(SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())) }
+    val datePattern = when {
+        uiState.userSettings.preferredLanguage.startsWith("de", ignoreCase = true) -> "dd.MM.yyyy"
+        uiState.userSettings.preferredLanguage.startsWith(
+            "es",
+            ignoreCase = true
+        ) || uiState.userSettings.preferredLanguage.startsWith(
+            "fr",
+            ignoreCase = true
+        ) -> "dd/MM/yyyy"
+
+        else -> "MM/dd/yyyy"
+    }
+    var checkDate by remember { mutableStateOf(DateUtil.getCurrentDateForLanguage(uiState.userSettings.preferredLanguage)) }
     var status by remember { mutableStateOf("IN_PROGRESS") }
 
     val answersMap = remember(uiState.questionsForSelectedChecklist) {
@@ -324,7 +336,7 @@ fun FillChecklistScreen(
                                 initialSelectedDateMillis = remember(checkDate) {
                                     try {
                                         val sdf =
-                                            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                                            SimpleDateFormat(datePattern, Locale.getDefault())
                                         sdf.parse(checkDate)?.time ?: System.currentTimeMillis()
                                     } catch (_: Exception) {
                                         System.currentTimeMillis()
@@ -342,7 +354,7 @@ fun FillChecklistScreen(
                                                     Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                                                 calendar.timeInMillis = millis
                                                 val formattedDate = SimpleDateFormat(
-                                                    "dd.MM.yyyy",
+                                                    datePattern,
                                                     Locale.getDefault()
                                                 ).format(calendar.time)
                                                 checkDate = formattedDate

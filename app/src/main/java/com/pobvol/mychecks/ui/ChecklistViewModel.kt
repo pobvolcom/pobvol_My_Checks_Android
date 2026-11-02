@@ -420,7 +420,11 @@ class ChecklistViewModel(
         }
 
         val checklistMap = checklists.associateBy { it.id }
-        val filteredSubmissions = globalState.submissionState.submissions.filter { submission ->
+        val sortedSubmissions = globalState.submissionState.submissions.sortedWith(
+            compareByDescending<ChecklistSubmissionEntity> { parseSubmissionDate(it.date) }
+                .thenByDescending { it.timestamp }
+        )
+        val filteredSubmissions = sortedSubmissions.filter { submission ->
             val matchesChecklist = if (selectedChecklistSub != null) {
                 submission.checklistid == selectedChecklistSub.id
             } else {
@@ -472,7 +476,7 @@ class ChecklistViewModel(
             submissions = displayedSubmissions,
             totalMatchingSubmissionsCount = totalMatchingCount,
             submissionLimit = limit,
-            allSubmissions = globalState.submissionState.submissions,
+            allSubmissions = sortedSubmissions,
             answers = globalState.submissionState.answers,
             isSubmissionsOverviewVisible = globalState.submissionState.isOverviewVisible,
             selectedSubmissionToEdit = globalState.submissionState.selectedSubmissionToEdit,
@@ -1472,6 +1476,32 @@ class ChecklistViewModel(
         }
     }
 
+    private fun parseSubmissionDate(dateStr: String): Long {
+        if (dateStr.isBlank()) return 0L
+        try {
+            if (dateStr.contains(".")) {
+                val parts = dateStr.split(".")
+                if (parts.size >= 3) {
+                    val day = parts[0].toIntOrNull() ?: 1
+                    val month = parts[1].toIntOrNull() ?: 1
+                    val year = parts[2].take(4).toIntOrNull() ?: 2026
+                    return year * 10000L + month * 100L + day
+                }
+            }
+            if (dateStr.contains("-")) {
+                val parts = dateStr.split("-")
+                if (parts.size >= 3) {
+                    val year = parts[0].take(4).toIntOrNull() ?: 2026
+                    val month = parts[1].toIntOrNull() ?: 1
+                    val day = parts[2].take(2).toIntOrNull() ?: 1
+                    return year * 10000L + month * 100L + day
+                }
+            }
+        } catch (_: Exception) {
+        }
+        return 0L
+    }
+
     fun loadDemoDatabase(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -1540,6 +1570,24 @@ class ChecklistViewModel(
                         context.startActivity(intent)
                         Runtime.getRuntime().exit(0)
                     }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun clearAppCache(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val cacheDir = context.cacheDir
+                cacheDir.listFiles()?.forEach { file ->
+                    if (file.isFile) {
+                        file.delete()
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, R.string.msg_cache_cleared, Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

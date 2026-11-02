@@ -40,12 +40,14 @@ fun ManageDatabaseDialog(
     onImportDbClick: () -> Unit,
     onLoadDemoClick: () -> Unit,
     onResetDbClick: () -> Unit,
+    onClearCacheClick: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showImportWarning by remember { mutableStateOf(false) }
     var showDemoWarning by remember { mutableStateOf(false) }
     var showResetWarning by remember { mutableStateOf(false) }
+    var showCacheWarning by remember { mutableStateOf(false) }
 
     if (showImportWarning) {
         AlertDialog(
@@ -136,6 +138,43 @@ fun ManageDatabaseDialog(
             dismissButton = {
                 TextButton(
                     onClick = { showResetWarning = false },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            shape = RoundedCornerShape(20.dp)
+        )
+    }
+
+    if (showCacheWarning) {
+        AlertDialog(
+            onDismissRequest = { showCacheWarning = false },
+            title = {
+                Text(
+                    stringResource(R.string.clear_cache_confirm_title),
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = { Text(stringResource(R.string.clear_cache_confirm_message)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showCacheWarning = false
+                        onClearCacheClick()
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    )
+                ) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showCacheWarning = false },
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(stringResource(R.string.cancel))
@@ -243,6 +282,21 @@ fun ManageDatabaseDialog(
                     )
                 ) {
                     Text(stringResource(R.string.menu_reset_database))
+                }
+
+                // 5. Clear App Cache
+                Button(
+                    onClick = {
+                        showCacheWarning = true
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                ) {
+                    Text(stringResource(R.string.menu_clear_cache))
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))

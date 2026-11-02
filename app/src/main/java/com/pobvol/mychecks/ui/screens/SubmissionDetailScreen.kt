@@ -63,6 +63,7 @@ import com.pobvol.mychecks.data.local.ChecklistSubmissionEntity
 import com.pobvol.mychecks.ui.AnswerInput
 import com.pobvol.mychecks.ui.ChecklistUiState
 import com.pobvol.mychecks.ui.theme.mychecksTheme
+import com.pobvol.mychecks.util.DateUtil
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -87,8 +88,25 @@ fun SubmissionDetailScreen(
     var inspectorName by remember(submission) { mutableStateOf(submission.inspector ?: "") }
     var status by remember(submission) { mutableStateOf(submission.status) }
     var notes by remember(submission) { mutableStateOf(submission.notes ?: "") }
+    val datePattern = when {
+        uiState.userSettings.preferredLanguage.startsWith("de", ignoreCase = true) -> "dd.MM.yyyy"
+        uiState.userSettings.preferredLanguage.startsWith(
+            "es",
+            ignoreCase = true
+        ) || uiState.userSettings.preferredLanguage.startsWith(
+            "fr",
+            ignoreCase = true
+        ) -> "dd/MM/yyyy"
+
+        else -> "MM/dd/yyyy"
+    }
     var checkDate by remember(submission) {
-        mutableStateOf(submission.date.ifBlank { SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date()) })
+        mutableStateOf(
+            DateUtil.formatDateByLanguage(
+                submission.date,
+                uiState.userSettings.preferredLanguage
+            )
+                .ifBlank { DateUtil.getCurrentDateForLanguage(uiState.userSettings.preferredLanguage) })
     }
 
     val existingAnswersMap = remember(submission.id, uiState.answers) {
@@ -322,7 +340,7 @@ fun SubmissionDetailScreen(
                                 initialSelectedDateMillis = remember(checkDate) {
                                     try {
                                         val sdf =
-                                            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                                            SimpleDateFormat(datePattern, Locale.getDefault())
                                         sdf.parse(checkDate)?.time ?: System.currentTimeMillis()
                                     } catch (_: Exception) {
                                         System.currentTimeMillis()
@@ -340,7 +358,7 @@ fun SubmissionDetailScreen(
                                                     Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                                                 calendar.timeInMillis = millis
                                                 val formattedDate = SimpleDateFormat(
-                                                    "dd.MM.yyyy",
+                                                    datePattern,
                                                     Locale.getDefault()
                                                 ).format(calendar.time)
                                                 checkDate = formattedDate

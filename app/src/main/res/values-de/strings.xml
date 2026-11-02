@@ -188,7 +188,7 @@
     <string name="pdf_footer_text_label">Fußzeilentext / Haftungsausschluss</string>
     <string name="configure_pdf_settings">PDF-Bericht Layout anpassen...</string>
     <string name="checklist_analytics">Checklisten-Analyse</string>
-    <string name="submissions_per_day">Protokolle pro Tag</string>
+    <string name="submissions_per_day">Protokolle</string>
     <string name="pdf_date_label">Datum: %1$s</string>
     <string name="pdf_inspector_label">Prüfer: %1$s</string>
     <string name="pdf_status_label">Status: %1$s</string>
@@ -246,7 +246,8 @@
     <string name="license_text_content">"Danke, dass Sie ** pobvol My Checks ** installiert haben. Die App ist Freie Software und wird quelloffen ausgeliefert. Die App wurde entwickelt mit Google Android Studio und Gemini 3.5 Flash Lite and Gemini 3.6 Flash. Der Sourcecode wird über GitHub veröffentlicht.
 
 1. LIZENZERTEILUNG
-Sie können die App unter den Bedingungen der GNU General Public License v3 herunterladen, installieren, betreiben, modifizieren und weiter verteilen. Siehe https://www.gnu.org/licenses/gpl-3.0
+Sie können die App unter den Bedingungen der GNU General Public License v3 herunterladen,
+        installieren, betreiben, modifizieren und weiter verteilen. Siehe https://www.gnu.org/licenses/gpl-3.0
 
 2. COPYRIGHT
 Copyright © 2026 Volker Pobloth, pobvol Software Services
@@ -305,4 +306,8 @@ Durch Klicken auf [Akzeptieren &amp; Zustimmen] bestätigen Sie, dass Sie diese 
     <string name="chart_mode_daily">Täglich</string>
     <string name="chart_mode_monthly">Monatlich</string>
     <string name="chart_mode_yearly">Jährlich</string>
+    <string name="menu_clear_cache">App-Cache leeren</string>
+    <string name="clear_cache_confirm_title">App-Cache leeren?</string>
+    <string name="clear_cache_confirm_message">Dadurch werden temporäre Cache-Dateien gelöscht (wie temporäre Kamerafotos und generierte PDF-Vorschauen).</string>
+    <string name="msg_cache_cleared">App-Cache erfolgreich geleert.</string>
 </resources>

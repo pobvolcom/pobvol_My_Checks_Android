@@ -110,6 +110,7 @@ fun StartScreen(
     onImportDbClick: () -> Unit = {},
     onLoadDemoClick: () -> Unit = {},
     onResetDbClick: () -> Unit = {},
+    onClearCacheClick: () -> Unit = {},
     onOpenManageDatabaseClick: () -> Unit = {},
     onDismissManageDatabaseDialog: () -> Unit = {},
     onCloseAppClick: () -> Unit = {},
@@ -347,6 +348,7 @@ fun StartScreen(
                 onImportDbClick = onImportDbClick,
                 onLoadDemoClick = onLoadDemoClick,
                 onResetDbClick = onResetDbClick,
+                onClearCacheClick = onClearCacheClick,
                 onDismissRequest = onDismissManageDatabaseDialog,
             )
         }

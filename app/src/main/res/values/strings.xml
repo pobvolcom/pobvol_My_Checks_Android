@@ -190,7 +190,7 @@
     <string name="pdf_footer_text_label">Footer Text / Disclaimer</string>
     <string name="configure_pdf_settings">Configure PDF Report Layout...</string>
     <string name="checklist_analytics">Checklist Analytics</string>
-    <string name="submissions_per_day">Submissions per Day</string>
+    <string name="submissions_per_day">Submissions</string>
     <string name="pdf_date_label">Check Date: %1$s</string>
     <string name="pdf_inspector_label">Inspector: %1$s</string>
     <string name="pdf_status_label">Status: %1$s</string>
@@ -307,4 +307,8 @@ By clicking [Accept &amp; Agree], you confirm that you have read, understood and
     <string name="chart_mode_daily">Daily</string>
     <string name="chart_mode_monthly">Monthly</string>
     <string name="chart_mode_yearly">Yearly</string>
+    <string name="menu_clear_cache">Clear App Cache</string>
+    <string name="clear_cache_confirm_title">Clear App Cache?</string>
+    <string name="clear_cache_confirm_message">This will delete temporary cached files (such as temporary camera photos and generated PDF previews).</string>
+    <string name="msg_cache_cleared">App cache cleared successfully.</string>
 </resources>

@@ -69,6 +69,15 @@ object SqlExporter {
         return dir
     }
 
+    fun getPicturesDir(context: Context): File {
+        val dir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "pobvolMyChecks/pictures"
+        )
+        if (!dir.exists()) dir.mkdirs()
+        return dir
+    }
+
     fun getDbBackupDir(context: Context): File {
         val dir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
@@ -260,13 +269,12 @@ object SqlExporter {
             val inputStream = context.contentResolver.openInputStream(sourceUri) ?: return null
             val picBytes = inputStream.readBytes()
 
-            // 1. Always save internal copy in app internal storage (context.filesDir/pictures)
-            val internalDir = File(context.filesDir, "pictures")
-            if (!internalDir.exists()) internalDir.mkdirs()
-            val internalFile = File(internalDir, fileName)
-            internalFile.writeBytes(picBytes)
+            // 1. Save primary copy in /download/pobvolMyChecks/pictures
+            val picturesDir = getPicturesDir(context)
+            val primaryFile = File(picturesDir, fileName)
+            primaryFile.writeBytes(picBytes)
 
-            // 2. Save export copy in /download/pobvolMyChecks/<deviceid>/sql for cloud sync app
+            // 2. Save export copy in /download/pobvolMyChecks/sql for data exchange
             val sqlDir = getSqlDir(context)
             val targetFile = File(sqlDir, fileName)
             targetFile.writeBytes(picBytes)

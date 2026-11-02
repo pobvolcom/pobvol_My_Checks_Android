@@ -188,7 +188,7 @@
     <string name="pdf_footer_text_label">Texte de Pied de Page / Avertissement</string>
     <string name="configure_pdf_settings">Configurer la mise en page PDF...</string>
     <string name="checklist_analytics">Analyse</string>
-    <string name="submissions_per_day">Soumissions par jour</string>
+    <string name="submissions_per_day">Soumissions</string>
     <string name="pdf_date_label">Date de contrôle : %1$s</string>
     <string name="pdf_inspector_label">Inspecteur : %1$s</string>
     <string name="pdf_status_label">Statut : %1$s</string>
@@ -261,8 +261,8 @@ L'application est fournie dans l'espoir qu'elle soit utile, mais SANS AUCUNE GAR
 En cliquant sur « Accepter et Accepter », vous confirmez avoir lu, compris et accepté ces Conditions.
 "</string>
     <string name="pdf_pos">Pos</string>
-    <string name="pdf_checkpoint">Checkpoint/Frage</string>
-    <string name="pdf_status">Ergebnis</string>
+    <string name="pdf_checkpoint">Point de contrôle/Question</string>
+    <string name="pdf_status">Résultat</string>
     <string name="pdf_picture_size_label">Taille d\'image dans le PDF</string>
     <string name="pdf_picture_size_small">Petit (100px)</string>
     <string name="pdf_picture_size_medium">Moyen (200px)</string>
@@ -305,4 +305,8 @@ En cliquant sur « Accepter et Accepter », vous confirmez avoir lu, compris et 
     <string name="chart_mode_daily">Quotidien</string>
     <string name="chart_mode_monthly">Mensuel</string>
     <string name="chart_mode_yearly">Annuel</string>
+    <string name="menu_clear_cache">Vider le cache de l\'application</string>
+    <string name="clear_cache_confirm_title">Vider le cache de l\'application ?</string>
+    <string name="clear_cache_confirm_message">Cela supprimera les fichiers temporaires mis en cache (tels que les photos de caméra temporaires et les aperçus PDF générés).</string>
+    <string name="msg_cache_cleared">Cache de l\'application vidé avec succès.</string>
 </resources>

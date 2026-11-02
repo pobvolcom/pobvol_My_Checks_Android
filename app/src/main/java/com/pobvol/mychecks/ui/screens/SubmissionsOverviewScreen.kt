@@ -74,6 +74,7 @@ import com.pobvol.mychecks.ui.ChecklistUiState
 import com.pobvol.mychecks.ui.components.PdfSettingsDialog
 import com.pobvol.mychecks.ui.components.SettingsDialog
 import com.pobvol.mychecks.ui.theme.mychecksTheme
+import com.pobvol.mychecks.util.DateUtil
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -353,6 +354,7 @@ fun SubmissionsOverviewScreen(
                             SubmissionItem(
                                 submission = submission,
                                 checklistTitle = checklistTitle,
+                                preferredLang = uiState.userSettings.preferredLanguage,
                                 onExportPdfClick = { onExportPdfClick(submission) },
                                 onExportSqlClick = { onExportSqlClick(submission) },
                                 onEditClick = { onEditSubmissionClick(submission) },
@@ -443,6 +445,7 @@ fun SubmissionsOverviewScreen(
 fun SubmissionItem(
     submission: ChecklistSubmissionEntity,
     checklistTitle: String,
+    preferredLang: String = "en",
     onExportPdfClick: () -> Unit = {},
     onExportSqlClick: () -> Unit = {},
     onEditClick: () -> Unit,
@@ -484,7 +487,10 @@ fun SubmissionItem(
                 */
 
                 Text(
-                    text = " " + submission.date + " / " + checklistTitle,
+                    text = " " + DateUtil.formatDateByLanguage(
+                        submission.date,
+                        preferredLang
+                    ) + " / " + checklistTitle,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
