@@ -120,6 +120,32 @@ private fun shortDate(dateStr: String, mode: ChartTimeMode, preferredLang: Strin
     return dateStr
 }
 
+private fun parseSubmissionDate(dateStr: String): Long {
+    if (dateStr.isBlank()) return 0L
+    try {
+        if (dateStr.contains(".")) {
+            val parts = dateStr.split(".")
+            if (parts.size >= 3) {
+                val day = parts[0].toIntOrNull() ?: 1
+                val month = parts[1].toIntOrNull() ?: 1
+                val year = parts[2].take(4).toIntOrNull() ?: 2026
+                return year * 10000L + month * 100L + day
+            }
+        }
+        if (dateStr.contains("-")) {
+            val parts = dateStr.split("-")
+            if (parts.size >= 3) {
+                val year = parts[0].take(4).toIntOrNull() ?: 2026
+                val month = parts[1].toIntOrNull() ?: 1
+                val day = parts[2].take(2).toIntOrNull() ?: 1
+                return year * 10000L + month * 100L + day
+            }
+        }
+    } catch (_: Exception) {
+    }
+    return 0L
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChecklistChartScreen(
@@ -142,7 +168,7 @@ fun ChecklistChartScreen(
     val preferredLang = uiState.userSettings.preferredLanguage
 
     val totalSubmissions = uiState.allSubmissions.filter { it.checklistid == checklist.id }
-        .sortedBy { it.date }
+        .sortedWith(compareBy({ parseSubmissionDate(it.date) }, { it.timestamp }))
     val submissions = totalSubmissions.takeLast(uiState.submissionLimit)
     val questions = uiState.questionsForSelectedChecklist.filter { it.checklistid == checklist.id }
     val numberQuestions = questions.filter { it.type.lowercase() == "number" }
@@ -243,7 +269,7 @@ fun ChecklistChartScreen(
                 }
             }
 
-            // 2. Single-Series Numeric Value Area Chart (Automatically lists all available answer values, fixed width no scrolling)
+            // 2. Single-Series Numeric Value Area Chart (Automatically lists all available answer values, fixed width no scrolling, with Y-axis)
             if (numberQuestions.isNotEmpty()) {
                 val q1 = numberQuestions[0]
 
@@ -435,7 +461,11 @@ fun SubmissionsLineChart(
                     val points = data.mapIndexed { index, pair ->
                         val x =
                             horizontalPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
-                        val y = height - (pair.second.toFloat() / maxOf(maxCount, 1f)) * (height - 30f) - 20f
+                        val y =
+                            height - (pair.second.toFloat() / maxOf(
+                                maxCount,
+                                1f
+                            )) * (height - 30f) - 20f
                         Offset(x, y)
                     }
 
@@ -445,7 +475,14 @@ fun SubmissionsLineChart(
                             for (i in 0 until points.size - 1) {
                                 val p1 = points[i]
                                 val p2 = points[i + 1]
-                                cubicTo((p1.x + p2.x) / 2f, p1.y, (p1.x + p2.x) / 2f, p2.y, p2.x, p2.y)
+                                cubicTo(
+                                    (p1.x + p2.x) / 2f,
+                                    p1.y,
+                                    (p1.x + p2.x) / 2f,
+                                    p2.y,
+                                    p2.x,
+                                    p2.y
+                                )
                             }
                         }
                         drawPath(path, color = primaryColor, style = Stroke(width = 3.dp.toPx()))
@@ -533,25 +570,52 @@ fun SingleSeriesAreaChart(
         ) {
             val width = size.width
             val height = size.height
-            val horizontalPadding = 36f
-            val effectiveWidth = width - (horizontalPadding * 2f)
+            //val leftPadding = 72f // Room for Y-axis numbers
+            val leftPadding = 30f // Room for Y-axis numbers
+            val rightPadding = 20f
+            val effectiveWidth = width - (leftPadding + rightPadding)
             val stepX = if (data.size > 1) effectiveWidth / (data.size - 1) else 0f
             val bottomBaseline = height - 25f
 
+            val labelColor = if (isDarkTheme) android.graphics.Color.rgb(
+                212,
+                175,
+                55
+            ) else android.graphics.Color.BLACK
+            val yLabelPaint = android.graphics.Paint().apply {
+                color =
+                    if (isDarkTheme) android.graphics.Color.LTGRAY else android.graphics.Color.DKGRAY
+                textSize = labelSmallPx * 0.85f
+                isAntiAlias = true
+                textAlign = android.graphics.Paint.Align.RIGHT
+            }
+
+            // Draw Y-axis grid lines & labels
             val gridSteps = 4
             for (i in 0..gridSteps) {
-                val y = 20f + (i * (bottomBaseline - 20f) / gridSteps)
+                val ratio = i.toFloat() / gridSteps
+                val valAtStep = ratio * maxVal
+                val y = bottomBaseline - (ratio * (bottomBaseline - 30f))
+
+                // Grid line
                 drawLine(
                     color = gridColor,
-                    start = Offset(horizontalPadding, y),
-                    end = Offset(width - horizontalPadding, y),
+                    start = Offset(leftPadding, y),
+                    end = Offset(width - rightPadding, y),
                     strokeWidth = 1f
+                )
+
+                // Y-axis label
+                drawContext.canvas.nativeCanvas.drawText(
+                    formatValue(valAtStep.toDouble()),
+                    leftPadding - 12f,
+                    y + 4f,
+                    yLabelPaint
                 )
             }
 
             val points = data.mapIndexed { index, pair ->
-                val x =
-                    horizontalPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
+                val x = leftPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
                 val y = bottomBaseline - (pair.second.toFloat() / maxVal) * (bottomBaseline - 30f)
                 Offset(x, y)
             }
@@ -583,11 +647,6 @@ fun SingleSeriesAreaChart(
                 drawPath(linePath, color = seriesColor, style = Stroke(width = 3.dp.toPx()))
             }
 
-            val labelColor = if (isDarkTheme) android.graphics.Color.rgb(
-                212,
-                175,
-                55
-            ) else android.graphics.Color.BLACK
             val textPaint = android.graphics.Paint().apply {
                 color = labelColor
                 textSize = labelSmallPx
@@ -697,7 +756,14 @@ fun DualSeriesLineChart(
                             for (i in 0 until points1.size - 1) {
                                 val p1 = points1[i]
                                 val p2 = points1[i + 1]
-                                cubicTo((p1.x + p2.x) / 2f, p1.y, (p1.x + p2.x) / 2f, p2.y, p2.x, p2.y)
+                                cubicTo(
+                                    (p1.x + p2.x) / 2f,
+                                    p1.y,
+                                    (p1.x + p2.x) / 2f,
+                                    p2.y,
+                                    p2.x,
+                                    p2.y
+                                )
                             }
                         }
                         drawPath(path1, color = series1Color, style = Stroke(width = 3.dp.toPx()))
@@ -709,7 +775,14 @@ fun DualSeriesLineChart(
                             for (i in 0 until points2.size - 1) {
                                 val p1 = points2[i]
                                 val p2 = points2[i + 1]
-                                cubicTo((p1.x + p2.x) / 2f, p1.y, (p1.x + p2.x) / 2f, p2.y, p2.x, p2.y)
+                                cubicTo(
+                                    (p1.x + p2.x) / 2f,
+                                    p1.y,
+                                    (p1.x + p2.x) / 2f,
+                                    p2.y,
+                                    p2.x,
+                                    p2.y
+                                )
                             }
                         }
                         drawPath(path2, color = series2Color, style = Stroke(width = 3.dp.toPx()))
@@ -752,7 +825,7 @@ fun DualSeriesLineChart(
                     }
                     points2.forEachIndexed { index, point ->
                         drawCircle(color = series2Color, radius = 6.dp.toPx(), center = point)
-                        drawCircle(color = Color.White, radius = 3.dp.toPx(), center = point)
+                        drawCircle(color = Color.White, radius = 2.dp.toPx(), center = point)
 
                         drawContext.canvas.nativeCanvas.drawText(
                             formatValue(data[index].third),
