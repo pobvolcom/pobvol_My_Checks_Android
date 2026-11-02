@@ -339,9 +339,20 @@ fun SubmissionDetailScreen(
                             val datePickerState = rememberDatePickerState(
                                 initialSelectedDateMillis = remember(checkDate) {
                                     try {
+                                        val sanitizedDate =
+                                            if (checkDate.length >= 8 && checkDate.count { it == '.' || it == '/' || it == '-' } == 2) {
+                                                val parts = checkDate.split(Regex("[./-]"))
+                                                if (parts.size >= 3 && parts[2].length == 2) {
+                                                    checkDate.replace(parts[2], "20${parts[2]}")
+                                                } else {
+                                                    checkDate
+                                                }
+                                            } else {
+                                                checkDate
+                                            }
                                         val sdf =
                                             SimpleDateFormat(datePattern, Locale.getDefault())
-                                        sdf.parse(checkDate)?.time ?: System.currentTimeMillis()
+                                        sdf.parse(sanitizedDate)?.time ?: System.currentTimeMillis()
                                     } catch (_: Exception) {
                                         System.currentTimeMillis()
                                     }
