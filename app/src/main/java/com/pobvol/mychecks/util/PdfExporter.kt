@@ -5,6 +5,7 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -237,6 +238,32 @@ object PdfExporter {
         )
     }
 
+    private fun getLocalizedContext(context: Context, language: String): Context {
+        val langTag = language.takeIf { it.isNotBlank() } ?: "en"
+        val locale = Locale.forLanguageTag(langTag)
+        val config = Configuration(context.resources.configuration)
+        config.setLocale(locale)
+        return context.createConfigurationContext(config)
+    }
+
+    private fun getLocalizedStatus(context: Context, status: String): String {
+        val upper = status.uppercase()
+        return when {
+            upper == "COMPLETED" || upper == "ABGESCHLOSSEN" || upper == "COMPLETADO" || upper == "TERMINÉ" ->
+                context.getString(R.string.status_completed)
+
+            upper == "IN_PROGRESS" || upper == "IN BEARBEITUNG" || upper == "EN PROGRESO" || upper == "EN COURS" || upper.contains(
+                "BEARBEITUNG"
+            ) || upper.contains("PROGRESO") || upper.contains("COURS") ->
+                context.getString(R.string.status_in_progress)
+
+            upper == "PENDING" || upper == "AUSSTEHEND" || upper == "PENDIENTE" || upper == "EN ATTENTE" ->
+                context.getString(R.string.status_pending)
+
+            else -> status
+        }
+    }
+
     private fun createSubmissionPdfDocumentV1(
         context: Context,
         submission: ChecklistSubmissionEntity,
@@ -245,6 +272,7 @@ object PdfExporter {
         answers: List<ChecklistAnswerEntity>,
         settings: UserSettings = UserSettings(),
     ): PdfDocument {
+        val context = getLocalizedContext(context, settings.preferredLanguage)
         val answersMap = answers.filter { it.submissionid == submission.id }.associateBy { it.questionid }
         val pdfDocument = PdfDocument()
 
@@ -276,7 +304,9 @@ object PdfExporter {
             paint.color = Color.GRAY
             var footerLine = ""
             if (settings.includeTimestamp) {
-                val formattedGenerated = SimpleDateFormat("dd.MM.yyyy • HH:mm", Locale.getDefault()).format(Date())
+                val datePart = DateUtil.getCurrentDateForLanguage(settings.preferredLanguage)
+                val timePart = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+                val formattedGenerated = "$datePart • $timePart"
                 footerLine += context.getString(R.string.pdf_generated_on, formattedGenerated)
             }
             if (settings.pdfIncludePageNumber) {
@@ -318,12 +348,7 @@ object PdfExporter {
             }
 
             if (settings.pdfIncludeStatus) {
-                val translatedStatus = when (submission.status.uppercase()) {
-                    "COMPLETED" -> context.getString(R.string.status_completed)
-                    "IN_PROGRESS" -> context.getString(R.string.status_in_progress)
-                    "PENDING" -> context.getString(R.string.status_pending)
-                    else -> submission.status
-                }
+                val translatedStatus = getLocalizedStatus(context, submission.status)
                 headerTitleParts.add("(" + translatedStatus + ")")
             }
 
@@ -403,12 +428,7 @@ object PdfExporter {
             headerDescriptionParts.add(checklist.description)
         }
         if (settings.pdfIncludeStatus) {
-            val translatedStatus = when (submission.status.uppercase()) {
-                "COMPLETED" -> context.getString(R.string.status_completed)
-                "IN_PROGRESS" -> context.getString(R.string.status_in_progress)
-                "PENDING" -> context.getString(R.string.status_pending)
-                else -> submission.status
-            }
+            val translatedStatus = getLocalizedStatus(context, submission.status)
             headerTitleParts.add("(" + translatedStatus + ")")
         }
 
