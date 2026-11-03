@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="de">
 <head>
     <title>My Checks - Aide utilisateur</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width; initial-scale=1.0;" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
     <meta name="description" content="Créez des listes de contrôle facilement | Enregistrer les résultats | Logiciel libre | Open Source | Android Smartphones and Tablets" />
-	<meta property="og:locale" content="fr_FR" />
-	<meta property="og:type" content="website" />
-	<meta property="og:title" content="pobvol My Checks Aide" />
-	<meta property="og:description" content="Créez des listes de contrôle facilement | Enregistrer les résultats | Logiciel libre | Open Source | Android Smartphones and Tablets" />
-	<meta property="og:url" content="help_fr.html" />
-	<meta property="og:site_name" content="pobvol My Checks Aide" />
+    <meta content="fr_FR" property="og:locale"/>
+    <meta content="website" property="og:type"/>
+    <meta content="website" property="og:type"/>
+    <meta content="pobvol My Checks Aide" property="og:title"/>
+    <meta content="Créez des listes de contrôle facilement | Enregistrer les résultats | Logiciel libre | Open Source | Android Smartphones and Tablets"
+          property="og:description"/>
+    <meta content="help_fr.html" property="og:url"/>
+    <meta content="pobvol My Checks Aide" property="og:site_name"/>
     <style>
         body {
             font-family: sans-serif;
@@ -51,6 +53,18 @@
             padding: 2px 4px;
             border-radius: 4px;
         }
+        body.dark .contentflex > div {
+            background-color: #252525;
+            border: 1px solid #3C3C3C;
+        }
+        body.dark figure.imgrght img {
+            border: 1px solid #3C3C3C;
+            box-shadow: 0 2px 6px rgba(255,255,255,0.05);
+        }
+        body.dark figure.imgrght img {
+            border: 1px solid #3C3C3C;
+            box-shadow: 0 2px 6px rgba(255,255,255,0.05);
+        }
         a { color: #FFB74D;}
         h1 { font-size: 22px; margin-bottom: 10px; }
         h2 { font-size: 16px; margin-top: 1px; padding-bottom: 0px; }
@@ -68,15 +82,42 @@
             margin-right: 9px;
             margin-bottom: 9px;
         }
+        img.logo{
+            float: left;
+            margin-right: 9px;
+            margin-bottom: 9px;
+            max-width: 180px;
+        }
         img.imgrght{
             float: right;
             margin-left: 18px;
+            margin-right: 0px;
             margin-bottom: 9px;
+        }
+        figure.imgrght {
+            float: right;
+            margin-left: 16px;
+            margin-bottom: 12px;
+            max-width: 180px;
+            text-align: center;
+            font-size: 11px;
+            opacity: 0.9;
+        }
+        figure.imgrght img, .contentflex img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            border: 1px solid rgba(128,128,128,0.3);
+            cursor: zoom-in;
+            transition: transform 0.2s ease;
+        }
+        figure.imgrght img:hover, .contentflex img:hover {
+            transform: scale(1.02);
         }
         .contentflex {
             display: flex;
             flex-flow: row nowrap;
-            height: auto
+            height: auto;
             margin-bottom: 10px;
             padding-bottom: 10px;
             max-width: 100%; /* Maximum width */
@@ -84,7 +125,7 @@
             margin-right: auto;
             padding-right: 15px;
             overflow-x: scroll;
-            background: white;
+            /*background: white;*/
             border-radius: 25px;
             line-height: 1.2;
             /*align-items: center;*/
@@ -94,22 +135,65 @@
             margin-right:25px;
             padding:15px;
             height: auto;
-            min-width: 33%;
+            min-width: 250px;
             text-align: center;
             border: 1px solid grey;
             border-radius: 25px;
             box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
         }
+
+        /* Lightbox Modal */
+        #lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #lightbox-modal img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.5);
+            cursor: default;
+        }
     </style>
     <script src="./scripts/myscript.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const modal = document.getElementById("lightbox-modal");
+            const modalImg = document.getElementById("lightbox-img");
+            const images = document.querySelectorAll("figure.imgrght img, .contentflex img");
+
+            images.forEach(img => {
+                img.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    modal.style.display = "flex";
+                    modalImg.src = this.src;
+                    modalImg.alt = this.alt;
+                });
+            });
+        });
+    </script>
 </head>
 <body>
-    <img class="logo" src="./images/logo.png" alt="Logo"/><br>
-    pobvol Software Services
 
     <a name="_home"></a>
     <div class="card">
         <h1>My Checks - Aide utilisateur</h1>
+        <figure class="imgrght">
+            <img alt="pobvol My Checks" loading="lazy" src="./images/pobvol_my_checks.png">
+            <figcaption>Logo</figcaption>
+        </figure>
         <p>
             Avec l'application Android <b>pobvol My Checks</b>, vous pouvez facilement et rapidement créer des listes de contrôle personnalisées avec des points de contrôle et des questions, et ensuite enregistrer, analyser et exporter les résultats des inspections dans des rapports PDF. Toutes les données sont sauvegardées automatiquement dans des fichiers SQL. Langues prises en charge : allemand, anglais, espagnol et français.<br>
             <br>
@@ -135,28 +219,31 @@
         <h2>Screenshots</h2>
         <div class="contentflex">
             <div>
-                <img width=100% src="./images/dashboard.png" alt="Dashboard">
+                <img alt="Dashboard" loading="lazy" src="./images/dashboard.png" width=100%>
             </div>
             <div>
-                <img width=100% src="./images/my-checklists.png" alt="My Checklists">
+                <img alt="My Checklists" loading="lazy" src="./images/my-checklists.png" width=100%>
             </div>
             <div>
-                <img width=100% src="./images/edit-checklist.png" alt="Edit Checklist">
+                <img alt="Edit Checklist" loading="lazy" src="./images/edit-checklist.png"
+                     width=100%>
             </div>
             <div>
-                <img width=100% src="./images/checkpoints-questions.png" alt="Checkpoints/Questions">
+                <img alt="Checkpoints/Questions" loading="lazy" src="./images/checkpoints-questions.png"
+                     width=100%>
             </div>
             <div>
-                <img width=100% src="./images/my-logs.png" alt="My Logs">
+                <img alt="My Logs" loading="lazy" src="./images/my-logs.png" width=100%>
             </div>
             <div>
-                <img width=100% src="./images/pdf-report.png" alt="PDF-Report">
+                <img alt="PDF-Report Designer" loading="lazy" src="./images/pdf-report-designer.png"
+                     width=100%>
             </div>
             <div>
-                <img width=100% src="./images/pdf-report-designer.png" alt="PDF-Report Designer">
+                <img alt="PDF-Report" loading="lazy" src="./images/pdf-report.png" width=100%>
             </div>
             <div>
-                <img width=100% src="./images/charts.png" alt="Charts">
+                <img alt="Tetx blocks" loading="lazy" src="./images/text-blocks.png" width=100%>
             </div>
         </div>
     </div>
@@ -166,14 +253,17 @@
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Tableau de bord & Navigation</h2>
+        <figure class="imgrght">
+            <img alt="Dashboard Screen" loading="lazy" src="./images/dashboard.png">
+            <figcaption>Dashboard</figcaption>
+        </figure>
         <p>
             Le tableau de bord est votre point de départ. Utilisez les cartes pour accéder à vos
             listes de contrôle et Journaux et accédent aux paramètres et à l'aide depuis la barre du
             haut.<br>
             <br>
             Via l'icône du menu en haut à gauche, vous pouvez consulter le contrat de licence,
-            gérer vos propres blocs de texte, sauvegarder la base de données, importer à nouveau des
-            sauvegardes de la base de données et fermer l'application.
+            Gérez vos propres blocs de texte, gérez la base de données et quittez l'application.
         </p>
     </div>
 
@@ -183,13 +273,16 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Paramètres</h2>
         <p>
-            Dans le tableau de bord, cliquez sur l'icône d'engrenage (⚙).
-            La boîte de dialogue «Paramètres généraux » s'ouvrira.
-            Personnalisez l'apparence, la langue préférée et les catégories selon vos besoins.
-            Entrez votre nom dans le champ examinateur.
-            Votre nom sera ensuite transféré dans le procès-verbal et sera produit dans le PDF.
-            Si vous voulez, activez Narrateur (TTS). Les messages de l'application vous seront alors
-            lus.
+            Dans le tableau de bord ou la liste de contrôle, cliquez sur l'icône de gregrenage (⚙).
+            La boîte de dialogue « Paramètres généraux » s'ouvrira.<br>
+            <br>
+            Personnalisez l'apparence, la langue préférée et les catégories selon vos besoins.<br>
+            <br>
+            Entrez votre nom dans le champ Inspecteur.
+            Votre nom sera ensuite inclus dans les procès-verbaux et sera publié dans le PDF. <br>
+            <br>
+            Si vous voulez, activez Narrateur (TTS).
+            Les messages de l'application vous seront alors lus.
         </p>
     </div>
 
@@ -198,6 +291,10 @@
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p><h2>Mes Listes de Contrôle</h2>
         <p>
+        <figure class="imgrght">
+            <img alt="My Checklists" loading="lazy" src="./images/my-checklists.png">
+            <figcaption>My Checklists</figcaption>
+        </figure>
             Cliquez sur la carte « Mes listes de contrôle » dans le tableau de bord et ouvrez le
             écran correspondant. <br>
             <br>
@@ -215,6 +312,10 @@
             <b>Filtrez les listes de contrôle par catégorie</b>: Filtrez la liste en cliquant sur un
             Catégorie (Santé, UVV, etc.). Cliquer sur Tous supprime à nouveau le filtre. <br>
             <br>
+        <figure class="imgrght">
+            <img alt="Edit Checklist" loading="lazy" src="./images/edit-checklist.png">
+            <figcaption>Edit Checklist</figcaption>
+        </figure>
             <b>Modifier une liste de contrôle</b>: Dans une carte de checklist, appuyez sur l'icône
             Modifier (), ✏️ la fenêtre « Modifier la liste de contrôle » s'ouvre. Ici, vous pouvez
             sélectionner le titre, le Personnalisez la catégorie et la description.<br>
@@ -238,6 +339,18 @@
             Veuillez noter : Listes de contrôle, à qui ont déjà eu un journal enregistré, ne peuvent
             pas être supprimés.<br>
             <br>
+        <figure class="imgrght">
+            <img alt="Statistics Chart 1" loading="lazy" src="./images/chart1.png">
+            <figcaption>Statistics Chart 1</figcaption>
+        </figure>
+        <figure class="imgrght">
+            <img alt="Statistics Chart 2" loading="lazy" src="./images/chart2.png">
+            <figcaption>Statistics Chart 2</figcaption>
+        </figure>
+        <figure class="imgrght">
+            <img alt="Statistics Chart 3" loading="lazy" src="./images/chart3.png">
+            <figcaption>Statistics Chart 3</figcaption>
+        </figure>
             <b>Afficher le graphique</b>: Si au moins 3 protocoles ont été enregistrés pour une
             liste de contrôle,
             le symbole du graphique (📋) est affiché.
@@ -261,6 +374,11 @@
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Points de contrôle / Questions</h2>
+        <figure class="imgrght">
+            <img alt="Checkpoints / Questions" loading="lazy"
+                 src="./images/checkpoints-questions.png">
+            <figcaption>Checkpoints / Questions</figcaption>
+        </figure>
         <p>
             Sur cet écran, vous gérez les points de contrôle/questions d'une liste de contrôle. Pour
             cela, Prend en charge les types de réponses suivants : texte, numéro, case à cocher,
@@ -326,6 +444,10 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Mes Journaux</h2>
         <p>
+        <figure class="imgrght">
+            <img alt="My Logs" loading="lazy" src="./images/my-logs.png">
+            <figcaption>My Logs</figcaption>
+        </figure>
             Cliquez sur la carte « Mes journaux » dans le tableau de bord et ouvrez la écran
             correspondant.
             Voir les journaux enregistrés, filtrer la liste, Corrigez vos réponses et créez
@@ -354,6 +476,10 @@
             <br>
             <b>Suppression d'un journal</b>: Supprime toutes les réponses associées.<br>
             <br>
+        <figure class="imgrght">
+            <img alt="PDF Report" loading="lazy" src="./images/pdf-report.png">
+            <figcaption>PDF Report</figcaption>
+        </figure>
             <b>Voir PDF</b>: Appuyez sur l'icône PDF sur une carte, ouvre une Visualiseur PDF et
             affiche le PDF généré.
             Vous pouvez ensuite l'imprimer ou le partager.
@@ -390,6 +516,10 @@
             supplémentaires sur l'examen dans les notes. Utilisez cette option, car les notes sont
             affichées dans l'aperçu du journal. Cela facilite la recherche d'un examen. <br>
             <br>
+        <figure class="imgrght">
+            <img alt="Fill checklist" loading="lazy" src="./images/edit-submission.png">
+            <figcaption>Fill checklist</figcaption>
+        </figure>
             - <b>Points de contrôle/Questions</b>: Répondez maintenant à toutes les questions
             obligatoires de la liste de contrôle. Vous Peut sauvegarder la modification à tout
             moment et continuer plus tard. Utilisez le Bouton d'enregistrement dans la zone en-tête
@@ -500,5 +630,11 @@
     </div>
 
     <div class="footer"></div>
+
+    <!-- Lightbox Modal Overlay -->
+    <div id="lightbox-modal" onclick="this.style.display='none';">
+        <img alt="Zoomed Screenshot" id="lightbox-img" src="">
+    </div>
+
 </body>
 </html>

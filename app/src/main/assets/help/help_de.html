@@ -1,29 +1,20 @@
 <!DOCTYPE html>
 <html lang="de">
-<!-- Test -->
 <head>
     <title>My Checks - Benutzerhilfe</title>
-
     <meta charset="UTF-8">
-
-    <!--meta-viewport
-    Wenn die Website am Computer getestet wird, funktioniert alles wie gewünscht.
-    Auf einem echten mobilen Endgerät ist das allerdings noch nicht der Fall, denn hier arbeitet eine Technik namens Layout-Viewport im Hintergrund. Damit Tablets, Smartphones & Co. Media Queries korrekt interpretieren, muss folgende Zeile Code in den <head> der Website eingebunden werden:-->
-    <meta content="width=device-width; initial-scale=1.0;" name="viewport"/>
-
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
     <meta name="description" content="Checklisten schnell und einfach erstellen | Ergebnisse protokollieren | Freie Software | Open Source | Android Smartphones und Tablets" />
-	<meta property="og:locale" content="de-DE" />
-	<meta property="og:type" content="website" />
-	<meta property="og:title" content="pobvol My Checks Benutzerhilfe" />
-	<meta property="og:description" content="Checklisten schnell und einfach erstellen | Ergebnisse protokollieren | Freie Software | Open Source | Android Smartphones und Tablets" />
-	<meta property="og:url" content="help_de.html" />
-	<meta property="og:site_name" content="pobvol My Checks Benutzerhilfe" />
-    <!--<link type="text/css" rel="stylesheet" media="screen" href="../style.css" /> -->
-    <!--<link type="text/css" rel="stylesheet" media="print" href="../print.css" />    -->
-
+    <meta content="de_DE" property="og:locale"/>
+    <meta content="website" property="og:type"/>
+    <meta content="pobvol My Checks Benutzerhilfe" property="og:title"/>
+    <meta content="Checklisten schnell und einfach erstellen | Ergebnisse protokollieren | Freie Software | Open Source | Android Smartphones und Tablets"
+          property="og:description"/>
+    <meta content="help_de.html" property="og:url"/>
+    <meta content="pobvol My Checks Benutzerhilfe" property="og:site_name"/>
     <style>
         body {
             font-family: sans-serif;
@@ -61,6 +52,18 @@
             padding: 2px 4px;
             border-radius: 4px;
         }
+        body.dark .contentflex > div {
+            background-color: #252525;
+            border: 1px solid #3C3C3C;
+        }
+        body.dark figure.imgrght img {
+            border: 1px solid #3C3C3C;
+            box-shadow: 0 2px 6px rgba(255,255,255,0.05);
+        }
+        body.dark figure.imgrght img {
+            border: 1px solid #3C3C3C;
+            box-shadow: 0 2px 6px rgba(255,255,255,0.05);
+        }
         a { color: #FFB74D;}
         h1 { font-size: 22px; margin-bottom: 10px; }
         h2 { font-size: 16px; margin-top: 1px; padding-bottom: 0px; }
@@ -78,15 +81,42 @@
             margin-right: 9px;
             margin-bottom: 9px;
         }
+        img.logo{
+            float: left;
+            margin-right: 9px;
+            margin-bottom: 9px;
+            max-width: 180px;
+        }
         img.imgrght{
             float: right;
             margin-left: 18px;
+            margin-right: 0px;
             margin-bottom: 9px;
+        }
+        figure.imgrght {
+            float: right;
+            margin-left: 16px;
+            margin-bottom: 12px;
+            max-width: 180px;
+            text-align: center;
+            font-size: 11px;
+            opacity: 0.9;
+        }
+        figure.imgrght img, .contentflex img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            border: 1px solid rgba(128,128,128,0.3);
+            cursor: zoom-in;
+            transition: transform 0.2s ease;
+        }
+        figure.imgrght img:hover, .contentflex img:hover {
+            transform: scale(1.02);
         }
         .contentflex {
             display: flex;
             flex-flow: row nowrap;
-            height: auto
+            height: auto;
             margin-bottom: 10px;
             padding-bottom: 10px;
             max-width: 100%; /* Maximum width */
@@ -94,7 +124,7 @@
             margin-right: auto;
             padding-right: 15px;
             overflow-x: scroll;
-            background: white;
+            /*background: white;*/
             border-radius: 25px;
             line-height: 1.2;
             /*align-items: center;*/
@@ -104,23 +134,65 @@
             margin-right:25px;
             padding:15px;
             height: auto;
-            min-width: 33%;
+            min-width: 250px;
             text-align: center;
             border: 1px solid grey;
             border-radius: 25px;
             box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
         }
+
+        /* Lightbox Modal */
+        #lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #lightbox-modal img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.5);
+            cursor: default;
+        }
     </style>
-    <!-- <script src="./scripts/myscript.js"></script> -->
+    <script src="./scripts/myscript.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const modal = document.getElementById("lightbox-modal");
+            const modalImg = document.getElementById("lightbox-img");
+            const images = document.querySelectorAll("figure.imgrght img, .contentflex img");
+
+            images.forEach(img => {
+                img.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    modal.style.display = "flex";
+                    modalImg.src = this.src;
+                    modalImg.alt = this.alt;
+                });
+            });
+        });
+    </script>
 </head>
 <body>
-<img alt="Logo" class="logo" src="./images/logo.png"/><br>
-pobvol Software Services
 
 <a name="_home"></a>
 <div class="card">
     <h1>My Checks - Benutzerhilfe</h1>
-    <!--<img class="imgrght" src="./images/dashboard.png" alt="dashboard.png" width="33%">-->
+    <figure class="imgrght">
+        <img alt="pobvol My Checks" loading="lazy" src="./images/pobvol_my_checks.png">
+        <figcaption>Logo</figcaption>
+    </figure>
     <p>
         Mit der Android-App <b>pobvol My Checks</b> können Sie ganz einfach und schnell eigene
         Checklisten mit Kontrollpunkten und Fragen erstellen und anschließend die Ergebnisse von
@@ -152,28 +224,30 @@ pobvol Software Services
     <h2>Screenshots</h2>
     <div class="contentflex">
         <div>
-            <img alt="Dashboard" src="./images/dashboard.png" width=100%>
+            <img alt="Dashboard" loading="lazy" src="./images/dashboard.png" width=100%>
         </div>
         <div>
-            <img alt="My Checklists" src="./images/my-checklists.png" width=100%>
+            <img alt="My Checklists" loading="lazy" src="./images/my-checklists.png" width=100%>
         </div>
         <div>
-            <img alt="Edit Checklist" src="./images/edit-checklist.png" width=100%>
+            <img alt="Edit Checklist" loading="lazy" src="./images/edit-checklist.png" width=100%>
         </div>
         <div>
-            <img alt="Checkpoints/Questions" src="./images/checkpoints-questions.png" width=100%>
+            <img alt="Checkpoints/Questions" loading="lazy" src="./images/checkpoints-questions.png"
+                 width=100%>
         </div>
         <div>
-            <img alt="My Logs" src="./images/my-logs.png" width=100%>
+            <img alt="My Logs" loading="lazy" src="./images/my-logs.png" width=100%>
         </div>
         <div>
-            <img alt="PDF-Report" src="./images/pdf-report.png" width=100%>
+            <img alt="PDF-Report Designer" loading="lazy" src="./images/pdf-report-designer.png"
+                 width=100%>
         </div>
         <div>
-            <img alt="PDF-Report Designer" src="./images/pdf-report-designer.png" width=100%>
+            <img alt="PDF-Report" loading="lazy" src="./images/pdf-report.png" width=100%>
         </div>
         <div>
-            <img alt="Charts" src="./images/charts.png" width=100%>
+            <img alt="Tetx blocks" loading="lazy" src="./images/text-blocks.png" width=100%>
         </div>
     </div>
 </div>
@@ -183,13 +257,17 @@ pobvol Software Services
 <div class="card">
     <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
     <h2>Dashboard & Navigation</h2>
+    <figure class="imgrght">
+        <img alt="Dashboard Screen" loading="lazy" src="./images/dashboard.png">
+        <figcaption>Dashboard</figcaption>
+    </figure>
     <p>
         Das Dashboard ist Ihr Startpunkt. Navigieren Sie mit den Karten zu Ihren Checklisten und
         Protokollen und greifen Sie über die obere Leiste auf Einstellungen und Hilfe zu.<br>
         <br>
-        Über das Menü-Icon in der linken oberen Ecke können Sie die Lizenzvereinbarung einsehen,
-        eigene Textblöcke verwalten, die Datenbank sichern, Sicherungen der Datenbank wieder
-        importieren und die App beenden.
+        Über das Menüsymbol oben links sehen Sie die Lizenzvereinbarung,
+        Verwalten Sie Ihre eigenen Textblöcke, verwalten Sie die Datenbank und
+        schließen Sie die App.
     </p>
 </div>
 
@@ -199,11 +277,15 @@ pobvol Software Services
     <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
     <h2>Einstellungen</h2>
     <p>
-        Klicken Sie im Dashboard auf das Zahnrad-Symbol (⚙). Es öffnet sich der Dialog "Allgemeine
-        Einstellungen". Passen Sie das Erscheinungsbild, die bevorzugte Sprache und die Kategorien
-        an
-        Ihre Bedürfnisse an. Tragen Sie Ihren Namen in das Feld Prüfer ein. Ihr Name wird damit in
-        die Protokolle übernommen und im PDF ausgegeben.
+        Klicken Sie im Dashboard oder in der Checklisten-Übersicht auf das Zahnrad-Symbol (⚙).
+        Es öffnet sich der Dialog "Allgemeine Einstellungen".<br>
+        <br>
+        Passen Sie das Erscheinungsbild, die bevorzugte Sprache und die Kategorien an Ihre
+        Bedürfnisse an.<br>
+        <br>
+        Tragen Sie Ihren Namen in das Feld Prüfer ein.
+        Ihr Name wird damit in die Protokolle übernommen und im PDF ausgegeben.<br>
+        <br>
         Wenn Sie mögen, schalten Sie die Sprachausgabe (TTS) ein.
         App-Nachrichten werden Ihnen dann vorgelesen.
     </p>
@@ -215,56 +297,76 @@ pobvol Software Services
     <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
     <h2>Meine Checklisten</h2>
     <p>
-        Klicken Sie im Dashboard auf die Karte "Meine Checklisten" und öffnen Sie damit den
-        entsprechenden Bildschirm.<br>
-        <br>
-        <b>Checkliste hinzufügen</b>: Neue Checklisten erstellen Sie recht schnell. Klicken Sie
-        einfach auf den **`+`** Button in der unteren rechten Ecke. Es öffnet sich der Dialog
-        "Checkliste hinzufügen". Tragen Sie im Feld Titel einen Namen für Ihre neue Checkliste ein,
-        ordnen Sie eine Kategorie zu und wenn Sie mögen, geben Sie eine kurze Beschreibung ein. Mit
-        dem Button "Hinzufügen" werden Ihre Eingaben gespeichert, Ihre neue Checkliste wird erstellt
-        und in der Übersicht angezeigt.<br>
-        <br>
-        <b>Checklisten suchen</b>: Tippen Sie auf das Suchsymbol (🔍) in der oberen Leiste, um
-        Checklisten nach Titel, Beschreibung oder Kategorie zu finden.<br>
-        <br>
-        <b>Checklisten nach Kategorie filtern</b>: Filtern Sie die Liste, indem Sie auf eine
-        Kategorie tippen (Health, UVV, usw.). Ein Klick auf All hebt den Filter wieder auf.<br>
-        <br>
-        <b>Checkliste bearbeiten</b>: Tippen Sie in einer Checklistenkarte auf das Ändern-Symbol
-        (✏️), öffnet sich das Fenster "Checkliste bearbeiten". Hier können Sie den Titel, die
-        Kategorie und die Beschreibung anpassen.<br>
-        <br>
-        <b>Checkliste kopieren</b>: Tippen Sie in einer Checklistenkarte auf das Kopieren-Symbol
-        (📄), öffnet sich das Fenster "Checkliste kopieren".
-        Passen Sie den Titel an und wählen Sie [Kopieren].
-        Die neue Checkliste wird als Kopie der gewählten Checkliste erstellt und in der Übersicht
-        angezeigt.<br>
-        <br>
-        <b>Checkpunkte/Fragen</b>: Tippen Sie in einer Checklistenkarte auf das Frage-Symbol (💬),
-        öffnet sich der Bildschirm "Checkpunkte/Fragen". Hier verwalten Sie die Checkpunkte und
-        Fragen für die gewählte Checkliste.
-        Wie das geht, finden Sie etwas weiter unten im Kapitel [<a href="#_checkpoints"
-                                                                   target="_self">Checkpunkte/Fragen</a>].<br>
-        <br>
-        <b>Checkliste löschen</b>: Tippen Sie in einer Checklistenkarte auf das Lösch-Symbol (🗑️),
-        öffnet sich ein Fenster, in welchem Sie die Löschung bestätigen müssen. Das Löschen einer
-        Checkliste löscht automatisch die zugehörigen Fragen. Bitte beachten Sie: Checklisten, zu
-        denen bereits ein Protokoll erfasst wurde, können nicht gelöscht werden.<br>
-        <br>
-        <b>Chart anzeigen</b>: Wurden zu einer Checkliste mindestens 3 Protokolle erfasst, wird das
-        Chart-Symbol (📋) angezeigt.
-        Mit diesem Icon öffnen Sie den Chart-Bildschirm.
-        Dieser zeigt in einem ersten Chart, wieviele Prüfberichte pro Tag erfasst wurden.
-        Enthält die Checkliste eine Nummernfrage, zeigt ein zweites Chart die Kurve für den ersten
-        Nummernwert.
-        Enthält die Checkliste zwei Nummernfragen, zeigt ein drittes Chart die Kurven für die ersten
-        beiden Nummernwerte.<br>
-        <br>
-        <b>Prüfungsprotokolle anzeigen und Prüfung hinzufügen</b>: Tippen Sie auf eine Checkliste,
-        öffnet sich der Bildschirm "Meine Protokolle".
-        Dieser listet die erfassten Protokolle für die gewählte Checkliste.
-        Hier können Sie auch Protokolle hinzufügen.
+    <figure class="imgrght">
+        <img alt="My Checklists" loading="lazy" src="./images/my-checklists.png">
+        <figcaption>My Checklists</figcaption>
+    </figure>
+    Klicken Sie im Dashboard auf die Karte "Meine Checklisten" und öffnen Sie damit den
+    entsprechenden Bildschirm.<br>
+    <br>
+    <b>Checkliste hinzufügen</b>: Neue Checklisten erstellen Sie recht schnell. Klicken Sie
+    einfach auf den **`+`** Button in der unteren rechten Ecke. Es öffnet sich der Dialog
+    "Checkliste hinzufügen". Tragen Sie im Feld Titel einen Namen für Ihre neue Checkliste ein,
+    ordnen Sie eine Kategorie zu und wenn Sie mögen, geben Sie eine kurze Beschreibung ein. Mit
+    dem Button "Hinzufügen" werden Ihre Eingaben gespeichert, Ihre neue Checkliste wird erstellt
+    und in der Übersicht angezeigt.<br>
+    <br>
+    <b>Checklisten suchen</b>: Tippen Sie auf das Suchsymbol (🔍) in der oberen Leiste, um
+    Checklisten nach Titel, Beschreibung oder Kategorie zu finden.<br>
+    <br>
+    <b>Checklisten nach Kategorie filtern</b>: Filtern Sie die Liste, indem Sie auf eine
+    Kategorie tippen (Health, UVV, usw.). Ein Klick auf All hebt den Filter wieder auf.<br>
+    <br>
+    <figure class="imgrght">
+        <img alt="Edit Checklist" loading="lazy" src="./images/edit-checklist.png">
+        <figcaption>Edit Checklist</figcaption>
+    </figure>
+    <b>Checkliste bearbeiten</b>: Tippen Sie in einer Checklistenkarte auf das Ändern-Symbol
+    (✏️), öffnet sich das Fenster "Checkliste bearbeiten". Hier können Sie den Titel, die
+    Kategorie und die Beschreibung anpassen.<br>
+    <br>
+    <b>Checkliste kopieren</b>: Tippen Sie in einer Checklistenkarte auf das Kopieren-Symbol
+    (📄), öffnet sich das Fenster "Checkliste kopieren".
+    Passen Sie den Titel an und wählen Sie [Kopieren].
+    Die neue Checkliste wird als Kopie der gewählten Checkliste erstellt und in der Übersicht
+    angezeigt.<br>
+    <br>
+    <b>Checkpunkte/Fragen</b>: Tippen Sie in einer Checklistenkarte auf das Frage-Symbol (💬),
+    öffnet sich der Bildschirm "Checkpunkte/Fragen". Hier verwalten Sie die Checkpunkte und
+    Fragen für die gewählte Checkliste.
+    Wie das geht, finden Sie etwas weiter unten im Kapitel [<a href="#_checkpoints"
+                                                               target="_self">Checkpunkte/Fragen</a>].<br>
+    <br>
+    <b>Checkliste löschen</b>: Tippen Sie in einer Checklistenkarte auf das Lösch-Symbol (🗑️),
+    öffnet sich ein Fenster, in welchem Sie die Löschung bestätigen müssen. Das Löschen einer
+    Checkliste löscht automatisch die zugehörigen Fragen. Bitte beachten Sie: Checklisten, zu
+    denen bereits ein Protokoll erfasst wurde, können nicht gelöscht werden.<br>
+    <br>
+    <figure class="imgrght">
+        <img alt="Statistics Chart 1" loading="lazy" src="./images/chart1.png">
+        <figcaption>Statistics Chart 1</figcaption>
+    </figure>
+    <figure class="imgrght">
+        <img alt="Statistics Chart 2" loading="lazy" src="./images/chart2.png">
+        <figcaption>Statistics Chart 2</figcaption>
+    </figure>
+    <figure class="imgrght">
+        <img alt="Statistics Chart 3" loading="lazy" src="./images/chart3.png">
+        <figcaption>Statistics Chart 3</figcaption>
+    </figure>
+    <b>Chart anzeigen</b>: Wurden zu einer Checkliste mindestens 3 Protokolle erfasst, wird das
+    Chart-Symbol (📋) angezeigt.
+    Mit diesem Icon öffnen Sie den Chart-Bildschirm.
+    Dieser zeigt in einem ersten Chart, wieviele Prüfberichte pro Tag erfasst wurden.
+    Enthält die Checkliste eine Nummernfrage, zeigt ein zweites Chart die Kurve für den ersten
+    Nummernwert.
+    Enthält die Checkliste zwei Nummernfragen, zeigt ein drittes Chart die Kurven für die ersten
+    beiden Nummernwerte.<br>
+    <br>
+    <b>Prüfungsprotokolle anzeigen und Prüfung hinzufügen</b>: Tippen Sie auf eine Checkliste,
+    öffnet sich der Bildschirm "Meine Protokolle".
+    Dieser listet die erfassten Protokolle für die gewählte Checkliste.
+    Hier können Sie auch Protokolle hinzufügen.
     </p>
 </div>
 
@@ -273,6 +375,10 @@ pobvol Software Services
 <div class="card">
     <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
     <h2>Checkpunkte/Fragen</h2>
+    <figure class="imgrght">
+        <img alt="Checkpoints / Questions" loading="lazy" src="./images/checkpoints-questions.png">
+        <figcaption>Checkpoints / Questions</figcaption>
+    </figure>
     <p>
         Auf diesem Bildschirm verwalten Sie die Checkpunkte/Fragen einer Checkliste. Dazu werden
         folgende Antworttypen unterstützt: Text, Zahl, Kontrollkästchen, einfache Auswahlliste,
@@ -338,43 +444,51 @@ pobvol Software Services
     <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
     <h2>Meine Protokolle</h2>
     <p>
-        Klicken Sie im Dashboard auf die Karte "Meine Protokolle" und öffnen Sie damit den
-        entsprechenden Bildschirm. Sehen Sie aufgezeichnete Protokolle an, filtern Sie die Liste,
-        bearbeiten Sie Ihre Antworten und erstellen Sie sofort Ihren DIN A4 PDF-Bericht.<br>
-        <br>
-        <b>Einstellungen</b>: Klicken Sie auf das Zahnrad-Symbol (⚙), öffnet sich der Dialog
-        "PDF-Berichts-Designer".
-        Passen Sie das Layout der PDF-Berichte (Kopfzeile, Fußzeile, Seitenumbrüche, Datums- und
-        Statusanzeige) an.
-        Für Bilder können Sie Ihre Werte für S, M, L an Ihre Wünsche anpassen.
-        Standardmäßig wird 100px für S, 200px für M und 300px für L verwendet.<br>
-        <br>
-        <b>Protokoll hinzufügen</b>: Klicken Sie dazu einfach auf den **`+`** Button in der unteren
-        rechten Ecke.
-        Weitere Informationen finden Sie im Kapitel [<a href="#_executions" target="_self">Prüfungen
-        durchführen und Ergebnisse erfassen</a>].<br>
-        <br>
-        <b>Protokolle suchen</b>: Tippen Sie auf das Suchsymbol (🔍) in der oberen Leiste, um
-        Protokolle nach Datum, Titel oder Notizen zu finden.<br>
-        <br>
-        <b>Checklisten nach Status filtern</b>: Filtern Sie die Liste, indem Sie auf einen Status
-        tippen (Abgeschlossen, In Bearbeitung). Ein Klick auf Alle hebt den Filter wieder auf.<br>
-        <br>
-        <b>Protokoll bearbeiten</b>: Tippen Sie in einer Karte auf das Ändern-Symbol (✏️), öffnet
-        sich das Fenster "Protokoll bearbeiten" und Sie können Ihre Eingaben anpassen.<br>
-        <br>
-        <b>Protokoll löschen</b>: Tippen Sie in einer Karte auf das Lösch-Symbol (🗑️), öffnet sich
-        ein Fenster, in welchem Sie die Löschung bestätigen müssen. Das Löschen eines Protokolls
-        löscht alle zugehörigen Antworten.<br>
-        <br>
-        <b>PDF anzeigen</b>: Tippen Sie in einer Karte auf das PDF-Symbol, öffnet sich ein
-        PDF-Viewer und zeigt das erzeugte PDF an. Dieses können Sie dann drucken oder teilen.
-        Sollten Sie eine neue Version des PDFs benötigen, tippen Sie in einer Karte auf das
-        Ändern-Symbol (✏️).
-        In dem Fenster "Protokoll bearbeiten" speichern Sie das Protokoll erneut.
-        Wenn alle erforderlichen Fragen beantwortet wurden, wird damit eine neue PDF-Datei erstellt.
-        Warten Sie bis die App-Nachricht nicht mehr sichtbar ist, bevor Sie auf das PDF-Icon
-        klicken.<br>
+    <figure class="imgrght">
+        <img alt="My Logs" loading="lazy" src="./images/my-logs.png">
+        <figcaption>My Logs</figcaption>
+    </figure>
+    Klicken Sie im Dashboard auf die Karte "Meine Protokolle" und öffnen Sie damit den
+    entsprechenden Bildschirm. Sehen Sie aufgezeichnete Protokolle an, filtern Sie die Liste,
+    bearbeiten Sie Ihre Antworten und erstellen Sie sofort Ihren DIN A4 PDF-Bericht.<br>
+    <br>
+    <b>Einstellungen</b>: Klicken Sie auf das Zahnrad-Symbol (⚙), öffnet sich der Dialog
+    "PDF-Berichts-Designer".
+    Passen Sie das Layout der PDF-Berichte (Kopfzeile, Fußzeile, Seitenumbrüche, Datums- und
+    Statusanzeige) an.
+    Für Bilder können Sie Ihre Werte für S, M, L an Ihre Wünsche anpassen.
+    Standardmäßig wird 100px für S, 200px für M und 300px für L verwendet.<br>
+    <br>
+    <b>Protokoll hinzufügen</b>: Klicken Sie dazu einfach auf den **`+`** Button in der unteren
+    rechten Ecke.
+    Weitere Informationen finden Sie im Kapitel [<a href="#_executions" target="_self">Prüfungen
+    durchführen und Ergebnisse erfassen</a>].<br>
+    <br>
+    <b>Protokolle suchen</b>: Tippen Sie auf das Suchsymbol (🔍) in der oberen Leiste, um
+    Protokolle nach Datum, Titel oder Notizen zu finden.<br>
+    <br>
+    <b>Checklisten nach Status filtern</b>: Filtern Sie die Liste, indem Sie auf einen Status
+    tippen (Abgeschlossen, In Bearbeitung). Ein Klick auf Alle hebt den Filter wieder auf.<br>
+    <br>
+    <b>Protokoll bearbeiten</b>: Tippen Sie in einer Karte auf das Ändern-Symbol (✏️), öffnet
+    sich das Fenster "Protokoll bearbeiten" und Sie können Ihre Eingaben anpassen.<br>
+    <br>
+    <b>Protokoll löschen</b>: Tippen Sie in einer Karte auf das Lösch-Symbol (🗑️), öffnet sich
+    ein Fenster, in welchem Sie die Löschung bestätigen müssen. Das Löschen eines Protokolls
+    löscht alle zugehörigen Antworten.<br>
+    <br>
+    <figure class="imgrght">
+        <img alt="PDF Report" loading="lazy" src="./images/pdf-report.png">
+        <figcaption>PDF Report</figcaption>
+    </figure>
+    <b>PDF anzeigen</b>: Tippen Sie in einer Karte auf das PDF-Symbol, öffnet sich ein
+    PDF-Viewer und zeigt das erzeugte PDF an. Dieses können Sie dann drucken oder teilen.
+    Sollten Sie eine neue Version des PDFs benötigen, tippen Sie in einer Karte auf das
+    Ändern-Symbol (✏️).
+    In dem Fenster "Protokoll bearbeiten" speichern Sie das Protokoll erneut.
+    Wenn alle erforderlichen Fragen beantwortet wurden, wird damit eine neue PDF-Datei erstellt.
+    Warten Sie bis die App-Nachricht nicht mehr sichtbar ist, bevor Sie auf das PDF-Icon
+    klicken.<br>
     </p>
 </div>
 
@@ -391,47 +505,51 @@ pobvol Software Services
         - <b>Prüfer</b>: Der Prüfername wurde automatisch aus den Einstellungen ausgefüllt. Sie
         können diesen ändern.<br>
         <br>
-        - </b>Prüfdatum</b>: Das Datum wurde mit dem aktuellen Datum vorbelegt (zur Zeit fest
+        - <b>Prüfdatum</b>: Das Datum wurde mit dem aktuellen Datum vorbelegt (zur Zeit fest
         dd.MM.yyyyy). Sie können dieses ändern.<br>
         <br>
-        - </b>Notizen</b>: Wenn Sie mögen, können Sie zusätzliche Angaben zur Prüfung in den Notizen
+        - <b>Notizen</b>: Wenn Sie mögen, können Sie zusätzliche Angaben zur Prüfung in den Notizen
         eintragen. Nutzen Sie diese Möglichkeit, da die Notizen in der Protokollübersicht angezeigt
         werden. Das erleichtert Ihnen das Auffinden einer Prüfung.<br>
         <br>
-        - </b>Checkpunkte/Fragen</b>: Beantworten Sie nun alle erforderlichen Checklistenfragen. Sie
-        können die Bearbeitung jederzeit speichern und später weitermachen. Nutzen Sie dazu den
-        Speichern-Button im Kopfbereich des Formulars. Zusätzlich finden Sie einen Speicherbutton
-        auch am Ende der Liste. Sollten noch nicht alle erforderlichen Fragen beantwortet sein, wird
-        der Status mit "in Bearbeitung" vorbelegt. Wenn alle erfordferlichen Checkpunkte/Fragen
-        beantwortet wurden, wird der Status beim Speichern automatisch auf "Abgeschlossen" geändert.<br>
-        <br>
-        - </b>NFC Tags</b>: Für NFC-Fragen tippen Sie auf den NFC-Button und halten Sie einen
-        NFC-Tag an die Rückseite Ihres Geräts, damit dieser gescannt werden kann. Wenn alles
-        geklappt hat, wurden die Daten in das Antwortfeld übernommen. Bitte beachten Sie, dass dazu
-        auf Ihrem Gerät NFC eingeschaltet sein muss.<br>
-        <br>
-        - </b>QR-Codes</b>: Für QR-Code-Fragen tippen Sie auf den Button "QR-Code scannen". Damit
-        öffnet sich der Kamerascanner und Sie können den Code aufnehmen. Wenn alles geklappt hat,
-        wurden die Daten in das Antwortfeld übernommen. Bitte beachten Sie, dass die App dazu
-        Kamera-Berechtigungen benötigt.<br>
-        <br>
-        - </b>Bild hinzufügen</b>: Tippen Sie auf das Icon "Bild aufnehmen" oder das Icon "Bild
-        hochladen", um ein Foto zu einer Antwort hinzuzufügen.
-        Bilder werden in dem abgesicherten App-Ordner (/data/data/com.pobvol.mychecks) gespeichert.
-        Legen Sie über die Icons "S", "M", "L" fest, in welcher Größe ein Bild im PDF-Dokument
-        ausgegeben werden soll.
-        S steht für eine Breite von 100px, M für eine Breite von 200px und L für eine Breite von
-        300px.
-        Das können Sie pro Bild / Antwort individuell festlegen.<br>
-        <br>
-        - <b>PDF- und SQL-Dateien</b>: PDF- und SQL-Dateien werden für vollständig ausgefüllte
-        Checklisten automatisch erstellt, sobald alle erforderlichen Daten erfasst wurden.
-        Der Status wird automatisch auf "Abgeschlossen" gesetzt.
-        Eine PDF-Datei wird in dem Ordner <b>Download/pobvolMyChecks/pdf</b> gespeichert.
-        Eine SQL-Datei wird in dem Ordner <b>Download/pobvolMyChecks/sql</b> gespeichert.
-        Für jede SQL-Datei wird zusätzlich eine Datei mit der entsprechenden Checksumme in dem
-        sql-Ordner gespeichert.
-        Wurden Bilder hinzugefügt, werden diese ebenfalls in den sql-Ordner kopiert.
+    <figure class="imgrght">
+        <img alt="Fill checklist" loading="lazy" src="./images/edit-submission.png">
+        <figcaption>Fill checklist</figcaption>
+    </figure>
+    - <b>Checkpunkte/Fragen</b>: Beantworten Sie nun alle erforderlichen Checklistenfragen. Sie
+    können die Bearbeitung jederzeit speichern und später weitermachen. Nutzen Sie dazu den
+    Speichern-Button im Kopfbereich des Formulars. Zusätzlich finden Sie einen Speicherbutton
+    auch am Ende der Liste. Sollten noch nicht alle erforderlichen Fragen beantwortet sein, wird
+    der Status mit "in Bearbeitung" vorbelegt. Wenn alle erfordferlichen Checkpunkte/Fragen
+    beantwortet wurden, wird der Status beim Speichern automatisch auf "Abgeschlossen" geändert.<br>
+    <br>
+    - <b>NFC Tags</b>: Für NFC-Fragen tippen Sie auf den NFC-Button und halten Sie einen
+    NFC-Tag an die Rückseite Ihres Geräts, damit dieser gescannt werden kann. Wenn alles
+    geklappt hat, wurden die Daten in das Antwortfeld übernommen. Bitte beachten Sie, dass dazu
+    auf Ihrem Gerät NFC eingeschaltet sein muss.<br>
+    <br>
+    - <b>QR-Codes</b>: Für QR-Code-Fragen tippen Sie auf den Button "QR-Code scannen". Damit
+    öffnet sich der Kamerascanner und Sie können den Code aufnehmen. Wenn alles geklappt hat,
+    wurden die Daten in das Antwortfeld übernommen. Bitte beachten Sie, dass die App dazu
+    Kamera-Berechtigungen benötigt.<br>
+    <br>
+    - <b>Bild hinzufügen</b>: Tippen Sie auf das Icon "Bild aufnehmen" oder das Icon "Bild
+    hochladen", um ein Foto zu einer Antwort hinzuzufügen.
+    Bilder werden in dem abgesicherten App-Ordner (/data/data/com.pobvol.mychecks) gespeichert.
+    Legen Sie über die Icons "S", "M", "L" fest, in welcher Größe ein Bild im PDF-Dokument
+    ausgegeben werden soll.
+    S steht für eine Breite von 100px, M für eine Breite von 200px und L für eine Breite von
+    300px.
+    Das können Sie pro Bild / Antwort individuell festlegen.<br>
+    <br>
+    - <b>PDF- und SQL-Dateien</b>: PDF- und SQL-Dateien werden für vollständig ausgefüllte
+    Checklisten automatisch erstellt, sobald alle erforderlichen Daten erfasst wurden.
+    Der Status wird automatisch auf "Abgeschlossen" gesetzt.
+    Eine PDF-Datei wird in dem Ordner <b>Download/pobvolMyChecks/pdf</b> gespeichert.
+    Eine SQL-Datei wird in dem Ordner <b>Download/pobvolMyChecks/sql</b> gespeichert.
+    Für jede SQL-Datei wird zusätzlich eine Datei mit der entsprechenden Checksumme in dem
+    sql-Ordner gespeichert.
+    Wurden Bilder hinzugefügt, werden diese ebenfalls in den sql-Ordner kopiert.
     </p>
 </div>
 
@@ -441,21 +559,51 @@ pobvol Software Services
     <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
     <h2>Datensicherheit</h2>
     <p>
-        Daten werden nur auf Ihrem Gerät gespeichert. Ihre persönlichen Einstellungen liegen in
-        einem abgesicherten Bereich der App (/data/data/com.pobvol.mychecks/shared_prefs).
-        Kategorien, Textbausteine, Checklisten, Checkpunkte/Fragen, Prüfungsdaten und Antworten
-        werden in einer lokalen Android SQLite-Datenbank gespeichert. Auch diese liegt in dem
-        abgesicherten Bereich der App (/data/data/com.pobvol.mychecks/databases).<br>
+        <b>Daten werden nur auf Ihrem Gerät gespeichert.
+            Die App selbst überträgt keine Daten in die Cloud oder auf fremde Server.</b><br>
         <br>
-        <b>Datensicherung und Datenexport</b>: Sie können jederzeit über den Startbildschirm
-        (Menüpunkt "Datenbank sichern)" eine Sicherungskopie der Datenbank erstellen. PDF- und
-        SQL-Dateien erstellt die App automatisch, sobald eine Prüfung abgeschlossen ist.
-        Datenbankkopien, PDF- und SQL-Dateien finden Sie in ihrem <b>Download</b>-Folder,
-        Unterordner pobvolMyChecks. In diesem Unterordner liegen die exportierten Daten dann in den
-        Ordnern <b>dbbackup</b>, <b>pdf</b> und <b>sql</b>.
-        Sie können diese Daten auf einen PC oder ein anderes Gerät kopieren und sichern. <br>
+        Ihre <b>persönlichen Einstellungen</b> liegen in einem abgesicherten Bereich der App
+        (/data/data/com.pobvol.mychecks/shared_prefs).<br>
         <br>
-        <b>Die App selbst überträgt keine Daten in die Cloud oder auf fremde Server.</b>
+        <b>Checklisten, Protokolle und Textbausteine</b> werden in einer lokalen Android
+        SQLite-Datenbank gespeichert.
+        Auch diese liegt in dem abgesicherten Bereich der App
+        (/data/data/com.pobvol.mychecks/databases).
+        Mit der App erhalten Sie auch eine kleine Demo-Datenbank.
+        Sie können jederzeit über den Startbildschirm (Menüpunkt "Datenbank verwalten)" eine
+        Sicherungskopie der Datenbank erstellen und diese wieder importieren.
+        Sie können die Demo-Datenbank aktivieren oder die Datenbank auf den Auslieferungszustand
+        zurücksetzen.
+        Bitte beachten Sie, dass Ihre Daten durch diese Aktionen überschrieben werden.
+        Erstellen Sie unbedingt vorher eine Sicherungskopie Ihrer Daten.
+        Datenbankkopien finden Sie in ihrem <b>Download</b>-Folder, Unterordner
+        pobvolMyChecks/dbbackup.<br>
+        <br>
+        <b>PDF-Dateien</b> erstellt die App automatisch, sobald eine Prüfung abgeschlossen und das
+        Protokoll gespeichert wird.
+        Die PDF-Dateien finden Sie in ihrem <b>Download</b>-Folder, Unterordner pobvolMyChecks/pdf.
+        PDFs, die Sie nicht mehr benötigen, können Sie aus diesem Ordner löschen.
+        Bitte beachten Sie, dass PDFs neu erstellt werden, sobald Sie das Protokoll noch einmal
+        speichern.<br>
+        <br>
+        Bilder, die sie Ihren Antworten hinzufügen, finden Sie in ihrem <b>Download</b>-Folder,
+        Unterordner pobvolMyChecks/pictures.
+        Die App nutzt diese, wenn ein PDF neu erstellt werden soll.
+        Bilder, die Sie nicht mehr benötigen, können Sie aus diesem Ordner löschen.
+        Bitte beachten Sie, dass gelöschte Bilder nicht in neu erstellten PDFs ausgegeben
+        werden!<br>
+        <br>
+        <b>SQL-Dateien</b> erstellt die App automatisch, sobald eine Prüfung abgeschlossen und das
+        Protokoll gespeichert wird.
+        Die SQL-Dateien finden Sie in ihrem <b>Download</b>-Folder, Unterordner pobvolMyChecks/sql.
+        In diesem Ordner finden Sie für jede SQL-Datei eine Datei mit der entsprechenden Checksumme.
+        Zusätzlich werden Kopien der genutzten Bilder in diesem Ordner abgelegt.
+        Bitte beachten Sie, dass SQL-Dateien neu erstellt werden, sobald Sie ein abgeschlossenes
+        Protokoll noch einmal speichern.<br>
+        <br>
+        Daten, die in Ihrem Download-Folder liegen, können Sie mit einer anderen App (bspw.
+        Autosync) auf einen PC oder in die Cloud übertragen.
+        Die App ** pobvol My Checks ** überträgt keine Daten.<br>
     </p>
 </div>
 
@@ -483,31 +631,50 @@ pobvol Software Services
 <div class="card">
     <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
     <h2>Lizenz und Copyright</h2>
-    <a href="https://www.gnu.org/licenses/gpl-3.0" rel="nofollow" target="_blank"><img
-            alt="imgage:gplv3-or-later.png" class="imgrght" src="./images/gplv3-or-later.png"></a>
     <p>
         Die App <b>pobvol My Checks</b> ist <a href="https://de.wikipedia.org/wiki/Freie_Software"
                                                rel="nofollow" target="_blank">Freie Software</a>☯
-        und wird quelloffen ausgeliefert. Der Sourcecode wird über <a
-            href="https://github.com/pobvolcom/pobvol_My_Checks_Android" rel="nofollow"
-            target="_blank">GitHub</a>☯ veröffentlicht. Sie können die App unter den Bedingungen der
-        <a href="https://www.gnu.org/licenses/gpl-3.0" rel="nofollow" target="_blank">GNU General
-            Public License v3</a>☯ herunterladen, installieren, betreiben, modifizieren und weiter
-        verteilen. Copyright © 2026 Volker Pobloth, pobvol Software Services. Alle Rechte
-        vorbehalten.
-        Entwickelt mit Google Android Studio und Gemini 3.5 Flash Lite and Gemini 3.6 Flash<br>
+        und wird quelloffen ausgeliefert.
+        Entwickelt mit Google Android Studio und Gemini 3.5 Flash Lite and Gemini 3.6 Flash.
+        Der Sourcecode wird über <a href="https://github.com/pobvolcom/pobvol_My_Checks_Android"
+                                    rel="nofollow" target="_blank">GitHub</a>☯ veröffentlicht.<br>
         <br>
+        LIZENZERTEILUNG<br>
+        <a href="https://www.gnu.org/licenses/gpl-3.0" rel="nofollow" target="_blank"><img
+                alt="imgage:gplv3-or-later.png" class="imgrght"
+                src="./images/gplv3-or-later.png"></a>
+        Sie können die App unter den Bedingungen der <a href="https://www.gnu.org/licenses/gpl-3.0"
+                                                        rel="nofollow" target="_blank">GNU General
+        Public License v3</a>☯ herunterladen, installieren, betreiben, modifizieren und weiter
+        verteilen.<br>
+        <br>
+        HAFTUNGSAUSSCHLUSS<br>
         Die App wird in der Hoffnung, dass sie nützlich sein wird, aber OHNE JEGLICHE GEWÄHRLEISTUNG
-        bereitgestellt; sogar ohne die implizite Gewährleistung der MARKTFÄHIGKEIT oder EIGNUNG FÜR
-        EINEN BESTIMMTEN ZWECK. Der Entwickler haftet nicht für Datenverluste oder fehlerhafte
-        Prüfergebnisse.<br>
+        bereitgestellt;
+        sogar ohne die implizite Gewährleistung der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN
+        ZWECK.
+        Der Entwickler haftet nicht für Datenverluste oder fehlerhafte Protokolle.<br>
         <br>
+        ZUSTIMMUNG<br>
+        Durch Klicken auf [Akzeptieren &amp; Zustimmen] haben Sie bei dem ersten Start bestätigt,
+        dass Sie diese Bedingungen gelesen, verstanden und akzeptiert haben.<br>
+        <br>
+        EXTERNE LINKS<br>
         Für die Inhalte verlinkter Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten
-        verantwortlich. Externe Links sind mit diesem Symbol gekennzeichnet: ☯
+        verantwortlich. Externe Links sind mit diesem Symbol gekennzeichnet: ☯<br>
+        <br>
+        COPYRIGHT<br>
+        Copyright © 2026 Volker Pobloth, pobvol Software Services. Alle Rechte vorbehalten.<br>
+        <br>
     </p>
+
 </div>
 
-<div class="footer">
+<div class="footer"></div>
+
+<!-- Lightbox Modal Overlay -->
+<div id="lightbox-modal" onclick="this.style.display='none';">
+    <img alt="Zoomed Screenshot" id="lightbox-img" src="">
 </div>
 
 </body>

@@ -3,7 +3,7 @@
 <head>
     <title>My Checks - User Help</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width; initial-scale=1.0;" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
@@ -51,6 +51,18 @@
             padding: 2px 4px;
             border-radius: 4px;
         }
+        body.dark .contentflex > div {
+            background-color: #252525;
+            border: 1px solid #3C3C3C;
+        }
+        body.dark figure.imgrght img {
+            border: 1px solid #3C3C3C;
+            box-shadow: 0 2px 6px rgba(255,255,255,0.05);
+        }
+        body.dark figure.imgrght img {
+            border: 1px solid #3C3C3C;
+            box-shadow: 0 2px 6px rgba(255,255,255,0.05);
+        }
         a { color: #FFB74D;}
         h1 { font-size: 22px; margin-bottom: 10px; }
         h2 { font-size: 16px; margin-top: 1px; padding-bottom: 0px; }
@@ -68,15 +80,42 @@
             margin-right: 9px;
             margin-bottom: 9px;
         }
+        img.logo{
+            float: left;
+            margin-right: 9px;
+            margin-bottom: 9px;
+            max-width: 180px;
+        }
         img.imgrght{
             float: right;
             margin-left: 18px;
+            margin-right: 0px;
             margin-bottom: 9px;
+        }
+        figure.imgrght {
+            float: right;
+            margin-left: 16px;
+            margin-bottom: 12px;
+            max-width: 180px;
+            text-align: center;
+            font-size: 11px;
+            opacity: 0.9;
+        }
+        figure.imgrght img, .contentflex img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            border: 1px solid rgba(128,128,128,0.3);
+            cursor: zoom-in;
+            transition: transform 0.2s ease;
+        }
+        figure.imgrght img:hover, .contentflex img:hover {
+            transform: scale(1.02);
         }
         .contentflex {
             display: flex;
             flex-flow: row nowrap;
-            height: auto
+            height: auto;
             margin-bottom: 10px;
             padding-bottom: 10px;
             max-width: 100%; /* Maximum width */
@@ -84,7 +123,7 @@
             margin-right: auto;
             padding-right: 15px;
             overflow-x: scroll;
-            background: white;
+            /*background: white;*/
             border-radius: 25px;
             line-height: 1.2;
             /*align-items: center;*/
@@ -94,24 +133,74 @@
             margin-right:25px;
             padding:15px;
             height: auto;
-            min-width: 33%;
+            min-width: 250px;
             text-align: center;
             border: 1px solid grey;
             border-radius: 25px;
             box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
         }
+
+        /* Lightbox Modal */
+        #lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #lightbox-modal img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.5);
+            cursor: default;
+        }
     </style>
     <script src="./scripts/myscript.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const modal = document.getElementById("lightbox-modal");
+            const modalImg = document.getElementById("lightbox-img");
+            const images = document.querySelectorAll("figure.imgrght img, .contentflex img");
+
+            images.forEach(img => {
+                img.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    modal.style.display = "flex";
+                    modalImg.src = this.src;
+                    modalImg.alt = this.alt;
+                });
+            });
+        });
+    </script>
 </head>
 <body>
-    <img class="logo" src="./images/logo.png" alt="Logo"/><br>
-    pobvol Software Services
 
     <a name="_home"></a>
     <div class="card">
         <h1>My Checks - User Help</h1>
+        <figure class="imgrght">
+            <img alt="pobvol My Checks" loading="lazy" src="./images/pobvol_my_checks.png">
+            <figcaption>Logo</figcaption>
+        </figure>
         <p>
-            With the Android app <b>pobvol My Checks</b>, you can easily and quickly create custom checklists with checkpoints and questions, and then record, analyze, and output the results of inspections and other activities in PDF reports. All captured data is automatically backed up in SQL files. Data structures do not need to be programmed in databases with great effort. German, English, Spanish, and French are supported.<br>
+            With the Android app <b>pobvol My Checks</b>, you can easily and quickly create custom
+            checklists
+            with checkpoints and questions, and then record, analyze, and output the results of
+            inspections
+            and other activities in PDF reports. All captured data is automatically backed up in SQL
+            files.
+            Data structures do not need to be programmed in databases with great effort.
+            German, English, Spanish, and French are supported.<br>
             <br>
         </p>
         <p style="font-size:normal;font-weight: normal;text-align: left;">
@@ -123,7 +212,8 @@
             &#x1F517;&nbsp;<a href="#_reports" target="_self">My Logs & PDF and SQL Export</a><br>
             &#x1F517;&nbsp;<a href="#_executions" target="_self">Performing Inspections & Recording
             Results</a><br>
-            &#x1F517;&nbsp;<a href="#_data_security" target="_self">Data Security & Export</a><br>
+            &#x1F517;&nbsp;<a href="#_data_security" target="_self">Privacy, Data Security &
+            Export</a><br>
             &#x1F517;&nbsp;<a href="#_architecture" target="_self">Technology / Architecture</a><br>
             &#x1F517;&nbsp;<a href="#_copyright" target="_self">© Copyright</a><br>
         </p>
@@ -136,28 +226,31 @@
         <h2>Screenshots</h2>
         <div class="contentflex">
             <div>
-                <img width=100% src="./images/dashboard.png" alt="Dashboard">
+                <img alt="Dashboard" loading="lazy" src="./images/dashboard.png" width=100%>
             </div>
             <div>
-                <img width=100% src="./images/my-checklists.png" alt="My Checklists">
+                <img alt="My Checklists" loading="lazy" src="./images/my-checklists.png" width=100%>
             </div>
             <div>
-                <img width=100% src="./images/edit-checklist.png" alt="Edit Checklist">
+                <img alt="Edit Checklist" loading="lazy" src="./images/edit-checklist.png"
+                     width=100%>
             </div>
             <div>
-                <img width=100% src="./images/checkpoints-questions.png" alt="Checkpoints/Questions">
+                <img alt="Checkpoints/Questions" loading="lazy" src="./images/checkpoints-questions.png"
+                     width=100%>
             </div>
             <div>
-                <img width=100% src="./images/my-logs.png" alt="My Logs">
+                <img alt="My Logs" loading="lazy" src="./images/my-logs.png" width=100%>
             </div>
             <div>
-                <img width=100% src="./images/pdf-report.png" alt="PDF-Report">
+                <img alt="PDF-Report Designer" loading="lazy" src="./images/pdf-report-designer.png"
+                     width=100%>
             </div>
             <div>
-                <img width=100% src="./images/pdf-report-designer.png" alt="PDF-Report Designer">
+                <img alt="PDF-Report" loading="lazy" src="./images/pdf-report.png" width=100%>
             </div>
             <div>
-                <img width=100% src="./images/charts.png" alt="Charts">
+                <img alt="Tetx blocks" loading="lazy" src="./images/text-blocks.png" width=100%>
             </div>
         </div>
     </div>
@@ -167,13 +260,16 @@
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Dashboard & Navigation</h2>
+        <figure class="imgrght">
+            <img alt="Dashboard Screen" loading="lazy" src="./images/dashboard.png">
+            <figcaption>Dashboard</figcaption>
+        </figure>
         <p>
             The dashboard is your starting point. Use the cards to navigate to your checklists and
             logs, and access settings and help via the top bar.<br>
             <br>
-            With the menu icon in the upper left corner, you can view the license agreement,
-            manage your own text blocks, back up the database, import backups of the database
-            again and close the app.
+            With the menu icon in the upper left corner you can view the license agreement,
+            manage your own text blocks, manage the database and exit the app.
         </p>
     </div>
 
@@ -183,28 +279,40 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Settings</h2>
         <p>
-            In the dashboard, click on the gear icon (⚙).
-            The "General Settings" dialog will open.
-            Customize the appearance, preferred language, and categories to suit your needs.
-            Enter your name in the examiner field.
-            Your name will then be transferred to the log and the PDF.
-            If you like, turn on Narrator (TTS). App messages will then be read to you.
+            In the dashboard or checklist overview, click the gear icon (⚙).
+            The "General Settings" dialog will open.<br>
+            <br>
+            Customize the appearance, preferred language, and categories to suit your needs.<br>
+            <br>
+            Enter your name in the Inspector field.
+            Your name will then be included in the minutes and output in the PDF. <br>
+            <br>
+            If you like, turn on Narrator (TTS). The app messages will then be read to you.
         </p>
     </div>
 
     <hr>
     <a name="_checklists"></a>
     <div class="card">
-        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p><h2>My Checklists</h2>
+        <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
+        <h2>My Checklists</h2>
         <p>
+        <figure class="imgrght">
+            <img alt="My Checklists" loading="lazy" src="./images/my-checklists.png">
+            <figcaption>My Checklists</figcaption>
+        </figure>
             Tap the "My Checklists" card on the dashboard to open this screen.<br>
-            <br>
+        <br>
             <b>Add Checklist</b>: Create new checklists quickly. Tap the **`+`** button in the bottom right corner to open the "Add Checklist" dialog. Enter a title, assign a category, and optionally provide a short description. Tap "Add" to save your new checklist, creating it and displaying it in the overview.<br>
             <br>
             <b>Search Checklists</b>: Tap the search icon (🔍) in the top bar to find checklists by title, description, or category.<br>
             <br>
             <b>Filter by Category</b>: Filter the list by tapping a category (Health, UVV, etc.). Tap All to clear the filter.<br>
             <br>
+        <figure class="imgrght">
+            <img alt="Edit Checklist" loading="lazy" src="./images/edit-checklist.png">
+            <figcaption>Edit Checklist</figcaption>
+        </figure>
             <b>Edit Checklist</b>: Tap the edit icon (✏️) on a checklist card to open "Edit Checklist". Here you can adjust title, category, and description.<br>
             <br>
             <b>Copy checklist</b>: In a checklist card, tap the copy icon (📄) to open the "Copy
@@ -219,6 +327,18 @@
             <br>
             <b>Delete Checklist</b>: Tap the delete icon (🗑️) to open a confirmation window. Deleting a checklist automatically deletes its questions. Please note: Checklists with recorded logs cannot be deleted.<br>
             <br>
+        <figure class="imgrght">
+            <img alt="Statistics Chart 1" loading="lazy" src="./images/chart1.png">
+            <figcaption>Statistics Chart 1</figcaption>
+        </figure>
+        <figure class="imgrght">
+            <img alt="Statistics Chart 2" loading="lazy" src="./images/chart2.png">
+            <figcaption>Statistics Chart 2</figcaption>
+        </figure>
+        <figure class="imgrght">
+            <img alt="Statistics Chart 3" loading="lazy" src="./images/chart3.png">
+            <figcaption>Statistics Chart 3</figcaption>
+        </figure>
             <b>Show chart</b>: If at least 3 protocols have been recorded for a checklist,
             the chart symbol (📋) is displayed.
             With this icon you open the chart screen.
@@ -239,6 +359,11 @@
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Checkpoints / Questions</h2>
+        <figure class="imgrght">
+            <img alt="Checkpoints / Questions" loading="lazy"
+                 src="./images/checkpoints-questions.png">
+            <figcaption>Checkpoints / Questions</figcaption>
+        </figure>
         <p>
             On this screen, you manage the checkpoints/questions of a checklist. The app supports
             the following response types: text, number, checkbox, simple picklist, Multiple
@@ -299,6 +424,10 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>My Logs</h2>
         <p>
+        <figure class="imgrght">
+            <img alt="My Logs" loading="lazy" src="./images/my-logs.png">
+            <figcaption>My Logs</figcaption>
+        </figure>
             Click on the "My Logs" card in the dashboard and open the corresponding screen.
             View recorded logs, filter the list, edit your answers and create your A4 PDF report
             immediately.<br>
@@ -325,7 +454,15 @@
             <b>Delete log</b>: Tap on the delete icon (🗑️) in a card, opens a window in which you
             have to confirm the deletion. Deleting a log deletes all related responses. <br>
             <br>
-            <b>View PDF</b>b>: A tap on the PDF icon, opens a PDF viewer and displays the generated
+        <figure class="imgrght">
+            <img alt="PDF Report" loading="lazy" src="./images/pdf-report.png">
+            <figcaption>PDF Report</figcaption>
+        </figure>
+        <figure class="imgrght">
+            <img alt="PDF Report Designer" loading="lazy" src="./images/pdf-report-designer.png">
+            <figcaption>PDF Report Designer</figcaption>
+        </figure>
+        <b>View PDF</b>: A tap on the PDF icon, opens a PDF viewer and displays the generated
             PDF.
             You can print or share it.
             If you need a new version of the PDF, tap the Change icon (✏️) in a card.
@@ -358,6 +495,10 @@
             notes. Use this option, as the notes are displayed in the log overview. This makes it
             easier for you to find an exam. <br>
             <br>
+        <figure class="imgrght">
+            <img alt="Fill checklist" loading="lazy" src="./images/edit-submission.png">
+            <figcaption>Fill checklist</figcaption>
+        </figure>
             - <b>Checkpoints/Questions</b>: Now answer all the required checklist questions. You can
             save the edit at any time and continue later. Use the Save button in the header area of
             the form. In addition, you will find a save button also at the end of the list. If not
@@ -398,23 +539,46 @@
     <a name="_data_security"></a>
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
-        <h2>Data Security & Export</h2>
+        <h2>Privacy, Data Security & Export</h2>
         <p>
-            Data is only stored on your device. Your personal settings are stored in a secure area
-            of
-            the app (/data/data/com.pobvol.mychecks/shared_prefs). Categories, text modules,
-            checklists, checkpoints/questions, exam data and answers are stored in a local Android
-            SQLite database. This is also located in the secure area of the app
-            (/data/data/com.pobvol.mychecks/databases).<br>
+            <b>Data is only stored on your device. The app itself does not transfer any data to the
+                cloud or to third-party servers.</b><br>
             <br>
-            <b>Data backup and data export</b>: You can create a backup copy of the database at any
-            time via the start screen (menu item "Back up database)". The app automatically creates
-            PDF and SQL files as soon as a check is completed. Database copies, PDF and SQL files
-            can be found in the download folder, subfolder pobvolMyChecks. In this subfolder,
-            the exported data is then stored in the dbbackup, pdf and sql folders.
-            You can copy this data to a PC or other device and back it up.<br>
+            Your <b>personal settings</b> are located in a secure area of the app
+            (/data/data/com.pobvol.mychecks/shared_prefs).<br>
             <br>
-            <b>The app itself does not transfer any data to the cloud or to third-party servers.</b>
+            <b>Checklists, logs, and text blocks</b> are stored in a local Android SQLite database.
+            This is also located in the secure area of the app
+            (/data/data/com.pobvol.mychecks/databases).
+            A small demo database is part of the app.
+            You can create a backup copy of the database at any time via the start screen (menu item
+            "Manage database)" and import it again.
+            You can activate the demo database or reset the database to its original state.
+            Please note that your data will be overwritten by these actions.
+            Be sure to make a backup copy of your data beforehand.
+            Database copies can be found in your download folder, subfolder pobvolMyChecks/dbbackup.<br>
+            <br>
+            The app automatically creates <b>PDF files</b> as soon as an exam is completed and the
+            log is saved.
+            The PDF files can be found in the download folder, subfolder pobvolMyChecks/pdf.
+            PDFs that you no longer need can be deleted from this folder.
+            Please note that PDFs will be recreated as soon as you save the log again.<br>
+            <br>
+            <b>Pictures</b> that you add to your answers can be found in your download folder,
+            subfolder pobvolMyChecks/pictures.
+            The app uses this when a PDF is to be created.
+            You can delete images that you no longer need from this folder.
+            Please note that deleted images will not be output in newly created PDFs!<br>
+            <br>
+            <b>SQL files</b> are automatically created by the app as soon as a check is completed
+            and the log is saved.
+            The SQL files can be found in their download folder, subfolder pobvolMyChecks/sql.
+            In this folder, you will find a file with the corresponding checksum for each SQL file.
+            In addition, copies of the images used are stored in this folder.
+            Please note that SQL files are recreated as soon as you save a completed log again.
+            Data that is in your download folder can be transferred to a PC or the cloud with
+            another app (e.g. Autosync).
+            <b>The app ** pobvol My Checks ** does not transmit any data.</b><br>
         </p>
     </div>
 
@@ -440,30 +604,49 @@
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>© Copyright</h2>
-        <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow"><img class="imgrght" src="./images/gplv3-or-later.png" alt="imgage:gplv3-or-later.png"></a>
         <p>
             The app <b>pobvol My Checks</b> is <a href="https://en.wikipedia.org/wiki/Free_software"
                                                   rel="nofollow" target="_blank">Free Software</a>☯,
             delivered as open source.
-            Source code is uploaded to <a
+            The app was developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini
+            3.6 Flash.
+            The source code is published at <a
                 href="https://github.com/pobvolcom/pobvol_My_Checks_Android" rel="nofollow"
-                target="_blank">GitHub</a>☯.
+                target="_blank">GitHub</a>☯.<br>
+            <br>
+            LICENSE GRANT<br>
+            <img alt="imgage:gplv3-or-later.png" class="imgrght" src="./images/gplv3-or-later.png"
+                 style="max-width: 120px; float: right; margin-left: 12px;">
             You can download, install, operate, modify, and redistribute this software under the
             terms of the <a href="https://www.gnu.org/licenses/gpl-3.0" rel="nofollow"
-                            target="_blank">GNU General Public License v3</a>☯.
-            Copyright © 2026 Volker Pobloth, pobvol Software Services.
-            Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash<br>
+                            target="_blank">GNU General Public License v3</a>☯.<br>
             <br>
-            The App is provided in the hope that it will be useful,
-            but WITHOUT WARRANTY OF ANY KIND;
+            DISCLAIMER<br>
+            The App is provided in the hope that it will be useful, but WITHOUT WARRANTY OF ANY
+            KIND;
             even without the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
             PURPOSE.
+            The Developer is not liable for any loss of data or erroneous logs.<br>
+            <br>
+            CONSENT<br>
+            By clicking [Accept &amp; Agree] at the first start, you confirmed that you have read,
+            understood and accepted these Terms.<br>
+            <br>
+            EXTERNAL LINKS<br>
             The content of linked sites is always the responsibility of the respective provider or
-            operator of the sites.
-            External links are marked with this symbol: ☯
+            operator of the sites. External links are marked with this symbol: ☯<br>
+            <br>
+            COPYRIGHT<br>
+            Copyright © 2026 Volker Pobloth, pobvol Software Services<br>
+            <br>
         </p>
     </div>
 
     <div class="footer"></div>
+
+    <!-- Lightbox Modal Overlay -->
+    <div id="lightbox-modal" onclick="this.style.display='none';">
+        <img alt="Zoomed Screenshot" id="lightbox-img" src="">
+    </div>
 </body>
 </html>

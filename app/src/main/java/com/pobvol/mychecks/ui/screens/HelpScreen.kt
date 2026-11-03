@@ -59,7 +59,7 @@ fun HelpScreen(
         ThemeMode.SYSTEM -> isSystemInDarkTheme()
     }
 
-    var textZoomPercent by remember { mutableStateOf(100) }
+    var textZoomPercent by remember { mutableStateOf(135) }
     var webViewRef by remember { mutableStateOf<WebView?>(null) }
 
     val currentLang = uiState.userSettings.preferredLanguage.takeIf { it.isNotBlank() } ?: "en"
@@ -133,7 +133,7 @@ fun HelpScreen(
             factory = { ctx ->
                 WebView(ctx).apply {
                     webViewClient = WebViewClient()
-                    settings.javaScriptEnabled = false
+                    settings.javaScriptEnabled = true
                     settings.textZoom = textZoomPercent
                     setBackgroundColor(Color.TRANSPARENT)
                     loadDataWithBaseURL("file:///android_asset/help/", htmlContent, "text/html", "UTF-8", null)

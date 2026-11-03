@@ -3,17 +3,18 @@
 <head>
     <title>My Checks - Ayuda del usuario</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width; initial-scale=1.0;" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
     <meta name="description" content="Cree listas de control rápida y fácilmente | Registrar resultados | Software libre | Código abierto | Android Smartphones y Tablets" />
-	<meta property="og:locale" content="es_ES" />
-	<meta property="og:type" content="website" />
-	<meta property="og:title" content="pobvol My Checks Ayuda" />
-	<meta property="og:description" content="Cree listas de control rápida y fácilmente | Registrar resultados | Software libre | Código abierto | Android Smartphones y Tablets" />
-	<meta property="og:url" content="help_es.html" />
-	<meta property="og:site_name" content="pobvol My Checks Ayuda" />
+    <meta content="es_ES" property="og:locale"/>
+    <meta content="website" property="og:type"/>
+    <meta content="pobvol My Checks Ayuda" property="og:title"/>
+    <meta content="Cree listas de control rápida y fácilmente | Registrar resultados | Software libre | Código abierto | Android Smartphones y Tablets"
+          property="og:description"/>
+    <meta content="help_es.html" property="og:url"/>
+    <meta content="pobvol My Checks Ayuda" property="og:site_name"/>
     <style>
         body {
             font-family: sans-serif;
@@ -51,6 +52,18 @@
             padding: 2px 4px;
             border-radius: 4px;
         }
+        body.dark .contentflex > div {
+            background-color: #252525;
+            border: 1px solid #3C3C3C;
+        }
+        body.dark figure.imgrght img {
+            border: 1px solid #3C3C3C;
+            box-shadow: 0 2px 6px rgba(255,255,255,0.05);
+        }
+        body.dark figure.imgrght img {
+            border: 1px solid #3C3C3C;
+            box-shadow: 0 2px 6px rgba(255,255,255,0.05);
+        }
         a { color: #FFB74D;}
         h1 { font-size: 22px; margin-bottom: 10px; }
         h2 { font-size: 16px; margin-top: 1px; padding-bottom: 0px; }
@@ -68,15 +81,42 @@
             margin-right: 9px;
             margin-bottom: 9px;
         }
+        img.logo{
+            float: left;
+            margin-right: 9px;
+            margin-bottom: 9px;
+            max-width: 180px;
+        }
         img.imgrght{
             float: right;
             margin-left: 18px;
+            margin-right: 0px;
             margin-bottom: 9px;
+        }
+        figure.imgrght {
+            float: right;
+            margin-left: 16px;
+            margin-bottom: 12px;
+            max-width: 180px;
+            text-align: center;
+            font-size: 11px;
+            opacity: 0.9;
+        }
+        figure.imgrght img, .contentflex img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            border: 1px solid rgba(128,128,128,0.3);
+            cursor: zoom-in;
+            transition: transform 0.2s ease;
+        }
+        figure.imgrght img:hover, .contentflex img:hover {
+            transform: scale(1.02);
         }
         .contentflex {
             display: flex;
             flex-flow: row nowrap;
-            height: auto
+            height: auto;
             margin-bottom: 10px;
             padding-bottom: 10px;
             max-width: 100%; /* Maximum width */
@@ -84,7 +124,7 @@
             margin-right: auto;
             padding-right: 15px;
             overflow-x: scroll;
-            background: white;
+            /*background: white;*/
             border-radius: 25px;
             line-height: 1.2;
             /*align-items: center;*/
@@ -94,22 +134,65 @@
             margin-right:25px;
             padding:15px;
             height: auto;
-            min-width: 33%;
+            min-width: 250px;
             text-align: center;
             border: 1px solid grey;
             border-radius: 25px;
             box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
         }
+
+        /* Lightbox Modal */
+        #lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #lightbox-modal img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.5);
+            cursor: default;
+        }
     </style>
     <script src="./scripts/myscript.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const modal = document.getElementById("lightbox-modal");
+            const modalImg = document.getElementById("lightbox-img");
+            const images = document.querySelectorAll("figure.imgrght img, .contentflex img");
+
+            images.forEach(img => {
+                img.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    modal.style.display = "flex";
+                    modalImg.src = this.src;
+                    modalImg.alt = this.alt;
+                });
+            });
+        });
+    </script>
 </head>
 <body>
-    <img class="logo" src="./images/logo.png" alt="Logo"/><br>
-    pobvol Software Services
 
     <a name="_home"></a>
     <div class="card">
         <h1>My Checks - Ayuda del usuario</h1>
+        <figure class="imgrght">
+            <img alt="pobvol My Checks" loading="lazy" src="./images/pobvol_my_checks.png">
+            <figcaption>Logo</figcaption>
+        </figure>
         <p>
             Con la aplicación de Android <b>pobvol My Checks</b>, puede crear rápida y fácilmente listas de control personalizadas con puntos de control y preguntas, y luego registrar, analizar y exportar los resultados de inspecciones en informes PDF. Todos los datos se respaldan automáticamente en archivos SQL. Idiomas admitidos: alemán, inglés, español y francés.<br>
             <br>
@@ -135,28 +218,31 @@
         <h2>Screenshots</h2>
         <div class="contentflex">
             <div>
-                <img width=100% src="./images/dashboard.png" alt="Dashboard">
+                <img alt="Dashboard" loading="lazy" src="./images/dashboard.png" width=100%>
             </div>
             <div>
-                <img width=100% src="./images/my-checklists.png" alt="My Checklists">
+                <img alt="My Checklists" loading="lazy" src="./images/my-checklists.png" width=100%>
             </div>
             <div>
-                <img width=100% src="./images/edit-checklist.png" alt="Edit Checklist">
+                <img alt="Edit Checklist" loading="lazy" src="./images/edit-checklist.png"
+                     width=100%>
             </div>
             <div>
-                <img width=100% src="./images/checkpoints-questions.png" alt="Checkpoints/Questions">
+                <img alt="Checkpoints/Questions" loading="lazy" src="./images/checkpoints-questions.png"
+                     width=100%>
             </div>
             <div>
-                <img width=100% src="./images/my-logs.png" alt="My Logs">
+                <img alt="My Logs" loading="lazy" src="./images/my-logs.png" width=100%>
             </div>
             <div>
-                <img width=100% src="./images/pdf-report.png" alt="PDF-Report">
+                <img alt="PDF-Report Designer" loading="lazy" src="./images/pdf-report-designer.png"
+                     width=100%>
             </div>
             <div>
-                <img width=100% src="./images/pdf-report-designer.png" alt="PDF-Report Designer">
+                <img alt="PDF-Report" loading="lazy" src="./images/pdf-report.png" width=100%>
             </div>
             <div>
-                <img width=100% src="./images/charts.png" alt="Charts">
+                <img alt="Tetx blocks" loading="lazy" src="./images/text-blocks.png" width=100%>
             </div>
         </div>
     </div>
@@ -166,15 +252,17 @@
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Panel y Navegación</h2>
+        <figure class="imgrght">
+            <img alt="Dashboard Screen" loading="lazy" src="./images/dashboard.png">
+            <figcaption>Dashboard</figcaption>
+        </figure>
         <p>
-            El panel de control es tu punto de partida. Usa las tarjetas para navegar hasta tus
-            listas de comprobación y Registros y acceso a Configuración y Ayuda desde la barra
-            superior. <br>
+            El panel de control es tu punto de partida.
+            Usa las tarjetas para navegar hasta tus listas de comprobación y Registros y acceso a
+            Configuración y Ayuda desde la barra superior.<br><
             <br>
-            A través del icono del menú en la esquina superior izquierda, puedes ver el
-            contrato de licencia, gestionar tus propios bloques de texto, hacer una copia de
-            seguridad de la base de datos, importar copias de seguridad de la base de datos y cerrar
-            la aplicación.
+            El icono del menú en la esquina superior izquierda te mostrará el acuerdo de licencia,
+            Gestiona tus propios bloques de texto, gestiona la base de datos y Cierra la app.
         </p>
     </div>
 
@@ -184,12 +272,16 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Configuración</h2>
         <p>
-            En el panel de control, haz clic en el icono de engranaje (⚙).
-            Se abrirá el cuadro de diálogo "Configuración general".
+            En el panel de control o en la lista de comprobación, haz clic en el icono de engranaje
+            (⚙).
+            Se abrirá el cuadro de diálogo "Configuración general".<br>
+            <br>
             Personaliza el aspecto, el idioma preferido y las categorías para adaptarlas a tus
-            necesidades.
-            Introduce tu nombre en el campo examinador.
-            Tu nombre se transferirá a las actas y se publicará en el PDF.
+            necesidades.<br>
+            <br>
+            Introduce tu nombre en el campo Inspector.
+            Tu nombre se incluirá entonces en las actas y la salida en el PDF.<br>
+            <br>
             Si quieres, activa Narrador (TTS). Luego te leerán los mensajes de la app.
         </p>
     </div>
@@ -199,6 +291,10 @@
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p><h2>Mis Listas de Control</h2>
         <p>
+        <figure class="imgrght">
+            <img alt="My Checklists" loading="lazy" src="./images/my-checklists.png">
+            <figcaption>My Checklists</figcaption>
+        </figure>
             Haz clic en la tarjeta "Mis listas de comprobación" en el panel de control y abre la
             pantalla correspondiente.<br>
             <br>
@@ -215,6 +311,10 @@
             <b>Filtrar listas de verificación por categoría</b>: Filtrar la lista haciendo clic en
             Categoría (Salud, UVV, etc.). Al hacer clic en Todos, el filtro vuelve a eliminar.<br>
             <br>
+        <figure class="imgrght">
+            <img alt="Edit Checklist" loading="lazy" src="./images/edit-checklist.png">
+            <figcaption>Edit Checklist</figcaption>
+        </figure>
             <b>Editar una lista de comprobación</b>: En una tarjeta de lista de comprobación, pulsa
             el icono de Cambiar (), ✏️ se abre la ventana "Editar lista de comprobación". Aquí
             puedes seleccionar el título, la Personaliza la categoría y la descripción.<br>
@@ -236,6 +336,18 @@
             Eliminar un Checklist elimina automáticamente las preguntas asociadas. Por favor, nota:
             Checklists, para que ya han tenido un registro registrado, no pueden ser eliminados.<br>
             <br>
+        <figure class="imgrght">
+            <img alt="Statistics Chart 1" loading="lazy" src="./images/chart1.png">
+            <figcaption>Statistics Chart 1</figcaption>
+        </figure>
+        <figure class="imgrght">
+            <img alt="Statistics Chart 2" loading="lazy" src="./images/chart2.png">
+            <figcaption>Statistics Chart 2</figcaption>
+        </figure>
+        <figure class="imgrght">
+            <img alt="Statistics Chart 3" loading="lazy" src="./images/chart3.png">
+            <figcaption>Statistics Chart 3</figcaption>
+        </figure>
             Mostrar gráfico : Si al menos 3 protocolos han sido registrados para una lista de
             comprobación,
             se muestra el símbolo del gráfico (📋).
@@ -259,6 +371,11 @@
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Puntos de control / Preguntas</h2>
+        <figure class="imgrght">
+            <img alt="Checkpoints / Questions" loading="lazy"
+                 src="./images/checkpoints-questions.png">
+            <figcaption>Checkpoints / Questions</figcaption>
+        </figure>
         <p>
             En esta pantalla, gestionas los puntos de control/preguntas de una lista de
             comprobación.
@@ -322,6 +439,10 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Mis Registr</h2>
         <p>
+        <figure class="imgrght">
+            <img alt="My Logs" loading="lazy" src="./images/my-logs.png">
+            <figcaption>My Logs</figcaption>
+        </figure>
             Haz clic en la tarjeta "Mis registros" en el panel de control y abre la pantalla
             correspondiente.
             Ver registros grabados, filtrar la lista, edita tus respuestas y crea tu informe A4 en
@@ -351,6 +472,10 @@
             ventana en la que tienes que confirmar la eliminación. Eliminar un registro Elimina
             todas las respuestas relacionadas.<br>
             <br>
+        <figure class="imgrght">
+            <img alt="PDF Report" loading="lazy" src="./images/pdf-report.png">
+            <figcaption>PDF Report</figcaption>
+        </figure>
             <b>Ver PDF</b>: Toca el icono del PDF en un mapa, se abre una Visor de PDF y muestra el
             PDF generado.
             Luego puedes imprimirlo o compartirlo.
@@ -386,6 +511,10 @@
             notas. Utiliza esta opción, ya que las notas se muestran en la visión general del
             registro. Esto facilita que encuentres un examen. <br>
             <br>
+        <figure class="imgrght">
+            <img alt="Fill checklist" loading="lazy" src="./images/edit-submission.png">
+            <figcaption>Fill checklist</figcaption>
+        </figure>
             - <b>Puntos de control/Preguntas</b>: Ahora responde todas las preguntas obligatorias de
             la lista de comprobación. Tú puedes guardar la edición en cualquier momento y continuar
             más adelante. Usa la Botón de guardar en la cabecera del formulario. Además, encontrarás
@@ -432,24 +561,56 @@
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>Seguridad de Datos y Exportación</h2>
         <p>
-            Todos los datos se almacenan en su dispositivo. Su configuración personal se almacena en
-            un área segura de la aplicación (/data/data/com.pobvol.mychecks/shared_prefs). Las
-            categorías, los módulos de texto, las listas de control, los puntos de
-            control/preguntas, los datos de inspección y las respuestas se almacenan en una base de
-            datos local de Android SQLite. Esta también se encuentra en el área segura de la
-            aplicación (/data/data/com.pobvol.mychecks/databases).<br>
+            <b>Los datos solo se almacenan en tu dispositivo.
+                La propia aplicación no transfiere ningún dato a la nube ni a servidores de
+                terceros.</b><br>
             <br>
-            <b>Copia de seguridad y exportación de datos</b>: Puede crear una copia de seguridad de
-            la base de datos en cualquier momento a través de la pantalla de inicio (elemento de
-            menú "Crear copia de base de datos"). La aplicación crea automáticamente archivos PDF y
-            SQL tan pronto como se completa una verificación. Las copias de la base de datos, los
-            archivos PDF y SQL se pueden encontrar en la carpeta de descargas, subcarpeta
-            pobvolMyChecks. En esta carpeta encontrará una subcarpeta con el ID de dispositivo de la
-            aplicación. En esta subcarpeta, los datos exportados se almacenan en las carpetas
-            dbbackup, pdf y sql. Puede copiar estos datos a un PC u otro dispositivo y realizar una
-            copia de seguridad.<br>
+            Tus <b>ajustes personales</b> están en una zona segura de la app
+            (/data/data/com.pobvol.mychecks/shared_prefs).<br>
             <br>
-            <b>La aplicación no transfiere ningún dato a la nube ni a servidores de terceros.</b>
+            <b>Las listas de comprobación, registros y frases se almacenan</b> en una base de datos
+            SQL local de Android.
+            Esto también se encuentra en la zona segura de la aplicación
+            (/data/data/com.pobvol.mychecks/databases).
+            La app también te ofrece una pequeña base de datos de demostraciones.
+            Puedes crear una copia de seguridad de la base de datos en cualquier momento
+            desde la pantalla de inicio (elemento del menú "Gestionar la base de datos)" e
+            importarla de nuevo.
+            Puedes activar la base de datos de demostración o restablecer la base de datos a su
+            estado original.
+            Por favor, ten en cuenta que tus datos serán sobrescritos por estas acciones.
+            Asegúrate de hacer una copia de seguridad de tus datos antes.
+            Las copias de la base de datos se pueden encontrar en tu carpeta de descargas,
+            subcarpeta pobvolMyChecks/dbbackup.<br>
+            <br>
+            La aplicación crea automáticamente archivos <b>PDF</b> tan pronto como se completa un
+            examen y se guarda el registro.
+            Los archivos PDF se pueden encontrar en su carpeta de descargas, subcarpeta
+            pobvolMyChecks/pdf.
+            Los PDFs que ya no necesitas pueden eliminarse de esta carpeta.
+            Ten en cuenta que los PDFs se recrearán tan pronto como guardes el registro de
+            nuevo.<br>
+            <br>
+            Las <b>imágenes</b> que añades a tus respuestas se pueden encontrar en tu carpeta de
+            descargas, Subcarpeta pobvolMyChecks/pictures.
+            La aplicación utiliza esto cuando se va a recrear un PDF.
+            Puedes eliminar imágenes que ya no necesitas de esta carpeta.
+            Por favor, ten en cuenta que las imágenes eliminadas no se generarán en PDFs recién
+            creados !<br>
+            <br>
+            Los archivos <b>SQL</b> son creados automáticamente por la aplicación tan pronto como se
+            completa una comprobación y se guarda el registro.
+            Los archivos SQL se pueden encontrar en su carpeta de descargas, subcarpeta
+            pobvolMyChecks/sql.
+            En esta carpeta, encontrarás un archivo con la suma de comprobación correspondiente para
+            cada archivo SQL.
+            Además, en esta carpeta se almacenan copias de las imágenes utilizadas.
+            Ten en cuenta que los archivos SQL se recrean tan pronto como vuelves a guardar un
+            registro completado.<br>
+            <br>
+            Los datos que están en tu carpeta de descargas pueden transferirse a un PC o a la nube
+            con otra aplicación (por ejemplo, Autosync).
+            <b>La app ** pobvol My Checks ** no transmite ningún dato.</b><br>
         </p>
     </div>
 
@@ -478,22 +639,50 @@
     <div class="card">
         <p style="float: right;"><a href="#_home">Top</a>&nbsp;&#8593;</p>
         <h2>© Copyright</h2>
-        <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow"><img class="imgrght" src="./images/gplv3-or-later.png" alt="imgage:gplv3-or-later.png"></a>
         <p>
             La app <b>pobvol My Checks</b> es <a href="https://en.wikipedia.org/wiki/Free_software"
                                                  rel="nofollow" target="_blank">Software Libre</a>☯
-            y código abierto vía <a href="https://github.com/pobvolcom/pobvol_My_Checks_Android"
-                                    rel="nofollow" target="_blank">GitHub</a>☯. Puedes descargar,
-            instalar, operar, modificar y redistribuir este software bajo los términos de la <a
-                href="https://www.gnu.org/licenses/gpl-3.0" rel="nofollow" target="_blank">GNU
-            General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software
-            Services.
-            Desarrollado con Google Android Studio y Gemini 3.5 Flash Lite y Gemini 3.6 Flash.<br>
+            y se ofrece de código abierto.
+            La app fue desarrollada con Google Android Studio y Gemini 3.5 Flash Lite y Gemini 3.6
+            Flash.
+            El código fuente se publicó a través de <a
+                href="https://github.com/pobvolcom/pobvol_My_Checks_Android" rel="nofollow"
+                target="_blank">GitHub</a>☯.<br>
             <br>
-            La aplicación se proporciona con la esperanza de que sea útil, pero SIN GARANTÍA DE NINGÚN TIPO; incluso sin la garantía implícita de COMERCIALIZACIÓN o APTITUD PARA UN PROPÓSITO PARTICULAR. El contenido de los sitios enlazados es siempre responsabilidad del proveedor o operador respectivo de los sitios. Los enlaces externos están marcados con este símbolo: ☯
+            CONCESIÓN DE LICENCIA<br>
+            Puedes descargar, instalar, operar, modificar y redistribuir la aplicación bajo los
+            términos de la Licencia Pública <a href="https://www.gnu.org/licenses/gpl-3.0"
+                                               rel="nofollow" target="_blank">GNU General Public
+            License v3</a>☯.<br>
+            <br>
+            AVISO LEGAL<br>
+            La aplicación se proporciona con la esperanza de que sea útil, pero SIN NINGUNA GARANTÍA
+            DE NINGÚN TIPO; incluso sin la garantía implícita de COMERCIALIZACIÓN o IDONEIDAD PARA
+            UN PROPÓSITO PARTICULAR. El desarrollador no se hace responsable de ninguna pérdida de
+            datos ni registros erróneos.<br>
+            <br>
+            CONSENTIMIENTO<br>
+            Al hacer clic en [Aceptar y Aceptar], has confirmado que has leído, entendido y aceptado
+            estos términos y condiciones cuando comienzas el proyecto.<br>
+            <br>
+            ENLACES EXTERNOS<br>
+            El contenido de las páginas enlazadas es siempre responsabilidad del proveedor o
+            operador correspondiente de las páginas. Los enlaces externos están marcados con este
+            símbolo: ☯<br>
+            <br>
+            DERECHOS DE AUTOR<br>
+            Copyright © 2026 Volker Pobloth, pobvol Software Services. Todos los derechos
+            reservados.<br>
+            <br>
         </p>
     </div>
 
     <div class="footer"></div>
+
+    <!-- Lightbox Modal Overlay -->
+    <div id="lightbox-modal" onclick="this.style.display='none';">
+        <img alt="Zoomed Screenshot" id="lightbox-img" src="">
+    </div>
+
 </body>
 </html>

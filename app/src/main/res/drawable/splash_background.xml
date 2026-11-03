@@ -3,7 +3,7 @@
     <item android:drawable="@android:color/white" />
     <item android:gravity="center">
         <bitmap
-            android:src="@drawable/pobvol"
+                android:src="@drawable/pobvol_my_checks_"
             android:gravity="center" />
     </item>
 </layer-list>
