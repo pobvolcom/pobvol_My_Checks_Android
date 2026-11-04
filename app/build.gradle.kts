@@ -17,30 +17,18 @@ val localProperties = Properties().apply {
 
 android {
     namespace = "com.pobvol.mychecks"
-    compileSdk {
-        version = release(37)
-    }
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.pobvol.mychecks"
         minSdk = 24
         targetSdk = 37
-        versionCode = 18
-        versionName = "1.7.0311.2"
+        versionCode = 21
+        versionName = "1.7.0411.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        ndk {
-            debugSymbolLevel = "FULL"
-        }
     }
 
-    buildTypes {
-        release {
-            optimization {
-                enable = false
-            }
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -64,7 +52,7 @@ android {
 
     buildTypes {
         release {
-            if (file("my-release-key.jks").exists()) {
+            if (releaseStoreFile.exists()) {
                 signingConfig = signingConfigs.findByName("release")
             }
             isMinifyEnabled = true
@@ -75,7 +63,6 @@ android {
             )
         }
     }
-
 }
 
 dependencies {

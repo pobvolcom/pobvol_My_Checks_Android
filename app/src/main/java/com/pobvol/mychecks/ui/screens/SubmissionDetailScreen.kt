@@ -208,12 +208,14 @@ fun SubmissionDetailScreen(
 
                     Button(
                         onClick = {
+                            val currentLang = uiState.userSettings.preferredLanguage
+                            val isoDate = DateUtil.toIsoDate(checkDate, currentLang)
                             val updatedSubmission = submission.copy(
                                 inspector = inspectorName.ifBlank { null },
-                                date = checkDate.ifBlank {
+                                date = isoDate.ifBlank {
                                     SimpleDateFormat(
-                                        "dd.MM.yyyy",
-                                        Locale.getDefault()
+                                        "yyyy-MM-dd",
+                                        Locale.US
                                     ).format(Date())
                                 },
                                 status = status,

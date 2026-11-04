@@ -52,37 +52,66 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.pobvol.mychecks.R
 import com.pobvol.mychecks.data.local.ChecklistEntity
+import com.pobvol.mychecks.data.local.ChecklistSubmissionEntity
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.ui.ChecklistUiState
+import com.pobvol.mychecks.util.DateUtil
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.log10
+import kotlin.math.pow
 
 enum class ChartTimeMode {
-    DAILY, MONTHLY, YEARLY
+    ALL, ONE_MONTH, SIX_MONTHS
 }
 
-private fun formatSubmissionDate(dateStr: String, mode: ChartTimeMode): String {
-    if (dateStr.isBlank()) return "Unknown"
-    val normalized = if (dateStr.contains(".") && dateStr.length >= 10) {
-        val parts = dateStr.split(".")
-        if (parts.size >= 3) {
-            val day = parts[0].padStart(2, '0')
-            val month = parts[1].padStart(2, '0')
-            val year = parts[2].take(4)
-            "$year-$month-$day"
-        } else {
-            dateStr
+private fun filterSubmissions(
+    submissions: List<ChecklistSubmissionEntity>,
+    mode: ChartTimeMode,
+    preferredLang: String = "en"
+): List<ChecklistSubmissionEntity> {
+    if (submissions.isEmpty() || mode == ChartTimeMode.ALL) return submissions
+    val maxVal = submissions.maxOfOrNull { parseSubmissionDate(it.date, preferredLang) } ?: 0L
+    if (maxVal == 0L) return submissions
+
+    val year = (maxVal / 10000L).toInt()
+    val month = ((maxVal / 100L) % 100L).toInt() - 1
+    val day = (maxVal % 100L).toInt()
+
+    val cal = java.util.Calendar.getInstance().apply {
+        set(year, month, day, 0, 0, 0)
+        set(java.util.Calendar.MILLISECOND, 0)
+    }
+    val maxDaysSinceEpoch = cal.timeInMillis / (24L * 60L * 60L * 1000L)
+
+    val daysBack = when (mode) {
+        ChartTimeMode.ALL -> 0L
+        ChartTimeMode.ONE_MONTH -> 30L
+        ChartTimeMode.SIX_MONTHS -> 180L
+    }
+    val minDaysSinceEpoch = maxDaysSinceEpoch - daysBack
+
+    return submissions.filter { sub ->
+        val subVal = parseSubmissionDate(sub.date, preferredLang)
+        if (subVal == 0L) return@filter false
+        val subYear = (subVal / 10000L).toInt()
+        val subMonth = ((subVal / 100L) % 100L).toInt() - 1
+        val subDay = (subVal % 100L).toInt()
+        val subCal = java.util.Calendar.getInstance().apply {
+            set(subYear, subMonth, subDay, 0, 0, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
         }
-    } else {
-        dateStr
-    }
-
-    return when (mode) {
-        ChartTimeMode.DAILY -> if (normalized.length >= 10) normalized.take(10) else normalized
-        ChartTimeMode.MONTHLY -> if (normalized.length >= 7) normalized.take(7) else normalized
-        ChartTimeMode.YEARLY -> if (normalized.length >= 4) normalized.take(4) else normalized
+        val subDays = subCal.timeInMillis / (24L * 60L * 60L * 1000L)
+        subDays in minDaysSinceEpoch..maxDaysSinceEpoch
     }
 }
 
-private fun shortDate(dateStr: String, mode: ChartTimeMode, preferredLang: String): String {
+private fun formatSubmissionDate(dateStr: String, preferredLang: String = "en"): String {
+    if (dateStr.isBlank()) return "Unknown"
+    return DateUtil.toIsoDate(dateStr, preferredLang)
+}
+
+private fun shortDate(dateStr: String, preferredLang: String): String {
     if (dateStr.length < 4) return dateStr
     try {
         val parts = when {
@@ -96,23 +125,16 @@ private fun shortDate(dateStr: String, mode: ChartTimeMode, preferredLang: Strin
             } else {
                 Triple(parts[2], parts[1], parts[0])
             }
-            return when (mode) {
-                ChartTimeMode.DAILY -> {
-                    if (preferredLang.startsWith("de", ignoreCase = true)) {
-                        "$day.$month."
-                    } else if (preferredLang.startsWith(
-                            "es",
-                            ignoreCase = true
-                        ) || preferredLang.startsWith("fr", ignoreCase = true)
-                    ) {
-                        "$day/$month/"
-                    } else {
-                        "$month/$day"
-                    }
-                }
-
-                ChartTimeMode.MONTHLY -> "$year-$month"
-                ChartTimeMode.YEARLY -> year
+            return if (preferredLang.startsWith("de", ignoreCase = true)) {
+                "$day.$month."
+            } else if (preferredLang.startsWith(
+                    "es",
+                    ignoreCase = true
+                ) || preferredLang.startsWith("fr", ignoreCase = true)
+            ) {
+                "$day/$month/"
+            } else {
+                "$month/$day"
             }
         }
     } catch (_: Exception) {
@@ -120,30 +142,100 @@ private fun shortDate(dateStr: String, mode: ChartTimeMode, preferredLang: Strin
     return dateStr
 }
 
-private fun parseSubmissionDate(dateStr: String): Long {
+private fun parseSubmissionDate(dateStr: String, preferredLang: String = "en"): Long {
     if (dateStr.isBlank()) return 0L
+    val iso = DateUtil.toIsoDate(dateStr, preferredLang)
     try {
-        if (dateStr.contains(".")) {
-            val parts = dateStr.split(".")
-            if (parts.size >= 3) {
-                val day = parts[0].toIntOrNull() ?: 1
-                val month = parts[1].toIntOrNull() ?: 1
-                val year = parts[2].take(4).toIntOrNull() ?: 2026
-                return year * 10000L + month * 100L + day
-            }
-        }
-        if (dateStr.contains("-")) {
-            val parts = dateStr.split("-")
-            if (parts.size >= 3) {
-                val year = parts[0].take(4).toIntOrNull() ?: 2026
-                val month = parts[1].toIntOrNull() ?: 1
-                val day = parts[2].take(2).toIntOrNull() ?: 1
-                return year * 10000L + month * 100L + day
-            }
+        val parts = iso.split("-")
+        if (parts.size >= 3) {
+            val year = parts[0].toLongOrNull() ?: 0L
+            val month = parts[1].toLongOrNull() ?: 0L
+            val day = parts[2].toLongOrNull() ?: 0L
+            return year * 10000L + month * 100L + day
         }
     } catch (_: Exception) {
     }
     return 0L
+}
+
+private fun parseDateTriple(
+    dateStr: String,
+    preferredLang: String = "en"
+): Triple<String, String, String> {
+    if (dateStr.length < 4) return Triple(dateStr, "", "")
+    val iso = DateUtil.toIsoDate(dateStr, preferredLang)
+    try {
+        val parts = iso.split("-")
+        if (parts.size >= 3) {
+            val year = parts[0]
+            val month = parts[1]
+            val day = parts[2]
+            return Triple(day, month, year)
+        }
+    } catch (_: Exception) {
+    }
+    return Triple(dateStr, "", "")
+}
+
+private fun calculateNiceScale(maxDataVal: Float, gridSteps: Int = 4): Pair<Float, Float> {
+    val maxVal = maxOf(maxDataVal, 1f)
+    val roughStep = maxVal / gridSteps.toFloat()
+    val magnitude = 10.0.pow(floor(log10(roughStep.toDouble()))).toFloat()
+    val residual = roughStep / magnitude
+    val niceResidual = when {
+        residual <= 1f -> 1f
+        residual <= 2f -> 2f
+        residual <= 2.5f -> 2.5f
+        residual <= 5f -> 5f
+        else -> 10f
+    }
+    val step = niceResidual * magnitude
+    val niceMax = ceil(maxVal / step) * step
+    return Pair(step, if (niceMax > 0f) niceMax else step * gridSteps)
+}
+
+private fun formatShortDateRange(dateStr: String, preferredLang: String): String {
+    val iso = DateUtil.toIsoDate(dateStr, preferredLang)
+    if (iso.length < 10) return dateStr
+    try {
+        val parts = iso.split("-")
+        if (parts.size >= 3) {
+            val year = parts[0]
+            val month = parts[1].toInt()
+            val day = parts[2].toInt()
+            val shortYear = year.takeLast(2)
+            return if (preferredLang.startsWith("de", ignoreCase = true)) {
+                "$day.$month.$shortYear"
+            } else if (preferredLang.startsWith(
+                    "es",
+                    ignoreCase = true
+                ) || preferredLang.startsWith("fr", ignoreCase = true)
+            ) {
+                "$day/$month/$shortYear"
+            } else {
+                "$month/$day/$shortYear"
+            }
+        }
+    } catch (_: Exception) {
+    }
+    return dateStr
+}
+
+private fun formatMillisDateRange(millis: Long, preferredLang: String): String {
+    val cal = java.util.Calendar.getInstance().apply { timeInMillis = millis }
+    val year = cal.get(java.util.Calendar.YEAR)
+    val month = cal.get(java.util.Calendar.MONTH) + 1
+    val day = cal.get(java.util.Calendar.DAY_OF_MONTH)
+    val shortYear = year.toString().takeLast(2)
+    return when {
+        preferredLang.startsWith("de", ignoreCase = true) -> "$day.$month.$shortYear"
+        preferredLang.startsWith("es", ignoreCase = true) || preferredLang.startsWith(
+            "fr",
+            ignoreCase = true
+        ) -> "$day/$month/$shortYear"
+
+        else -> "$month/$day/$shortYear"
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -164,18 +256,42 @@ fun ChecklistChartScreen(
         ThemeMode.SYSTEM -> systemDark
     }
 
-    var chartTimeMode by remember { mutableStateOf(ChartTimeMode.DAILY) }
+    var chartTimeMode by remember { mutableStateOf(ChartTimeMode.ALL) }
     val preferredLang = uiState.userSettings.preferredLanguage
 
     val totalSubmissions = uiState.allSubmissions.filter { it.checklistid == checklist.id }
-        .sortedWith(compareBy({ parseSubmissionDate(it.date) }, { it.timestamp }))
-    val submissions = totalSubmissions.takeLast(uiState.submissionLimit)
+        .sortedWith(compareBy({ parseSubmissionDate(it.date, preferredLang) }, { it.timestamp }))
+    val filteredSubmissions = remember(totalSubmissions, chartTimeMode, preferredLang) {
+        filterSubmissions(totalSubmissions, chartTimeMode, preferredLang)
+    }
+    val submissions = filteredSubmissions.takeLast(uiState.submissionLimit)
     val questions = uiState.questionsForSelectedChecklist.filter { it.checklistid == checklist.id }
     val numberQuestions = questions.filter { it.type.lowercase() == "number" }
 
     val submissionsPerPeriod = submissions.groupBy {
-        formatSubmissionDate(it.date, chartTimeMode)
+        formatSubmissionDate(it.date, preferredLang)
     }.mapValues { (_, subs) -> subs.size }.toList().sortedBy { it.first }
+
+    val dateRangeStr = if (filteredSubmissions.isNotEmpty() && chartTimeMode != ChartTimeMode.ALL) {
+        val maxVal =
+            totalSubmissions.maxOfOrNull { parseSubmissionDate(it.date, preferredLang) } ?: 0L
+        val year = (maxVal / 10000L).toInt()
+        val month = ((maxVal / 100L) % 100L).toInt() - 1
+        val day = (maxVal % 100L).toInt()
+        val cal = java.util.Calendar.getInstance().apply { set(year, month, day, 23, 59, 59) }
+        val maxMillis = cal.timeInMillis
+
+        val startDateMillis = when (chartTimeMode) {
+            ChartTimeMode.ALL -> 0L
+            ChartTimeMode.ONE_MONTH -> maxMillis - (30L * 24L * 60L * 60L * 1000L)
+            ChartTimeMode.SIX_MONTHS -> maxMillis - (180L * 24L * 60L * 60L * 1000L)
+        }
+        val startDate = formatMillisDateRange(startDateMillis, preferredLang)
+        val endDate = formatMillisDateRange(maxMillis, preferredLang)
+        " ($startDate - $endDate)"
+    } else {
+        ""
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -212,9 +328,9 @@ fun ChecklistChartScreen(
                 ) {
                     ChartTimeMode.entries.forEach { mode ->
                         val label = when (mode) {
-                            ChartTimeMode.DAILY -> stringResource(R.string.chart_mode_daily)
-                            ChartTimeMode.MONTHLY -> stringResource(R.string.chart_mode_monthly)
-                            ChartTimeMode.YEARLY -> stringResource(R.string.chart_mode_yearly)
+                            ChartTimeMode.ALL -> stringResource(R.string.chart_filter_all)
+                            ChartTimeMode.ONE_MONTH -> stringResource(R.string.chart_filter_1m)
+                            ChartTimeMode.SIX_MONTHS -> stringResource(R.string.chart_filter_6m)
                         }
                         FilterChip(
                             selected = chartTimeMode == mode,
@@ -245,7 +361,7 @@ fun ChecklistChartScreen(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Text(
-                                text = stringResource(R.string.submissions_per_day),
+                                text = stringResource(R.string.submissions_per_day) + dateRangeStr,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                             )
@@ -282,13 +398,13 @@ fun ChecklistChartScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "Numeric Value: ${q1.title}",
+                                text = stringResource(R.string.numeric_value) + ": ${q1.title}",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                             )
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            val singleSeriesData = totalSubmissions.map { sub ->
+                            val singleSeriesData = filteredSubmissions.map { sub ->
                                 val subAnswers =
                                     uiState.answers.filter { it.submissionid == sub.id }
                                 val rawV1 = subAnswers.find { it.questionid == q1.id }?.value ?: ""
@@ -315,8 +431,57 @@ fun ChecklistChartScreen(
                 }
             }
 
-            // 3. Dual-Series Line Chart
-            if (numberQuestions.size >= 2) {
+            // 3. Line Chart (Single-series if 1 numeric question, dual-series if 2+ numeric questions)
+            if (numberQuestions.size == 1) {
+                val q1 = numberQuestions[0]
+
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = stringResource(R.string.numeric_value) + ": ${q1.title}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            val singleSeriesLineData = submissions.groupBy {
+                                formatSubmissionDate(it.date, preferredLang)
+                            }.map { (period, subs) ->
+                                val avgV1 = subs.mapNotNull { sub ->
+                                    val subAnswers =
+                                        uiState.answers.filter { it.submissionid == sub.id }
+                                    subAnswers.find { it.questionid == q1.id }?.value?.replace(
+                                        ',',
+                                        '.'
+                                    )?.toDoubleOrNull()
+                                }.let { if (it.isNotEmpty()) it.average() else 0.0 }
+                                Pair(period, avgV1)
+                            }.sortedBy { it.first }
+
+                            if (singleSeriesLineData.isEmpty()) {
+                                Text(
+                                    text = "No submission answers recorded.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            } else {
+                                SingleSeriesLineChart(
+                                    data = singleSeriesLineData,
+                                    isDarkTheme = isDarkTheme,
+                                    chartTimeMode = chartTimeMode,
+                                    preferredLang = preferredLang
+                                )
+                            }
+                        }
+                    }
+                }
+            } else if (numberQuestions.size >= 2) {
                 val q1 = numberQuestions[0]
                 val q2 = numberQuestions[1]
 
@@ -329,20 +494,22 @@ fun ChecklistChartScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "Numeric Values (Series 1 & 2)",
+                                text = stringResource(R.string.numeric_values_dual),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "• Series 1: ${q1.title}\n• Series 2: ${q2.title}",
+                                text = stringResource(R.string.series_1) + q1.title + "\n" + stringResource(
+                                    R.string.series_2
+                                ) + q2.title,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                             Spacer(modifier = Modifier.height(16.dp))
 
                             val seriesData = submissions.groupBy {
-                                formatSubmissionDate(it.date, chartTimeMode)
+                                formatSubmissionDate(it.date, preferredLang)
                             }.map { (period, subs) ->
                                 val avgV1 = subs.mapNotNull { sub ->
                                     val subAnswers =
@@ -515,21 +682,30 @@ fun SubmissionsLineChart(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     data.forEachIndexed { index, pair ->
-                        val shouldShowLabel =
-                            index == 0 || index == data.size - 1 || index % skipInterval == 0
+                        val (day, month, year) = parseDateTriple(pair.first, preferredLang)
                         Column(
                             modifier = Modifier.width(55.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            if (shouldShowLabel) {
-                                Text(
-                                    text = shortDate(pair.first, chartTimeMode, preferredLang),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            }
+                            Text(
+                                text = day,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                            )
+                            Text(
+                                text = month,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                            )
+                            Text(
+                                text = year,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.outline,
+                                maxLines = 1,
+                            )
                         }
                     }
                 }
@@ -548,16 +724,18 @@ fun SingleSeriesAreaChart(
     if (data.isEmpty()) return
     val density = LocalDensity.current
     val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
-    val maxVal = maxOf(
+    val maxValData = maxOf(
         data.maxOfOrNull { it.second } ?: 1.0,
         1.0
     ).toFloat()
+
+    val gridSteps = 4
+    val (step, niceMax) = calculateNiceScale(maxValData, gridSteps)
 
     val seriesColor = Color(0xFFD4AF37) // Gold
     val fillColor = seriesColor.copy(alpha = 0.25f)
     val gridColor =
         if (isDarkTheme) Color.DarkGray.copy(alpha = 0.4f) else Color.LightGray.copy(alpha = 0.6f)
-    val skipInterval = if (data.size > 8) data.size / 5 else 1
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -570,31 +748,24 @@ fun SingleSeriesAreaChart(
         ) {
             val width = size.width
             val height = size.height
-            //val leftPadding = 72f // Room for Y-axis numbers
-            val leftPadding = 30f // Room for Y-axis numbers
-            val rightPadding = 20f
+            val leftPadding = 15f
+            val rightPadding = 65f
             val effectiveWidth = width - (leftPadding + rightPadding)
             val stepX = if (data.size > 1) effectiveWidth / (data.size - 1) else 0f
             val bottomBaseline = height - 25f
 
-            val labelColor = if (isDarkTheme) android.graphics.Color.rgb(
-                212,
-                175,
-                55
-            ) else android.graphics.Color.BLACK
             val yLabelPaint = android.graphics.Paint().apply {
                 color =
                     if (isDarkTheme) android.graphics.Color.LTGRAY else android.graphics.Color.DKGRAY
                 textSize = labelSmallPx * 0.85f
                 isAntiAlias = true
-                textAlign = android.graphics.Paint.Align.RIGHT
+                textAlign = android.graphics.Paint.Align.LEFT
             }
 
-            // Draw Y-axis grid lines & labels
-            val gridSteps = 4
+            // Draw Y-axis grid lines & labels on the right
             for (i in 0..gridSteps) {
                 val ratio = i.toFloat() / gridSteps
-                val valAtStep = ratio * maxVal
+                val valAtStep = (i * step).toLong()
                 val y = bottomBaseline - (ratio * (bottomBaseline - 30f))
 
                 // Grid line
@@ -605,10 +776,10 @@ fun SingleSeriesAreaChart(
                     strokeWidth = 1f
                 )
 
-                // Y-axis label
+                // Y-axis label on the right
                 drawContext.canvas.nativeCanvas.drawText(
-                    formatValue(valAtStep.toDouble()),
-                    leftPadding - 12f,
+                    valAtStep.toString(),
+                    width - rightPadding + 8f,
                     y + 4f,
                     yLabelPaint
                 )
@@ -616,7 +787,7 @@ fun SingleSeriesAreaChart(
 
             val points = data.mapIndexed { index, pair ->
                 val x = leftPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
-                val y = bottomBaseline - (pair.second.toFloat() / maxVal) * (bottomBaseline - 30f)
+                val y = bottomBaseline - (pair.second.toFloat() / niceMax) * (bottomBaseline - 30f)
                 Offset(x, y)
             }
 
@@ -647,48 +818,9 @@ fun SingleSeriesAreaChart(
                 drawPath(linePath, color = seriesColor, style = Stroke(width = 3.dp.toPx()))
             }
 
-            val textPaint = android.graphics.Paint().apply {
-                color = labelColor
-                textSize = labelSmallPx
-                isAntiAlias = true
-                textAlign = android.graphics.Paint.Align.CENTER
-            }
-
-            points.forEachIndexed { index, point ->
+            points.forEach { point ->
                 drawCircle(color = seriesColor, radius = 4.dp.toPx(), center = point)
                 drawCircle(color = Color.White, radius = 2.dp.toPx(), center = point)
-
-                val shouldShowLabel =
-                    index == 0 || index == data.size - 1 || index % skipInterval == 0
-                if (shouldShowLabel) {
-                    drawContext.canvas.nativeCanvas.drawText(
-                        formatValue(data[index].second),
-                        point.x,
-                        point.y - 12f,
-                        textPaint
-                    )
-                }
-            }
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            data.forEachIndexed { index, pair ->
-                val shouldShowLabel =
-                    index == 0 || index == data.size - 1 || index % skipInterval == 0
-                if (shouldShowLabel) {
-                    Text(
-                        text = shortDate(pair.first, chartTimeMode, preferredLang),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
             }
         }
     }
@@ -841,15 +973,133 @@ fun DualSeriesLineChart(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     data.forEachIndexed { index, triple ->
-                        val shouldShowLabel =
-                            index == 0 || index == data.size - 1 || index % skipInterval == 0
+                        val shouldShowLabel = true
                         Column(
                             modifier = Modifier.width(65.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             if (shouldShowLabel) {
                                 Text(
-                                    text = shortDate(triple.first, chartTimeMode, preferredLang),
+                                    text = shortDate(triple.first, preferredLang),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SingleSeriesLineChart(
+    data: List<Pair<String, Double>>,
+    isDarkTheme: Boolean,
+    chartTimeMode: ChartTimeMode,
+    preferredLang: String
+) {
+    if (data.isEmpty()) return
+    val density = LocalDensity.current
+    val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
+    val maxVal = maxOf(
+        data.maxOfOrNull { it.second } ?: 1.0,
+        1.0
+    ).toFloat()
+
+    val seriesColor = Color(0xFFD4AF37) // Gold
+    val scrollState = rememberScrollState()
+
+    val itemWidth = 75.dp
+    val totalWidth = maxOf(320.dp, itemWidth * data.size)
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(scrollState)
+    ) {
+        Box(modifier = Modifier.width(totalWidth)) {
+            Column {
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(8.dp)
+                ) {
+                    val width = size.width
+                    val height = size.height
+                    val horizontalPadding = 36f
+                    val effectiveWidth = width - (horizontalPadding * 2f)
+                    val stepX = if (data.size > 1) effectiveWidth / (data.size - 1) else 0f
+
+                    val points = data.mapIndexed { index, pair ->
+                        val x =
+                            horizontalPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
+                        val y = height - (pair.second.toFloat() / maxVal) * (height - 40f) - 20f
+                        Offset(x, y)
+                    }
+
+                    if (points.size > 1) {
+                        val path = Path().apply {
+                            moveTo(points.first().x, points.first().y)
+                            for (i in 0 until points.size - 1) {
+                                val p1 = points[i]
+                                val p2 = points[i + 1]
+                                cubicTo(
+                                    (p1.x + p2.x) / 2f,
+                                    p1.y,
+                                    (p1.x + p2.x) / 2f,
+                                    p2.y,
+                                    p2.x,
+                                    p2.y
+                                )
+                            }
+                        }
+                        drawPath(path, color = seriesColor, style = Stroke(width = 3.dp.toPx()))
+                    }
+
+                    val labelColor = if (isDarkTheme) android.graphics.Color.rgb(
+                        212,
+                        175,
+                        55
+                    ) else android.graphics.Color.BLACK
+
+                    val textPaint = android.graphics.Paint().apply {
+                        color = labelColor
+                        textSize = labelSmallPx
+                        isAntiAlias = true
+                        textAlign = android.graphics.Paint.Align.CENTER
+                    }
+
+                    points.forEachIndexed { index, point ->
+                        drawCircle(color = seriesColor, radius = 6.dp.toPx(), center = point)
+                        drawCircle(color = Color.White, radius = 3.dp.toPx(), center = point)
+
+                        drawContext.canvas.nativeCanvas.drawText(
+                            formatValue(data[index].second),
+                            point.x,
+                            point.y - 14f,
+                            textPaint
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    data.forEachIndexed { index, pair ->
+                        val shouldShowLabel = true
+                        Column(
+                            modifier = Modifier.width(65.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            if (shouldShowLabel) {
+                                Text(
+                                    text = shortDate(pair.first, preferredLang),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     maxLines = 1,

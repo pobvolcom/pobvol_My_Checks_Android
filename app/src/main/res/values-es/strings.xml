@@ -302,9 +302,16 @@ Al hacer clic en [Aceptar y Aceptar], confirmas que has leído, entendido y acep
     <string name="menu_reset_database">Restablecer base de datos</string>
     <string name="reset_db_warning">Advertencia: Restablecer la base de datos eliminará todos los datos actuales y la reiniciará con el estado predeterminado. Se perderán todas las listas de control e informes personalizados.</string>
     <string name="msg_db_reset">Base de datos restablecida con éxito.</string>
+    <string name="chart_filter_all">Todos</string>
+    <string name="chart_filter_1m">1 mes</string>
+    <string name="chart_filter_6m">6 meses</string>
     <string name="chart_mode_daily">Diario</string>
     <string name="chart_mode_monthly">Mensual</string>
     <string name="chart_mode_yearly">Anual</string>
+    <string name="numeric_value">Valor numérico</string>
+    <string name="numeric_values_dual">Valores numéricos (Serie 1 y 2)</string>
+    <string name="series_1">• Serie 1: </string>
+    <string name="series_2">• Serie 2: </string>
     <string name="menu_clear_cache">Borrar caché de la app</string>
     <string name="clear_cache_confirm_title">¿Borrar caché de la app?</string>
     <string name="clear_cache_confirm_message">Esto eliminará los archivos temporales en caché (como fotos de cámara temporales y vistas previas de PDF).</string>

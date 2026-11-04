@@ -1,10 +1,14 @@
 package com.pobvol.mychecks.util
 
 import android.content.ClipData
+import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import com.pobvol.mychecks.data.local.AppDatabase
 import com.pobvol.mychecks.data.local.ChecklistAnswerEntity
@@ -87,11 +91,71 @@ object SqlExporter {
         return dir
     }
 
+    fun writeSqlFileToStorage(
+        context: Context,
+        fileName: String,
+        fileBytes: ByteArray,
+        subFolder: String = "pobvolMyChecks/sql"
+    ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val resolver = context.contentResolver
+            val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/$subFolder"
+
+            val projection = arrayOf(MediaStore.MediaColumns._ID)
+            val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ?"
+            val selectionArgs = arrayOf(fileName)
+
+            try {
+                resolver.query(
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    null
+                )?.use { cursor ->
+                    while (cursor.moveToNext()) {
+                        val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
+                        val id = cursor.getLong(idColumn)
+                        val existingUri = ContentUris.withAppendedId(
+                            MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                            id
+                        )
+                        try {
+                            resolver.delete(existingUri, null, null)
+                        } catch (_: Exception) {
+                        }
+                    }
+                }
+            } catch (_: Exception) {
+            }
+
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
+            }
+            val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+            if (uri != null) {
+                resolver.openOutputStream(uri)?.use { fos ->
+                    fos.write(fileBytes)
+                }
+            }
+        } else {
+            val dir = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                subFolder
+            )
+            if (!dir.exists()) dir.mkdirs()
+            val file = File(dir, fileName)
+            file.writeBytes(fileBytes)
+        }
+    }
+
     fun createSha256ChecksumFile(
         context: Context,
         targetFileName: String,
         fileBytes: ByteArray,
-        targetDir: File
+        targetDir: File = getSqlDir(context)
     ) {
         try {
             val digest = MessageDigest.getInstance("SHA-256")
@@ -100,9 +164,12 @@ object SqlExporter {
             val checksumContent = "$hexString  $targetFileName\n"
             val checksumFileName = "$targetFileName.sha256"
 
-            if (!targetDir.exists()) targetDir.mkdirs()
-            val checksumFile = File(targetDir, checksumFileName)
-            checksumFile.writeText(checksumContent)
+            writeSqlFileToStorage(
+                context,
+                checksumFileName,
+                checksumContent.toByteArray(),
+                "pobvolMyChecks/sql"
+            )
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -123,11 +190,11 @@ object SqlExporter {
 
         try {
             val sqlBytes = sqlBuilder.toString().toByteArray()
+            writeSqlFileToStorage(context, fileName, sqlBytes, "pobvolMyChecks/sql")
+            createSha256ChecksumFile(context, fileName, sqlBytes)
+
             val sqlDir = getSqlDir(context)
             val file = File(sqlDir, fileName)
-            file.writeBytes(sqlBytes)
-            createSha256ChecksumFile(context, fileName, sqlBytes, sqlDir)
-
             val authority = "${context.packageName}.fileprovider"
             fileUri = FileProvider.getUriForFile(context, authority, file)
 
@@ -164,10 +231,8 @@ object SqlExporter {
 
         try {
             val sqlBytes = sqlBuilder.toString().toByteArray()
-            val sqlDir = getSqlDir(context)
-            val file = File(sqlDir, fileName)
-            file.writeBytes(sqlBytes)
-            createSha256ChecksumFile(context, fileName, sqlBytes, sqlDir)
+            writeSqlFileToStorage(context, fileName, sqlBytes, "pobvolMyChecks/sql")
+            createSha256ChecksumFile(context, fileName, sqlBytes)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -239,7 +304,14 @@ object SqlExporter {
                     escapeSql(
                         submission.inspector ?: ""
                     )
-                }', '${escapeSql(submission.notes ?: "")}', '${escapeSql(submission.date)}', ${submission.timestamp}\n);\n\n"
+                }', '${escapeSql(submission.notes ?: "")}', '${
+                    escapeSql(
+                        DateUtil.toIsoDate(
+                            submission.date,
+                            "en"
+                        )
+                    )
+                }', ${submission.timestamp}\n);\n\n"
             )
 
             if (submissionAnswers.isNotEmpty()) {

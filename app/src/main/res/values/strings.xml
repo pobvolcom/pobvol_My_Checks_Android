@@ -304,9 +304,16 @@ By clicking [Accept &amp; Agree], you confirm that you have read, understood and
     <string name="menu_reset_database">Reset Database</string>
     <string name="reset_db_warning">Warning: Resetting the database will delete all current data and re-initialize it with the default factory state. All custom checklists, submissions, and answers will be lost.</string>
     <string name="msg_db_reset">Database reset successfully.</string>
+    <string name="chart_filter_all">All</string>
+    <string name="chart_filter_1m">1 month</string>
+    <string name="chart_filter_6m">6 months</string>
     <string name="chart_mode_daily">Daily</string>
     <string name="chart_mode_monthly">Monthly</string>
     <string name="chart_mode_yearly">Yearly</string>
+    <string name="numeric_value">Numeric Value</string>
+    <string name="numeric_values_dual">Numeric Values (Series 1 &amp; 2)</string>
+    <string name="series_1">• Series 1: </string>
+    <string name="series_2">• Series 2: </string>
     <string name="menu_clear_cache">Clear App Cache</string>
     <string name="clear_cache_confirm_title">Clear App Cache?</string>
     <string name="clear_cache_confirm_message">This will delete temporary cached files (such as temporary camera photos and generated PDF previews).</string>

@@ -303,9 +303,16 @@ Durch Klicken auf [Akzeptieren &amp; Zustimmen] bestätigen Sie, dass Sie diese 
     <string name="menu_reset_database">Datenbank zurücksetzen</string>
     <string name="reset_db_warning">Warnung: Das Zurücksetzen der Datenbank löscht alle aktuellen Daten und stellt den Auslieferungszustand wieder her. Alle eigenen Checklisten und Prüfberichte gehen verloren.</string>
     <string name="msg_db_reset">Datenbank erfolgreich zurückgesetzt.</string>
+    <string name="chart_filter_all">Alle</string>
+    <string name="chart_filter_1m">1 Monat</string>
+    <string name="chart_filter_6m">6 Monate</string>
     <string name="chart_mode_daily">Täglich</string>
     <string name="chart_mode_monthly">Monatlich</string>
     <string name="chart_mode_yearly">Jährlich</string>
+    <string name="numeric_value">Numerischer Wert</string>
+    <string name="numeric_values_dual">Numerische Werte (Reihe 1 &amp; 2)</string>
+    <string name="series_1">• Reihe 1: </string>
+    <string name="series_2">• Reihe 2: </string>
     <string name="menu_clear_cache">App-Cache leeren</string>
     <string name="clear_cache_confirm_title">App-Cache leeren?</string>
     <string name="clear_cache_confirm_message">Dadurch werden temporäre Cache-Dateien gelöscht (wie temporäre Kamerafotos und generierte PDF-Vorschauen).</string>

@@ -28,6 +28,7 @@ import com.pobvol.mychecks.data.repository.SettingsRepository
 import com.pobvol.mychecks.data.repository.TextBlockRepository
 import com.pobvol.mychecks.data.repository.ThemeMode
 import com.pobvol.mychecks.data.repository.UserSettings
+import com.pobvol.mychecks.util.DateUtil
 import com.pobvol.mychecks.util.PdfExporter
 import com.pobvol.mychecks.util.SqlExporter
 import kotlinx.coroutines.Dispatchers
@@ -240,6 +241,7 @@ class ChecklistViewModel(
         _selectedChecklistToAnswer,
         _submissionToDelete,
     ) { states ->
+        @Suppress("UNCHECKED_CAST")
         DialogState(
             isAddEditVisible = states[0] as Boolean,
             checklistToEdit = states[1] as ChecklistEntity?,
@@ -334,6 +336,7 @@ class ChecklistViewModel(
         _isManageDatabaseDialogVisible,
         _selectedSubmissionStatus,
     ) { flows ->
+        @Suppress("UNCHECKED_CAST")
         val settings = flows[0] as SettingsState
         val submissions = flows[1] as SubmissionState
         val isHelpVisible = flows[2] as Boolean
@@ -387,6 +390,7 @@ class ChecklistViewModel(
         _selectedChecklistForSubmissions,
         _submissionLimit,
     ) { flows ->
+        @Suppress("UNCHECKED_CAST")
         val checklists = flows[0] as List<ChecklistEntity>
         val checklistQuery = flows[1] as String
         val submissionQuery = flows[2] as String
@@ -421,7 +425,12 @@ class ChecklistViewModel(
 
         val checklistMap = checklists.associateBy { it.id }
         val sortedSubmissions = globalState.submissionState.submissions.sortedWith(
-            compareByDescending<ChecklistSubmissionEntity> { parseSubmissionDate(it.date) }
+            compareByDescending<ChecklistSubmissionEntity> {
+                parseSubmissionDate(
+                    it.date,
+                    globalState.settingsState.settings.preferredLanguage
+                )
+            }
                 .thenByDescending { it.timestamp }
         )
         val filteredSubmissions = sortedSubmissions.filter { submission ->
@@ -760,8 +769,10 @@ class ChecklistViewModel(
         answers: Map<String, AnswerInput>
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            val formattedDate = date.ifBlank {
-                SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
+            val currentPreferredLang = settingsRepository.userSettings.first().preferredLanguage
+            val isoDate = DateUtil.toIsoDate(date, currentPreferredLang)
+            val formattedDate = isoDate.ifBlank {
+                SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
             }
 
             val questions = questionRepository.getChecklistQuestionsByChecklistId(checklistId).first()
@@ -936,17 +947,23 @@ class ChecklistViewModel(
         updatedAnswersMap: Map<String, AnswerInput>,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            val questions = questionRepository.getChecklistQuestionsByChecklistId(updatedSubmission.checklistid).first()
+            val currentPreferredLang = settingsRepository.userSettings.first().preferredLanguage
+            val isoDate = DateUtil.toIsoDate(updatedSubmission.date, currentPreferredLang)
+            val normalizedSubmission = updatedSubmission.copy(date = isoDate)
+
+            val questions =
+                questionRepository.getChecklistQuestionsByChecklistId(normalizedSubmission.checklistid)
+                    .first()
             val allRequiredAnswered = questions.all { q ->
                 !q.required || updatedAnswersMap[q.id]?.value?.isNotBlank() == true
             }
-            val finalStatus = if (updatedSubmission.status.equals(
+            val finalStatus = if (normalizedSubmission.status.equals(
                     "COMPLETED",
                     ignoreCase = true
                 ) || allRequiredAnswered
-            ) "COMPLETED" else updatedSubmission.status
+            ) "COMPLETED" else normalizedSubmission.status
 
-            val finalSubmission = updatedSubmission.copy(status = finalStatus)
+            val finalSubmission = normalizedSubmission.copy(status = finalStatus)
             submissionRepository.updateChecklistSubmission(finalSubmission)
 
             val existingAnswers = answerRepository.getChecklistAnswersListBySubmissionId(finalSubmission.id)
@@ -1015,8 +1032,29 @@ class ChecklistViewModel(
                 val checklist = repository.getAllChecklists().first().find { it.id == finalSubmission.checklistid }
                 val allAnswers = answerRepository.getAllChecklistAnswers().first()
                 val settings = settingsRepository.userSettings.first()
-                PdfExporter.savePdfToMyChecks(context, finalSubmission, checklist, questions, allAnswers, settings)
-                SqlExporter.saveSqlToMyChecks(context, finalSubmission, checklist, questions, allAnswers)
+                try {
+                    PdfExporter.savePdfToMyChecks(
+                        context,
+                        finalSubmission,
+                        checklist,
+                        questions,
+                        allAnswers,
+                        settings
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                try {
+                    SqlExporter.saveSqlToMyChecks(
+                        context,
+                        finalSubmission,
+                        checklist,
+                        questions,
+                        allAnswers
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
                 _userMessage.value = context.getString(R.string.msg_submission_completed)
             } else {
                 _userMessage.value = context.getString(R.string.msg_submission_updated_in_progress)
@@ -1476,27 +1514,55 @@ class ChecklistViewModel(
         }
     }
 
-    private fun parseSubmissionDate(dateStr: String): Long {
+    private fun parseSubmissionDate(dateStr: String, preferredLang: String = "en"): Long {
         if (dateStr.isBlank()) return 0L
         try {
-            if (dateStr.contains(".")) {
-                val parts = dateStr.split(".")
-                if (parts.size >= 3) {
-                    val day = parts[0].toIntOrNull() ?: 1
-                    val month = parts[1].toIntOrNull() ?: 1
-                    val year = parts[2].take(4).toIntOrNull() ?: 2026
-                    return year * 10000L + month * 100L + day
-                }
+            val clean = dateStr.split(" ")[0].trim()
+            val sep = when {
+                clean.contains(".") -> "."
+                clean.contains("-") -> "-"
+                clean.contains("/") -> "/"
+                else -> ""
             }
-            if (dateStr.contains("-")) {
-                val parts = dateStr.split("-")
-                if (parts.size >= 3) {
-                    val year = parts[0].take(4).toIntOrNull() ?: 2026
-                    val month = parts[1].toIntOrNull() ?: 1
-                    val day = parts[2].take(2).toIntOrNull() ?: 1
-                    return year * 10000L + month * 100L + day
+            if (sep.isBlank()) return 0L
+            val parts = clean.split(sep)
+            if (parts.size < 3) return 0L
+
+            val n0 = parts[0].toIntOrNull() ?: return 0L
+            val n1 = parts[1].toIntOrNull() ?: return 0L
+            val n2 = parts[2].toIntOrNull() ?: return 0L
+
+            val year: Int
+            val month: Int
+            val day: Int
+
+            if (parts[0].length == 4 || n0 > 31) {
+                year = n0
+                month = n1
+                day = n2
+            } else if (parts[2].length == 4 || n2 > 31) {
+                year = n2
+                if (n0 > 12) {
+                    day = n0
+                    month = n1
+                } else if (n1 > 12) {
+                    month = n0
+                    day = n1
+                } else {
+                    val isUsFormat = preferredLang.startsWith("en", ignoreCase = true)
+                    if (sep == "/" && isUsFormat) {
+                        month = n0
+                        day = n1
+                    } else {
+                        day = n0
+                        month = n1
+                    }
                 }
+            } else {
+                return 0L
             }
+
+            return year * 10000L + month * 100L + day
         } catch (_: Exception) {
         }
         return 0L

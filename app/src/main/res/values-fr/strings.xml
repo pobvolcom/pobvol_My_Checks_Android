@@ -302,9 +302,16 @@ En cliquant sur « Accepter et Accepter », vous confirmez avoir lu, compris et 
     <string name="menu_reset_database">Réinitialiser la base de données</string>
     <string name="reset_db_warning">Attention : La réinitialisation de la base de données supprimera toutes les données actuelles et la réinitialisera avec l\'état d\'usine. Toutes les listes de contrôle et rapports personnalisés seront perdus.</string>
     <string name="msg_db_reset">Base de données réinitialisée avec succès.</string>
+    <string name="chart_filter_all">Tous</string>
+    <string name="chart_filter_1m">1 mois</string>
+    <string name="chart_filter_6m">6 mois</string>
     <string name="chart_mode_daily">Quotidien</string>
     <string name="chart_mode_monthly">Mensuel</string>
     <string name="chart_mode_yearly">Annuel</string>
+    <string name="numeric_value">Valeur numérique</string>
+    <string name="numeric_values_dual">Valeurs numériques (Série 1 &amp; 2)</string>
+    <string name="series_1">• Série 1: </string>
+    <string name="series_2">• Série 2: </string>
     <string name="menu_clear_cache">Vider le cache de l\'application</string>
     <string name="clear_cache_confirm_title">Vider le cache de l\'application ?</string>
     <string name="clear_cache_confirm_message">Cela supprimera les fichiers temporaires mis en cache (tels que les photos de caméra temporaires et les aperçus PDF générés).</string>

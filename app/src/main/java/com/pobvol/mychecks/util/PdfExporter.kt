@@ -305,7 +305,12 @@ object PdfExporter {
             var footerLine = ""
             if (settings.includeTimestamp) {
                 val datePart = DateUtil.getCurrentDateForLanguage(settings.preferredLanguage)
-                val timePart = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+                val timePattern = if (settings.preferredLanguage.startsWith(
+                        "en",
+                        ignoreCase = true
+                    )
+                ) "hh:mm a" else "HH:mm"
+                val timePart = SimpleDateFormat(timePattern, Locale.getDefault()).format(Date())
                 val formattedGenerated = "$datePart • $timePart"
                 footerLine += context.getString(R.string.pdf_generated_on, formattedGenerated)
             }
@@ -872,7 +877,9 @@ object PdfExporter {
             //print Date
             paint.textSize = 11f
             val footerX = 40f
-            canvas.drawText(submission.date, footerX, y + 10f, paint)
+            val formattedDisplayDate =
+                DateUtil.formatDateForDisplay(submission.date, settings.preferredLanguage)
+            canvas.drawText(formattedDisplayDate, footerX, y + 10f, paint)
             //print line
             canvas.drawLine(footerX, y + 16, footerX + 160f, y + 16, dividerPaint)
             //print label Date
