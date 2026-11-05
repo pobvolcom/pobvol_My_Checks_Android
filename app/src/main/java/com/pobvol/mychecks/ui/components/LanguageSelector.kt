@@ -1,3 +1,7 @@
+/*
+ *  My software is <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Free Software</a>☯ and delivered as open source via <a href="https://github.com/pobvolcom/" target="_blank" rel="nofollow">GitHub</a>☯. You can download, install, operate, modify, and redistribute my software under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
+ */
+
 package com.pobvol.mychecks.ui.components
 
 import androidx.compose.foundation.background
@@ -35,6 +39,16 @@ fun LanguageSelector(
     onLanguageSelected: (LanguageEntity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val defaultLanguages = remember {
+        listOf(
+            LanguageEntity(language = "de", title = "Deutsch"),
+            LanguageEntity(language = "en", title = "English"),
+            LanguageEntity(language = "es", title = "Español"),
+            LanguageEntity(language = "fr", title = "Français"),
+        )
+    }
+    val effectiveLanguages = if (languages.isNotEmpty()) languages else defaultLanguages
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -60,7 +74,7 @@ fun LanguageSelector(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                languages.forEach { lang ->
+                effectiveLanguages.forEach { lang ->
                     val isSelected = lang.language == selectedLanguage
                     val backgroundColor = if (isSelected) {
                         MaterialTheme.colorScheme.primaryContainer

@@ -1,7 +1,13 @@
+<!--
+  ~  My software is <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Free Software</a>☯ and delivered as open source via <a href="https://github.com/pobvolcom/" target="_blank" rel="nofollow">GitHub</a>☯. You can download, install, operate, modify, and redistribute my software under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
+  -->
+
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.mychecks" parent="Theme.MaterialComponents.DayNight.NoActionBar" tools:ignore="ResourceName">
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowSplashScreenBackground">@drawable/clouds</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_512</item>
     </style>
 </resources>

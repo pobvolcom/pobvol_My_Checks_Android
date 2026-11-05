@@ -1,3 +1,7 @@
+/*
+ *  My software is <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Free Software</a>☯ and delivered as open source via <a href="https://github.com/pobvolcom/" target="_blank" rel="nofollow">GitHub</a>☯. You can download, install, operate, modify, and redistribute my software under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
+ */
+
 package com.pobvol.mychecks.ui.screens
 
 import androidx.activity.compose.BackHandler
@@ -21,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Analytics
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -62,7 +65,7 @@ import kotlin.math.log10
 import kotlin.math.pow
 
 enum class ChartTimeMode {
-    ALL, ONE_MONTH, SIX_MONTHS
+    ONE_MONTH, SIX_MONTHS, ALL
 }
 
 private fun filterSubmissions(
@@ -177,9 +180,9 @@ private fun parseDateTriple(
     return Triple(dateStr, "", "")
 }
 
-private fun calculateNiceScale(maxDataVal: Float, gridSteps: Int = 4): Pair<Float, Float> {
+private fun calculateNiceScale(maxDataVal: Float, targetSteps: Int = 4): Triple<Float, Float, Int> {
     val maxVal = maxOf(maxDataVal, 1f)
-    val roughStep = maxVal / gridSteps.toFloat()
+    val roughStep = maxVal / targetSteps.toFloat()
     val magnitude = 10.0.pow(floor(log10(roughStep.toDouble()))).toFloat()
     val residual = roughStep / magnitude
     val niceResidual = when {
@@ -189,9 +192,10 @@ private fun calculateNiceScale(maxDataVal: Float, gridSteps: Int = 4): Pair<Floa
         residual <= 5f -> 5f
         else -> 10f
     }
-    val step = niceResidual * magnitude
-    val niceMax = ceil(maxVal / step) * step
-    return Pair(step, if (niceMax > 0f) niceMax else step * gridSteps)
+    val step = maxOf(niceResidual * magnitude, 1f)
+    val actualMax = ceil(maxVal / step) * step
+    val actualSteps = maxOf((actualMax / step + 0.5f).toInt(), 1)
+    return Triple(step, actualMax, actualSteps)
 }
 
 private fun formatShortDateRange(dateStr: String, preferredLang: String): String {
@@ -256,7 +260,7 @@ fun ChecklistChartScreen(
         ThemeMode.SYSTEM -> systemDark
     }
 
-    var chartTimeMode by remember { mutableStateOf(ChartTimeMode.ALL) }
+    var chartTimeMode by remember { mutableStateOf(ChartTimeMode.ONE_MONTH) }
     val preferredLang = uiState.userSettings.preferredLanguage
 
     val totalSubmissions = uiState.allSubmissions.filter { it.checklistid == checklist.id }
@@ -264,7 +268,7 @@ fun ChecklistChartScreen(
     val filteredSubmissions = remember(totalSubmissions, chartTimeMode, preferredLang) {
         filterSubmissions(totalSubmissions, chartTimeMode, preferredLang)
     }
-    val submissions = filteredSubmissions.takeLast(uiState.submissionLimit)
+    val submissions = filteredSubmissions
     val questions = uiState.questionsForSelectedChecklist.filter { it.checklistid == checklist.id }
     val numberQuestions = questions.filter { it.type.lowercase() == "number" }
 
@@ -361,7 +365,7 @@ fun ChecklistChartScreen(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Text(
-                                text = stringResource(R.string.submissions_per_day) + dateRangeStr,
+                                text = stringResource(R.string.submissions_per_day) + " (${submissions.size})" + dateRangeStr,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                             )
@@ -450,19 +454,15 @@ fun ChecklistChartScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            val singleSeriesLineData = submissions.groupBy {
-                                formatSubmissionDate(it.date, preferredLang)
-                            }.map { (period, subs) ->
-                                val avgV1 = subs.mapNotNull { sub ->
-                                    val subAnswers =
-                                        uiState.answers.filter { it.submissionid == sub.id }
-                                    subAnswers.find { it.questionid == q1.id }?.value?.replace(
-                                        ',',
-                                        '.'
-                                    )?.toDoubleOrNull()
-                                }.let { if (it.isNotEmpty()) it.average() else 0.0 }
-                                Pair(period, avgV1)
-                            }.sortedBy { it.first }
+                            val singleSeriesLineData = submissions.mapNotNull { sub ->
+                                val subAnswers =
+                                    uiState.answers.filter { it.submissionid == sub.id }
+                                val v1 = subAnswers.find { it.questionid == q1.id }?.value?.replace(
+                                    ',',
+                                    '.'
+                                )?.toDoubleOrNull()
+                                if (v1 != null) Pair(sub.date, v1) else null
+                            }
 
                             if (singleSeriesLineData.isEmpty()) {
                                 Text(
@@ -508,29 +508,23 @@ fun ChecklistChartScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            val seriesData = submissions.groupBy {
-                                formatSubmissionDate(it.date, preferredLang)
-                            }.map { (period, subs) ->
-                                val avgV1 = subs.mapNotNull { sub ->
-                                    val subAnswers =
-                                        uiState.answers.filter { it.submissionid == sub.id }
-                                    subAnswers.find { it.questionid == q1.id }?.value?.replace(
-                                        ',',
-                                        '.'
-                                    )?.toDoubleOrNull()
-                                }.let { if (it.isNotEmpty()) it.average() else 0.0 }
-
-                                val avgV2 = subs.mapNotNull { sub ->
-                                    val subAnswers =
-                                        uiState.answers.filter { it.submissionid == sub.id }
-                                    subAnswers.find { it.questionid == q2.id }?.value?.replace(
-                                        ',',
-                                        '.'
-                                    )?.toDoubleOrNull()
-                                }.let { if (it.isNotEmpty()) it.average() else 0.0 }
-
-                                Triple(period, avgV1, avgV2)
-                            }.sortedBy { it.first }
+                            val seriesData = submissions.mapNotNull { sub ->
+                                val subAnswers =
+                                    uiState.answers.filter { it.submissionid == sub.id }
+                                val v1 = subAnswers.find { it.questionid == q1.id }?.value?.replace(
+                                    ',',
+                                    '.'
+                                )?.toDoubleOrNull()
+                                val v2 = subAnswers.find { it.questionid == q2.id }?.value?.replace(
+                                    ',',
+                                    '.'
+                                )?.toDoubleOrNull()
+                                if (v1 != null || v2 != null) {
+                                    Triple(sub.date, v1 ?: 0.0, v2 ?: 0.0)
+                                } else {
+                                    null
+                                }
+                            }
 
                             if (seriesData.isEmpty()) {
                                 Text(
@@ -547,26 +541,6 @@ fun ChecklistChartScreen(
                                 )
                             }
                         }
-                    }
-                }
-            }
-
-            if (totalSubmissions.size > submissions.size) {
-                item {
-                    Button(
-                        onClick = onLoadMoreClick,
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                    ) {
-                        Text(
-                            text = stringResource(
-                                R.string.load_more_submissions,
-                                submissions.size,
-                                totalSubmissions.size
-                            )
-                        )
                     }
                 }
             }
@@ -729,8 +703,7 @@ fun SingleSeriesAreaChart(
         1.0
     ).toFloat()
 
-    val gridSteps = 4
-    val (step, niceMax) = calculateNiceScale(maxValData, gridSteps)
+    val (step, niceMax, gridSteps) = calculateNiceScale(maxValData, 4)
 
     val seriesColor = Color(0xFFD4AF37) // Gold
     val fillColor = seriesColor.copy(alpha = 0.25f)
@@ -836,10 +809,11 @@ fun DualSeriesLineChart(
     if (data.isEmpty()) return
     val density = LocalDensity.current
     val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
-    val maxVal = maxOf(
+    val maxValData = maxOf(
         data.maxOfOrNull { maxOf(it.second, it.third) } ?: 1.0,
         1.0
     ).toFloat()
+    val (_, niceMax, _) = calculateNiceScale(maxValData, 4)
 
     val series1Color = Color(0xFFD4AF37) // Gold
     val series2Color = Color(0xFF29B6F6) // Blue
@@ -871,14 +845,14 @@ fun DualSeriesLineChart(
                     val points1 = data.mapIndexed { index, triple ->
                         val x =
                             horizontalPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
-                        val y = height - (triple.second.toFloat() / maxVal) * (height - 40f) - 20f
+                        val y = height - (triple.second.toFloat() / niceMax) * (height - 40f) - 20f
                         Offset(x, y)
                     }
 
                     val points2 = data.mapIndexed { index, triple ->
                         val x =
                             horizontalPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
-                        val y = height - (triple.third.toFloat() / maxVal) * (height - 40f) - 20f
+                        val y = height - (triple.third.toFloat() / niceMax) * (height - 40f) - 20f
                         Offset(x, y)
                     }
 
@@ -1005,10 +979,11 @@ fun SingleSeriesLineChart(
     if (data.isEmpty()) return
     val density = LocalDensity.current
     val labelSmallPx = with(density) { MaterialTheme.typography.labelSmall.fontSize.toPx() }
-    val maxVal = maxOf(
+    val maxValData = maxOf(
         data.maxOfOrNull { it.second } ?: 1.0,
         1.0
     ).toFloat()
+    val (_, niceMax, _) = calculateNiceScale(maxValData, 4)
 
     val seriesColor = Color(0xFFD4AF37) // Gold
     val scrollState = rememberScrollState()
@@ -1038,7 +1013,7 @@ fun SingleSeriesLineChart(
                     val points = data.mapIndexed { index, pair ->
                         val x =
                             horizontalPadding + (if (data.size == 1) effectiveWidth / 2f else index * stepX)
-                        val y = height - (pair.second.toFloat() / maxVal) * (height - 40f) - 20f
+                        val y = height - (pair.second.toFloat() / niceMax) * (height - 40f) - 20f
                         Offset(x, y)
                     }
 

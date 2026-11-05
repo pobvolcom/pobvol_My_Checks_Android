@@ -1,3 +1,7 @@
+/*
+ *  My software is <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Free Software</a>☯ and delivered as open source via <a href="https://github.com/pobvolcom/" target="_blank" rel="nofollow">GitHub</a>☯. You can download, install, operate, modify, and redistribute my software under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
+ */
+
 package com.pobvol.mychecks
 
 import android.app.PendingIntent
@@ -38,7 +42,6 @@ import com.pobvol.mychecks.data.repository.LanguageRepositoryImpl
 import com.pobvol.mychecks.data.repository.SettingsRepositoryImpl
 import com.pobvol.mychecks.data.repository.TextBlockRepositoryImpl
 import com.pobvol.mychecks.data.repository.ThemeMode
-import com.pobvol.mychecks.ui.ChecklistViewModel
 import com.pobvol.mychecks.ui.screens.ChecklistChartScreen
 import com.pobvol.mychecks.ui.screens.ChecklistListScreen
 import com.pobvol.mychecks.ui.screens.ChecklistQuestionsScreen
@@ -51,6 +54,7 @@ import com.pobvol.mychecks.ui.screens.SubmissionDetailScreen
 import com.pobvol.mychecks.ui.screens.SubmissionsOverviewScreen
 import com.pobvol.mychecks.ui.screens.TextBlocksScreen
 import com.pobvol.mychecks.ui.theme.mychecksTheme
+import com.pobvol.mychecks.ui.viewmodels.MainViewModel
 import com.pobvol.mychecks.util.SqlExporter
 import com.pobvol.mychecks.util.TtsHelper
 import kotlinx.coroutines.Dispatchers
@@ -62,7 +66,7 @@ class MainActivity : AppCompatActivity() {
 
     private var nfcAdapter: NfcAdapter? = null
     private var pendingIntent: PendingIntent? = null
-    private var viewModelRef: ChecklistViewModel? = null
+    private var viewModelRef: MainViewModel? = null
     private var ttsHelper: TtsHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,8 +112,8 @@ class MainActivity : AppCompatActivity() {
         val textBlockRepository = TextBlockRepositoryImpl(database.textblockDao())
 
         setContent {
-            val viewModel: ChecklistViewModel = viewModel(
-                factory = ChecklistViewModel.Factory(
+            val viewModel: MainViewModel = viewModel(
+                factory = MainViewModel.Factory(
                     repository = repository,
                     questionRepository = questionRepository,
                     deviceRepository = deviceRepository,
@@ -344,12 +348,16 @@ class MainActivity : AppCompatActivity() {
                             onDeleteClick = viewModel::requestDeleteConfirmation,
                             onChartClick = viewModel::openChartForChecklist,
                             onDismissAddEditDialog = viewModel::dismissAddEditDialog,
-                            onSaveChecklist = viewModel::saveChecklist,
+                            onSaveChecklist = { title, lang, desc, cat, icon, color ->
+                                viewModel.saveChecklist(title, lang, desc, cat, icon, color)
+                            },
                             onDismissDeleteDialog = viewModel::dismissDeleteConfirmation,
                             onConfirmDelete = viewModel::confirmDelete,
                             onCopyClick = viewModel::openCopyChecklistDialog,
                             onDismissCopyDialog = viewModel::dismissCopyChecklistDialog,
-                            onConfirmCopyChecklist = viewModel::copyChecklist,
+                            onConfirmCopyChecklist = { source, newTitle ->
+                                viewModel.copyChecklist(source, newTitle)
+                            },
                             onUserMessageShown = viewModel::userMessageShown,
                             onBackClick = viewModel::closeChecklistsScreen,
                             onOpenHelpClick = viewModel::openHelpScreen,
