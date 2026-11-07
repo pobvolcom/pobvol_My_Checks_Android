@@ -27,8 +27,8 @@ android {
         applicationId = "com.pobvol.mychecks"
         minSdk = 24
         targetSdk = 37
-        versionCode = 22
-        versionName = "1.7.0511.1"
+        versionCode = 24
+        versionName = "1.7.0711.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

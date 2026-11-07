@@ -272,6 +272,10 @@ class MainViewModel(
             matchesChecklist && matchesSearch && matchesStatus
         }
 
+        val effectiveTextBlocks = textBlocks.filter {
+            normalizeLanguage(it.language) == targetLangCode
+        }.sortedBy { it.sortno }
+
         ChecklistUiState(
             checklists = filteredChecklists,
             allChecklists = checklists,
@@ -304,7 +308,7 @@ class MainViewModel(
             scannedNfcTag = scannedNfcTag,
             selectedChecklistForSubmissions = selectedChecklistSub,
             selectedChecklistForChart = selectedChecklistForChart,
-            textBlocks = textBlocks.sortedBy { it.sortno },
+            textBlocks = effectiveTextBlocks,
             isTextBlocksVisible = isTextBlocksVisible,
             isAddEditTextBlockDialogVisible = isAddEditTextBlockDialogVisible,
             textBlockToEdit = textBlockToEdit,
@@ -1135,6 +1139,7 @@ class MainViewModel(
     fun saveTextBlock(text: String, sortno: Int = 0) {
         val currentEdit = _textBlockToEdit.value
         viewModelScope.launch(Dispatchers.IO) {
+            val currentPreferredLang = settingsRepository.userSettings.first().preferredLanguage
             if (currentEdit == null) {
                 val currentBlocks = textBlockRepository.getAllTextBlocks().first()
                 val nextSortNo =
@@ -1142,12 +1147,14 @@ class MainViewModel(
                 val newBlock = TextBlockEntity(
                     text = text,
                     sortno = nextSortNo,
+                    language = currentPreferredLang,
                 )
                 textBlockRepository.insertTextBlock(newBlock)
             } else {
                 val updated = currentEdit.copy(
                     text = text,
                     sortno = if (sortno > 0) sortno else currentEdit.sortno,
+                    language = currentPreferredLang,
                 )
                 textBlockRepository.updateTextBlock(updated)
             }

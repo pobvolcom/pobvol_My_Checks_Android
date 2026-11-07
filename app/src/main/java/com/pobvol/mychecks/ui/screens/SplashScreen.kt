@@ -4,15 +4,16 @@
 
 package com.pobvol.mychecks.ui.screens
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import com.pobvol.mychecks.R
 import kotlinx.coroutines.delay
@@ -23,26 +24,24 @@ fun SplashScreen(
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(Unit) {
-        delay(1000) // Show splash for 1 second
+        delay(1000) // Show splash for 1 second, timeMillis = 1000
         onTimeout()
     }
+
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val splashRes =
+        if (isLandscape) R.drawable.pobvol_my_checks_start_landscape else R.drawable.pobvol_my_checks_start
 
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         Image(
-            painter = painterResource(id = R.drawable.clouds),
+            painter = painterResource(id = splashRes),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
-        )
-
-        Image(
-            painter = painterResource(id = R.drawable.ic_launcher_512),
-            contentDescription = "Logo",
-            modifier = Modifier.fillMaxWidth(0.7f),
-            contentScale = ContentScale.Fit,
         )
     }
 }

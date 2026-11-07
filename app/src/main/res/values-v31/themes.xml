@@ -6,8 +6,8 @@
     <style name="Theme.mychecks" parent="Theme.MaterialComponents.DayNight.NoActionBar" tools:ignore="ResourceName">
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-        <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="android:windowSplashScreenBackground">@drawable/clouds</item>
+        <item name="android:windowBackground">@drawable/pobvol_my_checks_start</item>
+        <item name="android:windowSplashScreenBackground">#04244D</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_512</item>
     </style>
 </resources>

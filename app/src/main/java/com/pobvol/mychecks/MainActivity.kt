@@ -6,6 +6,7 @@ package com.pobvol.mychecks
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.res.Configuration
 import android.nfc.NdefMessage
 import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
@@ -13,6 +14,7 @@ import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,12 +23,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -61,6 +68,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.nio.charset.Charset
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -70,6 +78,7 @@ class MainActivity : AppCompatActivity() {
     private var ttsHelper: TtsHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.setBackgroundDrawableResource(R.drawable.clouds)
         val prefs = getSharedPreferences("my_checks_prefs", MODE_PRIVATE)
         val savedLang = prefs.getString("saved_language", null)
         if (!savedLang.isNullOrBlank()) {
@@ -129,7 +138,7 @@ class MainActivity : AppCompatActivity() {
             viewModelRef = viewModel
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-            var isSplashVisible by remember { mutableStateOf(true) }
+            var isSplashVisible by rememberSaveable { mutableStateOf(true) }
 
             LaunchedEffect(uiState.userMessage, uiState.userSettings.audioFeedback) {
                 val message = uiState.userMessage
@@ -139,8 +148,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             LaunchedEffect(uiState.userSettings.preferredLanguage) {
-                val appLocale = LocaleListCompat.forLanguageTags(uiState.userSettings.preferredLanguage)
-                AppCompatDelegate.setApplicationLocales(appLocale)
+                val lang = uiState.userSettings.preferredLanguage
+                if (lang.isBlank()) return@LaunchedEffect
+                val locale = Locale.forLanguageTag(lang)
+                Locale.setDefault(locale)
+                val config = Configuration(resources.configuration)
+                config.setLocale(locale)
+                @Suppress("DEPRECATION")
+                resources.updateConfiguration(config, resources.displayMetrics)
             }
 
             val darkTheme = when (uiState.userSettings.themeMode) {
@@ -149,7 +164,8 @@ class MainActivity : AppCompatActivity() {
                 ThemeMode.SYSTEM -> isSystemInDarkTheme()
             }
 
-            mychecksTheme(darkTheme = darkTheme) {
+            LocalizedContent(languageCode = uiState.userSettings.preferredLanguage) {
+                mychecksTheme(darkTheme = darkTheme) {
                 val importDbLauncher =
                     rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
                         if (uri != null) {
@@ -465,6 +481,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -551,6 +568,39 @@ class MainActivity : AppCompatActivity() {
             if (!tagContent.isNullOrBlank()) {
                 viewModelRef?.onNfcTagScanned(tagContent)
             }
+        }
+    }
+}
+
+@Composable
+fun LocalizedContent(
+    languageCode: String,
+    content: @Composable () -> Unit
+) {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val localizedContext = remember(languageCode, configuration, context) {
+        if (languageCode.isBlank()) {
+            context
+        } else {
+            val locale = Locale.forLanguageTag(languageCode)
+            Locale.setDefault(locale)
+            val config = Configuration(configuration)
+            config.setLocale(locale)
+            context.createConfigurationContext(config)
+        }
+    }
+    val registryOwner = LocalActivityResultRegistryOwner.current
+    if (registryOwner != null) {
+        CompositionLocalProvider(
+            LocalContext provides localizedContext,
+            LocalActivityResultRegistryOwner provides registryOwner
+        ) {
+            content()
+        }
+    } else {
+        CompositionLocalProvider(LocalContext provides localizedContext) {
+            content()
         }
     }
 }
