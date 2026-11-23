@@ -42,7 +42,10 @@
 ## 🔒 Datenschutz
 
 * **100 % lokale Speicherung:** Alle Checklisten, Prüfprotokolle, Fotos, Textbausteine und Einstellungen werden ausschließlich lokal auf Ihrem Gerät gespeichert.
+
 * **Keine Datenweitergabe:** Es werden keinerlei Daten an externe Server, Cloud-Dienste oder Dritte übertragen. Sie behalten jederzeit die volle Kontrolle über Ihre Prüfdaten.
+
+* **[Privacy Policy] (PRIVACY-POLICY.md)
 
 ---
 
