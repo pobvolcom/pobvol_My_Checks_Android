@@ -45,7 +45,7 @@
 
 * **Keine Datenweitergabe:** Es werden keinerlei Daten an externe Server, Cloud-Dienste oder Dritte übertragen. Sie behalten jederzeit die volle Kontrolle über Ihre Prüfdaten.
 
-* ** [Privacy Policy](PRIVACY-POLICY.md) **
+* [Privacy Policy](PRIVACY_POLICY.md)
 
 ---
 
