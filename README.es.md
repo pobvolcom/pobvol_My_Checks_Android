@@ -16,7 +16,7 @@
 
 | Panel principal | Listas de verificación | Ejecución de inspección | Informe PDF |
 | :---: | :---: | :---: | :---: |
-| <img src="images/en/dashboard.png" width="100" alt="Dashboard"> | <img src="images/en/my-checklists.png" width="100" alt="Checklists"> | <img src="images/en/fill-out-checklist.png" width="100" alt="Inspection"> | <img src="images/en/pdf.png" width="100" alt="PDF"> |
+| <img src="images/es/dashboard.png" width="100" alt="Dashboard"> | <img src="images/es/my-checklists.png" width="100" alt="Checklists"> | <img src="images/es/fill-out-checklist.png" width="100" alt="Inspection"> | <img src="images/es/pdf.png" width="100" alt="PDF"> |
 ---
 
 ## ✨ Características principales
