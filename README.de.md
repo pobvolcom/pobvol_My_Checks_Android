@@ -15,7 +15,10 @@
 
 | Dashboard | Checklists | Inspection Execution | PDF Report |
 | :---: | :---: | :---: | :---: |
-| <img src="images/en/dashboard.png" width="200" alt="Dashboard"> | <img src="images/en/my-checklists.png" width="200" alt="My Checklists"> | <img src="images/en/fill-out-checklist.png" width="200" alt="Inspection Execution"> | <img src="images/en/pdf.png" width="200" alt="PDF Report"> |
+| <img src="images/en/dashboard.png" width="200" alt="Dashboard"> 
+| <img src="images/en/my-checklists.png" width="200" alt="My Checklists"> 
+| <img src="images/en/fill-out-checklist.png" width="200" alt="Inspection Execution"> 
+| <img src="images/en/pdf.png" width="200" alt="PDF Report"> |
 
 ---
 
