@@ -8,14 +8,14 @@
 ![Platform: Android](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white)
 ![Privacy: 100% Offline](https://img.shields.io/badge/Privacy-100%25%20Local%20%26%20Offline-success)
 
-**My Checks** ist eine mobile Anwendung zum Erstellen, Verwalten und Durchführen digitaler Checklisten, Sicherheitsinspektionen und Betriebsmittelprüfungen (wie z. B. UVV-Prüfungen), inklusive automatischer PDF-Berichterstellung. Die App ist Freie Software und wird als Open Source über GitHub veröffentlicht und bereitgestellt. Die App wurde mit Google Android Studio sowie Gemini 3.5 Flash Lite und Gemini 3.6 Flash entwickelt.
+**My Checks** ist eine mobile Anwendung zum Erstellen und Verwalten digitaler Checklisten, mit denen Sie die Ergebnisse von Inspektionen und Prüfungen (wie z. B. UVV-Prüfungen, Blutdruck, etc.) erfassen und sich diese als PDF-Bericht ausgeben lassen. Die App ist Freie Software und wird als Open Source über GitHub veröffentlicht und bereitgestellt. Die App wurde mit Google Android Studio sowie Gemini 3.5 Flash Lite und Gemini 3.6 Flash entwickelt.
 
 
 ## 📸 Screenshots
 
 | Dashboard | Checklists | Inspection Execution | PDF Report |
 | :---: | :---: | :---: | :---: |
-| <img src="images/en/dashboard.png" width="200" alt="Dashboard"> | <zimg src="images/en/my-checklists.png" width="200" alt="My Checklists"> | <img src="images/en/fill-out-checklist.png" width="200" alt="Inspection Execution"> | <img src="images/en/pdf.jpg" width="200" alt="README.fr.mdPDF Report"> |
+| <img src="images/en/dashboard.png" width="200" alt="Dashboard"> | <img src="images/en/my-checklists.png" width="200" alt="My Checklists"> | <img src="images/en/fill-out-checklist.png" width="200" alt="Inspection Execution"> | <img src="images/en/pdf.png" width="200" alt="README.fr.mdPDF Report"> |
 
 ---
 
