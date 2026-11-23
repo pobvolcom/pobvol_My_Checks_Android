@@ -8,7 +8,7 @@
 ![Platform: Android](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white)
 ![Privacy: 100% Offline](https://img.shields.io/badge/Privacy-100%25%20Local%20%26%20Offline-success)
 
-**My Checks** es una aplicación móvil para crear, gestionar y ejecutar listas de verificación digitales, inspecciones de seguridad y controles de equipos (como inspecciones UVV), con generación automática de informes en PDF. La aplicación es Software Libre, publicado y distribuido como código abierto a través de GitHub. La aplicación fue desarrollada con Google Android Studio y Gemini 3.5 Flash Lite y Gemini 3.6 Flash.
+<img src="images/pobvol_my_checks.png" width="100" alt="Logo"> **My Checks** es una aplicación móvil para crear, gestionar y ejecutar listas de verificación digitales, inspecciones de seguridad y controles de equipos (como inspecciones UVV), con generación automática de informes en PDF. La aplicación es Software Libre, publicado y distribuido como código abierto a través de GitHub. La aplicación fue desarrollada con Google Android Studio y Gemini 3.5 Flash Lite y Gemini 3.6 Flash.
 
 ---
 
