@@ -14,9 +14,9 @@
 
 ## 📸 Screenshots
 
-| Dashboard | Checklists | Inspection Execution | PDF Report |
+| Dashboard | Checklists | Inspection | PDF |
 | :---: | :---: | :---: | :---: |
-| <img src="images/en/dashboard.png" width="200" alt="Dashboard"> | <img src="images/en/my-checklists.png" width="200" alt="My Checklists"> | <img src="images/en/fill-out-checklist.png" width="200" alt="Inspection Execution"> | <img src="images/en/pdf.png" width="200" alt="PDF Report"> |
+| <img src="images/en/dashboard.png" width="100" alt="Dashboard"> | <img src="images/en/my-checklists.png" width="100" alt="Checklists"> | <img src="images/en/fill-out-checklist.png" width="100" alt="Inspection"> | <img src="images/en/pdf.png" width="100" alt="PDF"> |
 
 ---
 
@@ -43,7 +43,10 @@
 ## 🔒 Privacy
 
 * **100% Local Storage:** All checklists, inspection logs, photos, text blocks, and settings are stored exclusively locally on your device.
+
 * **No Data Sharing:** No data is transmitted to external servers, cloud services, or third parties. You retain full control over your inspection data at all times.
+
+* [Privacy Policy](PRIVACY_POLICY.md)
 
 ---
 

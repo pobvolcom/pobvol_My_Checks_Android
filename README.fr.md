@@ -43,7 +43,10 @@
 ## 🔒 Confidentialité
 
 * **Stockage 100 % local :** Toutes les listes de contrôle, journaux d'inspection, photos, blocs de texte et paramètres sont stockés exclusivement en local sur votre appareil.
+
 * **Aucun partage de données :** Aucune donnée n'est transmise à des serveurs externes, des services cloud ou des tiers. Vous conservez à tout moment le contrôle total de vos données d'inspection.
+
+* [Privacy Policy](PRIVACY_POLICY.md)
 
 ---
 

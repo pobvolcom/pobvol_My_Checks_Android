@@ -16,7 +16,7 @@
 
 | Panel principal | Listas de verificación | Ejecución de inspección | Informe PDF |
 | :---: | :---: | :---: | :---: |
-| <img src="images/en/dashboard.png" width="200" alt="Dashboard"> | <img src="images/en/my-checklists.png" width="200" alt="My Checklists"> | <img src="images/en/fill-out-checklist.png" width="200" alt="Inspection Execution"> | <img src="images/en/pdf.png" width="200" alt="PDF Report"> |
+| <img src="images/en/dashboard.png" width="100" alt="Dashboard"> | <img src="images/en/my-checklists.png" width="100" alt="Checklists"> | <img src="images/en/fill-out-checklist.png" width="100" alt="Inspection"> | <img src="images/en/pdf.png" width="100" alt="PDF"> |
 ---
 
 ## ✨ Características principales
@@ -42,7 +42,10 @@
 ## 🔒 Privacidad
 
 * **Almacenamiento 100 % local:** Todas las listas de verificación, registros de inspección, fotos, bloques de texto y configuraciones se almacenan exclusivamente de forma local en su dispositivo.
+
 * **Sin intercambio de datos:** No se transmiten datos a servidores externos, servicios en la nube ni terceros. Usted mantiene el control total sobre sus datos de inspección en todo momento.
+
+* [Privacy Policy](PRIVACY_POLICY.md)
 
 ---
 
