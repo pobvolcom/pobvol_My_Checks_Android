@@ -40,12 +40,6 @@
 
 ---
 
-## 📖 Interactive Help
-
-This repository includes a standalone HTML help guide (`help.html`) featuring topic carousels, step-by-step instructions, and a full-screen screenshot viewer.
-
----
-
 ## 🔒 Privacy
 
 * **100% Local Storage:** All checklists, inspection logs, photos, text blocks, and settings are stored exclusively locally on your device.

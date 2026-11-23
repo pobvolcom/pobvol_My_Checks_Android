@@ -39,12 +39,6 @@
 
 ---
 
-## 📖 Ayuda interactiva
-
-Este repositorio incluye una guía de ayuda HTML independiente (`help.html`) con carruseles temáticos, instrucciones paso a paso y un visor de capturas de pantalla a pantalla completa.
-
----
-
 ## 🔒 Privacidad
 
 * **Almacenamiento 100 % local:** Todas las listas de verificación, registros de inspección, fotos, bloques de texto y configuraciones se almacenan exclusivamente de forma local en su dispositivo.

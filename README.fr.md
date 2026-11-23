@@ -40,12 +40,6 @@
 
 ---
 
-## 📖 Aide interactive
-
-Ce dépôt inclut un guide d'aide HTML autonome (`help.html`) proposant des carrousels thématiques, des instructions étape par étape et une visionneuse de captures d'écran en plein écran.
-
----
-
 ## 🔒 Confidentialité
 
 * **Stockage 100 % local :** Toutes les listes de contrôle, journaux d'inspection, photos, blocs de texte et paramètres sont stockés exclusivement en local sur votre appareil.

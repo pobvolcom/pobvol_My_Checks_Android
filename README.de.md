@@ -39,12 +39,6 @@
 
 ---
 
-## 📖 Interaktive Hilfe
-
-Dieses Repository enthält eine eigenständige HTML-Hilfeanleitung (`help.html`) mit Themen-Karussells, Schritt-für-Schritt-Anleitungen und einer Vollbild-Ansicht für Screenshots.
-
----
-
 ## 🔒 Datenschutz
 
 * **100 % lokale Speicherung:** Alle Checklisten, Prüfprotokolle, Fotos, Textbausteine und Einstellungen werden ausschließlich lokal auf Ihrem Gerät gespeichert.
