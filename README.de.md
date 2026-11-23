@@ -13,7 +13,7 @@
 
 ## 📸 Screenshots
 
-| Dashboard | Checklists | Inspection Execution | PDF Report |
+| Dashboard | Checklisten | Erfassung | PDF |
 | :---: | :---: | :---: | :---: |
 | <img src="images/en/dashboard.png" width="100" alt="Dashboard"> | <img src="images/en/my-checklists.png" width="100" alt="My Checklists"> | <img src="images/en/fill-out-checklist.png" width="100" alt="Fill-out"> | <img src="images/en/pdf.png" width="100" alt="PDF"> |
 
