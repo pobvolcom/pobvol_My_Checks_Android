@@ -40,6 +40,14 @@
 
 ---
 
+## 💾 Datenbankdiagramm
+
+<img src="images/sqlite-db-schema-pobvol-my-checks.jpg" alt="DB Schema">
+
+Das Bild visualisiert genau die Relationen und den Aufbau der SQLite-Datenbank aus der App – von den Checklisten-Vorlagen über Prüfpunkte, Protokolle (Logs), Foto-Antworten bis hin zu den Textbausteinen und allgemeinen App-Einstellungen.
+
+---
+
 ## 🔒 Datenschutz
 
 * **100 % lokale Speicherung:** Alle Checklisten, Prüfprotokolle, Fotos, Textbausteine und Einstellungen werden ausschließlich lokal auf Ihrem Gerät gespeichert.
