@@ -42,7 +42,7 @@
 
 ## 💾 Datenbankdiagramm
 
-<img src="images/sqlite-db-schema-pobvol-my-checks.jpg" alt="DB Schema">
+<img src="images/sqlite-db-schema-pobvol-my-checks.gif" alt="DB Schema">
 
 Das Bild visualisiert genau die Relationen und den Aufbau der SQLite-Datenbank aus der App – von den Checklisten-Vorlagen über Prüfpunkte, Protokolle (Logs), Foto-Antworten bis hin zu den Textbausteinen und allgemeinen App-Einstellungen.
 
