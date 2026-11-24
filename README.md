@@ -75,3 +75,36 @@ The App is provided in the hope that it will be useful, but WITHOUT WARRANTY OF 
 ## ©️ Copyright
 
 Copyright © 2026 Volker Pobloth, pobvol Software Services
+
+---
+
+### 🇬🇧 English (für `README_en.md`)
+
+```markdown
+## 📲 Installation (Android)
+
+Since **pobvol My Checks** is developed as free, open-source software without Google Play dependencies, you can install it directly from GitHub on your Android smartphone or tablet.
+
+### Option 1: Direct APK Installation (Quick & Easy)
+
+1. On your Android device, go to the **[GitHub Releases page](https://github.com/pobvolcom/pobvol_My_Checks_Android/releases/latest)**.
+2. Scroll down to the **Assets** section and tap **`app-release.apk`** to download the installer.
+3. Open the downloaded file from your notification shade or your **Files / Downloads** app.
+4. **Allow installation (if prompted):** By default, Android blocks installations from outside the Play Store. Tap **Settings** in the prompt and enable **"Allow from this source"** for your browser or file manager.
+5. Tap **Install**.
+
+> **Note on Google Play Protect:** If Play Protect displays a warning (*"Unrecognized app"*), tap **More details** and select **Install anyway**. The app is 100% open source (GPL-3.0) and stores all data strictly locally on your device.
+
+---
+
+### Option 2: Automatic Updates via Obtainium (Recommended)
+
+To receive future updates automatically directly from GitHub, you can use the free open-source app **[Obtainium](https://github.com/ImranR98/Obtainium)**:
+
+1. Install **Obtainium** on your Android device.
+2. Open Obtainium, tap **Add App**, and paste the following repository URL:
+   ```text
+   [https://github.com/pobvolcom/pobvol_My_Checks_Android](https://github.com/pobvolcom/pobvol_My_Checks_Android)
+3. ​Tap Add and then Install. Obtainium will automatically notify you whenever a new release is published.
+
+

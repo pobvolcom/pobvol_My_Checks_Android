@@ -74,3 +74,34 @@ Die App wird in der Hoffnung bereitgestellt, dass sie nützlich sein wird, jedoc
 ## ©️ Urheberrecht
 
 Copyright © 2026 Volker Pobloth, pobvol Software Services
+
+---
+
+## 📲 Installation (Android)
+
+Da **pobvol My Checks** als freie Open-Source-Software ohne Google-Play-Zwang entwickelt wird, kannst du die App direkt über GitHub auf deinem Android-Smartphone oder -Tablet installieren.
+
+### Option 1: Direkte Installation per APK (Schnell & Einfach)
+
+1. Öffne auf deinem Android-Gerät die **[GitHub Releases-Seite](https://github.com/pobvolcom/pobvol_My_Checks_Android/releases/latest)**.
+2. Scrolle ganz nach unten zum Bereich **Assets** und tippe auf **`app-release.apk`**, um die Installationsdatei herunterzuladen.
+3. Öffne die heruntergeladene Datei über die Benachrichtigungsleiste oder deine **Dateien / Downloads**-App.
+4. **Berechtigung erteilen (falls gefragt):** Android blockiert aus Sicherheitsgründen standardmäßig Apps außerhalb des Play Stores. Tippe im Hinweis-Fenster auf **Einstellungen** und aktiviere **„Aus dieser Quelle zulassen“** für deinen Browser bzw. Dateimanager.
+5. Tippe anschließend auf **Installieren**.
+
+> **Hinweis zu Google Play Protect:** Falls beim Installieren eine Warnung von Play Protect erscheint (*„Unbekannte App“*), tippe auf **Weitere Details** und wähle **Trotzdem installieren**. Die App ist vollständig Open Source (GPL-3.0) und speichert alle Daten ausschließlich lokal auf deinem Gerät.
+
+---
+
+### Option 2: Automatische Updates mit Obtainium (Empfohlen)
+
+Wenn du zukünftige Updates bequem und automatisch direkt von GitHub erhalten möchtest, empfiehlt sich die kostenlose Open-Source-App **[Obtainium](https://github.com/ImranR98/Obtainium)**:
+
+1. Installiere **Obtainium** auf deinem Gerät.
+2. Öffne Obtainium, tippe auf **App hinzufügen** und füge folgende URL ein:
+   ```text
+   [https://github.com/pobvolcom/pobvol_My_Checks_Android](https://github.com/pobvolcom/pobvol_My_Checks_Android)
+3. ​Tippe auf Hinzufügen und anschließend auf Installieren. Obtainium informiert dich ab sofort automatisch über neue Versionen. 
+
+
+
