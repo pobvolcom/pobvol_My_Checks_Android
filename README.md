@@ -15,9 +15,13 @@
 
 ## 📸 Screenshots
 
-| Dashboard | Checklists | Inspection | PDF |
-| :---: | :---: | :---: | :---: |
-| <img src="images/en/dashboard.png" width="100" alt="Dashboard"> | <img src="images/en/my-checklists.png" width="100" alt="Checklists"> | <img src="images/en/fill-out-checklist.png" width="100" alt="Inspection"> | <img src="images/en/pdf.png" width="100" alt="PDF"> |
+| Dashboard | Checklists |
+| :---: | :---: |
+| <img src="images/en/dashboard.png" width="260" alt="Dashboard"> | <img src="images/en/my-checklists.png" width="260" alt="Checklists"> |
+
+| Inspection Execution | PDF Report |
+| :---: | :---: |
+| <img src="images/en/fill-out-checklist.png" width="260" alt="Inspection Execution"> | <img src="images/en/pdf.png" width="260" alt="PDF Report"> |
 
 ---
 
