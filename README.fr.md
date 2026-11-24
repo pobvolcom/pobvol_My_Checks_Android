@@ -42,7 +42,7 @@
 
 ## 💾 Graphique de base de données
 
-<img src="images/sqlite-db-schema-pobvol-my-checks.gif" alt="DB Schema">
+<img src="images/sqlite-db-schema-pobvol-my-checks.jpg" alt="DB Schema">
 
 L'image visualise précisément les relations et la structure de la base de données SQLite depuis l'application – des modèles de checklist aux points de contrôle, journaux, réponses photo, modules textuels et paramètres généraux de l'application.
 

@@ -43,7 +43,7 @@
 
 ## 💾 Database schema
 
-<img src="images/sqlite-db-schema-pobvol-my-checks.gif" alt="DB Schema">
+<img src="images/sqlite-db-schema-pobvol-my-checks.jpg" alt="DB Schema">
 
 The image precisely visualizes the relationships and structure of the SQLite database from the app – from checklist templates to checkpoints, logs, photo responses, to text modules and general app settings.
 
