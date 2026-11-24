@@ -41,6 +41,14 @@
 
 ---
 
+## 💾 Database schema
+
+<img src="images/sqlite-db-schema-pobvol-my-checks.jpg" alt="DB Schema">
+
+The image precisely visualizes the relationships and structure of the SQLite database from the app – from checklist templates to checkpoints, logs, photo responses, to text modules and general app settings.
+
+---
+
 ## 🔒 Privacy
 
 * **100% Local Storage:** All checklists, inspection logs, photos, text blocks, and settings are stored exclusively locally on your device.

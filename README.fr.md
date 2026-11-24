@@ -40,6 +40,14 @@
 
 ---
 
+## 💾 Graphique de base de données
+
+<img src="images/sqlite-db-schema-pobvol-my-checks.jpg" alt="DB Schema">
+
+L'image visualise précisément les relations et la structure de la base de données SQLite depuis l'application – des modèles de checklist aux points de contrôle, journaux, réponses photo, modules textuels et paramètres généraux de l'application.
+
+---
+
 ## 🔒 Confidentialité
 
 * **Stockage 100 % local :** Toutes les listes de contrôle, journaux d'inspection, photos, blocs de texte et paramètres sont stockés exclusivement en local sur votre appareil.

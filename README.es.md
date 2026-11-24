@@ -39,6 +39,14 @@
 
 ---
 
+## 💾 Gráfico de base de datos
+
+<img src="images/sqlite-db-schema-pobvol-my-checks.jpg" alt="DB Schema">
+
+La imagen visualiza con precisión las relaciones y la estructura de la base de datos SQLite desde la aplicación: desde plantillas de listas de verificación hasta puntos de control, registros, respuestas fotográficas, módulos de texto y configuraciones generales de la aplicación.
+
+---
+
 ## 🔒 Privacidad
 
 * **Almacenamiento 100 % local:** Todas las listas de verificación, registros de inspección, fotos, bloques de texto y configuraciones se almacenan exclusivamente de forma local en su dispositivo.
