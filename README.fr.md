@@ -78,9 +78,6 @@ Copyright © 2026 Volker Pobloth, pobvol Software Services
 
 ---
 
-### 🇫🇷 Français (für `README_fr.md`)
-
-```markdown
 ## 📲 Installation (Android)
 
 Comme **pobvol My Checks** est développé en tant que logiciel libre et open source sans dépendance à Google Play, vous pouvez installer l'application directement depuis GitHub sur votre smartphone ou tablette Android.
