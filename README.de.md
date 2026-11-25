@@ -15,12 +15,12 @@
 ## 📸 Screenshots
 
 
-<img src="images/de/start.jpg" width="40%" alt="Launcher"> 
-<img src="images/de/dashboard.jpg" width="40%" alt="Dashboard"> 
-<img src="images/de/my-checklists.jpg" width="40%" alt="Checklisten">
-<img src="images/de/fill-out-checklist.jpg" width="40%" alt="Fill-out"> 
-<img src="images/de/my-logs.jpg" width="40%" alt="Logs"> 
-<img src="images/de/pdf.jpg" width="40%" alt="PDF">
+<img src="images/de/start.jpg" width="40%" alt="Launcher"> <img src="images/de/dashboard.jpg" width="40%" alt="Dashboard"> 
+
+<img src="images/de/my-checklists.jpg" width="40%" alt="Checklisten"> <img src="images/de/fill-out-checklist.jpg" width="40%" alt="Fill-out"> 
+
+<img src="images/de/my-logs.jpg" width="40%" alt="Logs"> <img src="images/de/pdf.jpg" width="40%" alt="PDF">
+
 <img src="images/de/charts.jpg" width="40%" alt="Charts"> 
 
 ---
