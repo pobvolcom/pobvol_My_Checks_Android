@@ -14,9 +14,8 @@
 
 ## 📸 Screenshots
 
-| Dashboard | Checklisten | Erfassung | PDF |
-| :---: | :---: | :---: | :---: |
-| <img src="images/de/dashboard.png" width="100" alt="Dashboard"> | <img src="images/de/my-checklists.png" width="100" alt="Checklisten"> | <img src="images/de/fill-out-checklist.png" width="100" alt="Fill-out"> | <img src="images/de/pdf.png" width="100" alt="PDF"> |
+<img src="images/de/dashboard.png" width="40%" alt="Dashboard"> <img src="images/de/my-checklists.png" width="40%" alt="Checklisten">
+<img src="images/de/fill-out-checklist.png" width="40%" alt="Fill-out"> <img src="images/de/pdf.png" width="40%" alt="PDF">
 
 ---
 
@@ -44,7 +43,7 @@
 
 <img src="images/sqlite-db-schema-pobvol-my-checks.jpg" alt="DB Schema">
 
-Das Bild visualisiert genau die Relationen und den Aufbau der SQLite-Datenbank aus der App – von den Checklisten-Vorlagen über Prüfpunkte, Protokolle (Logs), Foto-Antworten bis hin zu den Textbausteinen und allgemeinen App-Einstellungen.
+Das Bild visualisiert genau die Beziehungen und Struktur der SQLite-Datenbank – von Checklisten über Checkpunkten / Fragen, Protokollen, Antworten, Fotos bis hin zu Textbausteinen und Nachschlagetabellen.
 
 ---
 

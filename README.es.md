@@ -14,9 +14,9 @@
 
 ## 📸 Capturas de pantalla
 
-| Panel principal | Listas de verificación | Ejecución de inspección | Informe PDF |
-| :---: | :---: | :---: | :---: |
-| <img src="images/es/dashboard.png" width="100" alt="Dashboard"> | <img src="images/es/my-checklists.png" width="100" alt="Checklists"> | <img src="images/es/fill-out-checklist.png" width="100" alt="Inspection"> | <img src="images/es/pdf.png" width="100" alt="PDF"> |
+<img src="images/es/dashboard.png" width="40%" alt="Dashboard"> <img src="images/es/my-checklists.png" width="40%" alt="Checklists">
+<img src="images/es/fill-out-checklist.png" width="40%" alt="Inspection"> <img src="images/es/pdf.png" width="40%" alt="PDF">
+
 ---
 
 ## ✨ Características principales
@@ -43,7 +43,7 @@
 
 <img src="images/sqlite-db-schema-pobvol-my-checks.jpg" alt="DB Schema">
 
-La imagen visualiza con precisión las relaciones y la estructura de la base de datos SQLite desde la aplicación: desde plantillas de listas de verificación hasta puntos de control, registros, respuestas fotográficas, módulos de texto y configuraciones generales de la aplicación.
+La imagen visualiza con precisión las relaciones y la estructura de la base de datos SQLite: desde listas de verificación hasta puntos de control/preguntas, registros, respuestas, fotos, módulos de texto y tablas de consulta.
 
 ---
 

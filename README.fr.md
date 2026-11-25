@@ -14,9 +14,8 @@
 
 ## 📸 Captures d'écran
 
-| Tableau de bord | Listes de contrôle | Exécution d'inspection | Rapport PDF |
-| :---: | :---: | :---: | :---: |
-| <img src="images/en/dashboard.png" width="100" alt="Dashboard"> | <img src="images/en/my-checklists.png" width="100" alt="My Checklists"> | <img src="images/en/fill-out-checklist.png" width="100" alt="Inspection Execution"> | <img src="images/en/pdf.png" width="100" alt="PDF Report"> |
+<img src="images/en/dashboard.png" width="40%" alt="Dashboard"> <img src="images/en/my-checklists.png" width="40%" alt="My Checklists">
+<img src="images/en/fill-out-checklist.png" width="40%" alt="Inspection Execution"> <img src="images/en/pdf.png" width="40%" alt="PDF Report">
 
 ---
 
@@ -44,7 +43,7 @@
 
 <img src="images/sqlite-db-schema-pobvol-my-checks.jpg" alt="DB Schema">
 
-L'image visualise précisément les relations et la structure de la base de données SQLite depuis l'application – des modèles de checklist aux points de contrôle, journaux, réponses photo, modules textuels et paramètres généraux de l'application.
+L'image visualise précisément les relations et la structure de la base de données SQLite – des listes de contrôle aux points de contrôle/questions, en passant par les journaux, les réponses, les photos, les modules textuels et les tableaux de recherche.
 
 ---
 
