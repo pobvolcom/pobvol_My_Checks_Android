@@ -1,3 +1,7 @@
+/*
+ *  My software is <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Free Software</a>☯ and delivered as open source via <a href="https://github.com/pobvolcom/" target="_blank" rel="nofollow">GitHub</a>☯. You can download, install, operate, modify, and redistribute my software under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
+ */
+
 package com.pobvol.mychecks.util
 
 import android.content.ClipData
@@ -246,19 +250,28 @@ object PdfExporter {
         return context.createConfigurationContext(config)
     }
 
-    private fun getLocalizedStatus(context: Context, status: String): String {
+    private fun getLocalizedStatus(
+        context: Context,
+        status: String,
+        preferredLang: String = ""
+    ): String {
+        val localizedContext =
+            if (preferredLang.isNotBlank()) getLocalizedContext(context, preferredLang) else context
         val upper = status.uppercase()
         return when {
+            upper == "SIGNED" || upper == "SIGNIERT" || upper == "UNTERSCHRIEBEN" || upper == "FIRMADO" || upper == "SIGNÉ" ->
+                localizedContext.getString(R.string.status_signed)
+
             upper == "COMPLETED" || upper == "ABGESCHLOSSEN" || upper == "COMPLETADO" || upper == "TERMINÉ" ->
-                context.getString(R.string.status_completed)
+                localizedContext.getString(R.string.status_completed)
 
             upper == "IN_PROGRESS" || upper == "IN BEARBEITUNG" || upper == "EN PROGRESO" || upper == "EN COURS" || upper.contains(
                 "BEARBEITUNG"
             ) || upper.contains("PROGRESO") || upper.contains("COURS") ->
-                context.getString(R.string.status_in_progress)
+                localizedContext.getString(R.string.status_in_progress)
 
             upper == "PENDING" || upper == "AUSSTEHEND" || upper == "PENDIENTE" || upper == "EN ATTENTE" ->
-                context.getString(R.string.status_pending)
+                localizedContext.getString(R.string.status_pending)
 
             else -> status
         }
@@ -353,7 +366,8 @@ object PdfExporter {
             }
 
             if (settings.pdfIncludeStatus) {
-                val translatedStatus = getLocalizedStatus(context, submission.status)
+                val translatedStatus =
+                    getLocalizedStatus(context, submission.status, settings.preferredLanguage)
                 headerTitleParts.add("(" + translatedStatus + ")")
             }
 
@@ -433,7 +447,8 @@ object PdfExporter {
             headerDescriptionParts.add(checklist.description)
         }
         if (settings.pdfIncludeStatus) {
-            val translatedStatus = getLocalizedStatus(context, submission.status)
+            val translatedStatus =
+                getLocalizedStatus(context, submission.status, settings.preferredLanguage)
             headerTitleParts.add("(" + translatedStatus + ")")
         }
 
@@ -863,8 +878,8 @@ object PdfExporter {
         }
         //------------------------------------------------------------------
 
-        //Print Date and Inspector Signature
-        if (settings.pdfIncludeDate || settings.pdfIncludeInspector) {
+        //Print Date and Inspector Signature (Always included)
+        if (true) {
             y += 40f
             if (y + 40 > bottomLimit) {
                 startNewPage()
@@ -886,11 +901,16 @@ object PdfExporter {
             paint.textSize = 8f
             canvas.drawText(context.getString(R.string.date), footerX, y + 26f, paint)
             //----------------------------------------------
-            //print Inspector
+            //print Inspectors signature
+
             paint.textSize = 11f
             val inspX = footerX + 220f
 
-            if (!settings.signaturePath.isBlank()) {
+            if (!settings.signaturePath.isBlank() && submission.status.equals(
+                    "SIGNED",
+                    ignoreCase = true
+                )
+            ) {
                 val sigFile = File(settings.signaturePath)
                 if (sigFile.exists()) {
                     try {
@@ -915,6 +935,9 @@ object PdfExporter {
                 }
             }
 
+            //----------------------------------------------
+            //print Inspectors name
+
             canvas.drawLine(inspX, y + 16, inspX + 160f, y + 16, dividerPaint)
             paint.textSize = 8f
             canvas.drawText(
@@ -924,6 +947,7 @@ object PdfExporter {
                 paint
             )
             y += 40f
+
         }
         //----------------------------------------------
         // print Footer
@@ -932,6 +956,65 @@ object PdfExporter {
         return pdfDocument
     }
 
+    fun getSubmissionPdfFile(context: Context, submissionId: String): File? {
+        val fileName = "Submission_${submissionId}_Report.pdf"
+        val dir = SqlExporter.getPdfDir(context)
+        val file = File(dir, fileName)
+        if (file.exists() && file.length() > 0) {
+            return file
+        }
+        val rootDir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "pobvolMyChecks/pdf"
+        )
+        val rootFile = File(rootDir, fileName)
+        if (rootFile.exists() && rootFile.length() > 0) {
+            return rootFile
+        }
+        return null
+    }
+
+    fun doesSubmissionPdfExist(context: Context, submissionId: String): Boolean {
+        return getSubmissionPdfFile(context, submissionId) != null
+    }
+
+    fun openExistingSubmissionPdf(context: Context, submissionId: String): Boolean {
+        val existingFile = getSubmissionPdfFile(context, submissionId) ?: return false
+        val cacheFile = File(context.cacheDir, existingFile.name)
+        try {
+            existingFile.copyTo(cacheFile, overwrite = true)
+        } catch (_: Exception) {
+        }
+
+        val authority = "${context.packageName}.fileprovider"
+        val contentUri = FileProvider.getUriForFile(context, authority, cacheFile)
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(contentUri, "application/pdf")
+            clipData = ClipData.newUri(context.contentResolver, "PDF Report", contentUri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        try {
+            context.startActivity(intent)
+            return true
+        } catch (_: Exception) {
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(Intent.EXTRA_STREAM, contentUri)
+                clipData = ClipData.newUri(context.contentResolver, "PDF Report", contentUri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            val chooser = Intent.createChooser(shareIntent, "Share Inspection PDF Report")
+            chooser.clipData = ClipData.newUri(context.contentResolver, "PDF Report", contentUri)
+            chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(chooser)
+            return true
+        }
+    }
 
     fun generateAndOpenSubmissionPdf(
         context: Context,

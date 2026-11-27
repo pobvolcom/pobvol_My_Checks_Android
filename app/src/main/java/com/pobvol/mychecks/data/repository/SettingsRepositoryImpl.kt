@@ -1,3 +1,7 @@
+/*
+ *  My software is <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Free Software</a>☯ and delivered as open source via <a href="https://github.com/pobvolcom/" target="_blank" rel="nofollow">GitHub</a>☯. You can download, install, operate, modify, and redistribute my software under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
+ */
+
 package com.pobvol.mychecks.data.repository
 
 import android.content.Context
@@ -53,7 +57,14 @@ class SettingsRepositoryImpl(
 
     override val userSettings: Flow<UserSettings> = context.dataStore.data
         .map { preferences ->
-            val themeModeStr = preferences[PreferencesKeys.THEME_MODE] ?: ThemeMode.SYSTEM.name
+            val prefs = try {
+                context.getSharedPreferences("my_checks_prefs", Context.MODE_PRIVATE)
+            } catch (_: Exception) {
+                null
+            }
+            val savedThemeStr = prefs?.getString("saved_theme_mode", null)
+            val themeModeStr =
+                preferences[PreferencesKeys.THEME_MODE] ?: savedThemeStr ?: ThemeMode.SYSTEM.name
             val themeMode = try {
                 ThemeMode.valueOf(themeModeStr)
             } catch (e: Exception) {
@@ -136,6 +147,13 @@ class SettingsRepositoryImpl(
         }
 
     override suspend fun updateThemeMode(themeMode: ThemeMode) {
+        try {
+            context.getSharedPreferences("my_checks_prefs", Context.MODE_PRIVATE)
+                .edit()
+                .putString("saved_theme_mode", themeMode.name)
+                .apply()
+        } catch (_: Exception) {
+        }
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.THEME_MODE] = themeMode.name
         }

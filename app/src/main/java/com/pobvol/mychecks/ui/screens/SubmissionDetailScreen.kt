@@ -1,3 +1,7 @@
+/*
+ *  My software is <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Free Software</a>☯ and delivered as open source via <a href="https://github.com/pobvolcom/" target="_blank" rel="nofollow">GitHub</a>☯. You can download, install, operate, modify, and redistribute my software under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
+ */
+
 package com.pobvol.mychecks.ui.screens
 
 import androidx.activity.compose.BackHandler
@@ -165,7 +169,8 @@ fun SubmissionDetailScreen(
         }
     }
 
-    val localizedStatus = when (status) {
+    val localizedStatus = when (status.uppercase()) {
+        "SIGNED" -> stringResource(R.string.status_signed)
         "COMPLETED" -> stringResource(R.string.status_completed)
         "IN_PROGRESS" -> stringResource(R.string.status_in_progress)
         "PENDING" -> stringResource(R.string.status_pending)

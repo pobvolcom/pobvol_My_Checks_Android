@@ -151,6 +151,8 @@
     <string name="manage_questions">Manage questions</string>
     <string name="delete_checklist">Delete checklist</string>
     <string name="pdf_report_customization">PDF Report Customization</string>
+    <string name="pdf_designer">PDF Designer</string>
+    <string name="settings_menu">Settings</string>
     <string name="pdf_header_title_label">PDF Header Title</string>
     <string name="include_timestamp">Include timestamp footer</string>
     <string name="include_inspector">Include inspector name</string>
@@ -159,10 +161,14 @@
     <string name="compact_answer_layout">Compact answer layout</string>
     <string name="send_sql">Send SQL</string>
     <string name="status_all">All</string>
+    <string name="status_signed">Signed</string>
     <string name="status_completed">Completed</string>
-    <string name="status_in_progress">In progress</string>
+    <string name="status_in_progress">In process</string>
     <string name="status_pending">Pending</string>
-    <string name="edit">Edit</string> 
+    <string name="sign_pdf">Sign PDF</string>
+    <string name="msg_no_signature_saved">Please save a signature in PDF settings first</string>
+    <string name="msg_pdf_signed_success">PDF signed and updated successfully</string>
+    <string name="edit">Edit</string>
     <string name="back">Back</string>
     <string name="cannot_delete_checklist_with_submissions">Cannot delete checklist because it is used in submissions</string>
     <string name="copyright" translatable="false">Copyright</string>

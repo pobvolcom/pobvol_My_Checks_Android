@@ -177,13 +177,13 @@ class ChecklistsViewModel(
                 category = source.category,
                 icon = source.icon,
             )
-            val newId = checklistRepository.insertChecklist(newChecklist)
+            checklistRepository.insertChecklist(newChecklist)
             val sourceQuestions =
                 questionRepository.getChecklistQuestionsByChecklistId(source.id).first()
             sourceQuestions.forEach { q ->
                 questionRepository.insertChecklistQuestion(
                     ChecklistQuestionEntity(
-                        checklistid = newId.toString(),
+                        checklistid = newChecklist.id,
                         title = q.title,
                         description = q.description,
                         type = q.type,
@@ -204,7 +204,8 @@ class ChecklistsViewModel(
         language: String,
         description: String,
         category: String,
-        icon: String?
+        icon: String?,
+        templateChecklistId: String? = null
     ) {
         val currentEdit = _checklistToEdit.value
         viewModelScope.launch(Dispatchers.IO) {
@@ -217,6 +218,26 @@ class ChecklistsViewModel(
                     icon = icon,
                 )
                 checklistRepository.insertChecklist(newChecklist)
+                if (!templateChecklistId.isNullOrBlank()) {
+                    val templateQuestions =
+                        questionRepository.getChecklistQuestionsByChecklistId(templateChecklistId)
+                            .first()
+                    templateQuestions.forEach { q ->
+                        questionRepository.insertChecklistQuestion(
+                            ChecklistQuestionEntity(
+                                checklistid = newChecklist.id,
+                                title = q.title,
+                                description = q.description,
+                                type = q.type,
+                                options = q.options,
+                                required = q.required,
+                                sortno = q.sortno,
+                                minValue = q.minValue,
+                                maxValue = q.maxValue,
+                            )
+                        )
+                    }
+                }
             } else {
                 val updated = currentEdit.copy(
                     title = title,

@@ -140,6 +140,40 @@ class SubmissionsViewModel(
         _selectedSubmissionToEdit.value = null
     }
 
+    fun signPdf(context: Context, submission: ChecklistSubmissionEntity) {
+        if (!submission.status.equals("COMPLETED", ignoreCase = true)) return
+        viewModelScope.launch(Dispatchers.IO) {
+            val settings = settingsRepository.userSettings.first()
+            if (settings.signaturePath.isBlank() || !java.io.File(settings.signaturePath)
+                    .exists()
+            ) {
+                return@launch
+            }
+
+            val updatedSubmission = submission.copy(
+                status = "SIGNED",
+                timestamp = System.currentTimeMillis()
+            )
+            submissionRepository.updateChecklistSubmission(updatedSubmission)
+
+            val checklist = checklistRepository.getAllChecklists().first()
+                .find { it.id == submission.checklistid }
+            val questions =
+                questionRepository.getChecklistQuestionsByChecklistId(submission.checklistid)
+                    .first()
+            val answers = answerRepository.getChecklistAnswersListBySubmissionId(submission.id)
+
+            PdfExporter.savePdfToMyChecks(
+                context,
+                updatedSubmission,
+                checklist,
+                questions,
+                answers,
+                settings
+            )
+        }
+    }
+
     fun confirmDeleteSubmission() {
         val target = _submissionToDelete.value ?: return
         viewModelScope.launch(Dispatchers.IO) {

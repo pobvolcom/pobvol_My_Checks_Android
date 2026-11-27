@@ -1,3 +1,7 @@
+/*
+ *  My software is <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Free Software</a>☯ and delivered as open source via <a href="https://github.com/pobvolcom/" target="_blank" rel="nofollow">GitHub</a>☯. You can download, install, operate, modify, and redistribute my software under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
+ */
+
 package com.pobvol.mychecks.ui.components
 
 import android.graphics.BitmapFactory
@@ -138,72 +142,6 @@ fun PdfSettingsDialog(
                     }
                 }*/
 
-                // Picture Size Selector (<Number input> for S, M, L)
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = stringResource(R.string.pdf_picture_size_label),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        var smallText by remember(userSettings.pdfPictureSizeSmall) {
-                            mutableStateOf(
-                                userSettings.pdfPictureSizeSmall.toString()
-                            )
-                        }
-                        var mediumText by remember(userSettings.pdfPictureSizeMedium) {
-                            mutableStateOf(
-                                userSettings.pdfPictureSizeMedium.toString()
-                            )
-                        }
-                        var largeText by remember(userSettings.pdfPictureSizeLarge) {
-                            mutableStateOf(
-                                userSettings.pdfPictureSizeLarge.toString()
-                            )
-                        }
-
-                        OutlinedTextField(
-                            value = smallText,
-                            onValueChange = { newVal ->
-                                smallText = newVal
-                                newVal.toIntOrNull()?.let { onPdfPictureSizeSmallChanged(it) }
-                            },
-                            label = { Text(stringResource(R.string.pdf_picture_size_s_label)) },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.weight(1f),
-                        )
-                        OutlinedTextField(
-                            value = mediumText,
-                            onValueChange = { newVal ->
-                                mediumText = newVal
-                                newVal.toIntOrNull()?.let { onPdfPictureSizeMediumChanged(it) }
-                            },
-                            label = { Text(stringResource(R.string.pdf_picture_size_m_label)) },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.weight(1f),
-                        )
-                        OutlinedTextField(
-                            value = largeText,
-                            onValueChange = { newVal ->
-                                largeText = newVal
-                                newVal.toIntOrNull()?.let { onPdfPictureSizeLargeChanged(it) }
-                            },
-                            label = { Text(stringResource(R.string.pdf_picture_size_l_label)) },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
-                }
 
                 // Header Design
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -296,6 +234,74 @@ fun PdfSettingsDialog(
                     )
                 }
 
+                // Picture Size Selector (<Number input> for S, M, L)
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = stringResource(R.string.pdf_picture_size_label),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        var smallText by remember(userSettings.pdfPictureSizeSmall) {
+                            mutableStateOf(
+                                userSettings.pdfPictureSizeSmall.toString()
+                            )
+                        }
+                        var mediumText by remember(userSettings.pdfPictureSizeMedium) {
+                            mutableStateOf(
+                                userSettings.pdfPictureSizeMedium.toString()
+                            )
+                        }
+                        var largeText by remember(userSettings.pdfPictureSizeLarge) {
+                            mutableStateOf(
+                                userSettings.pdfPictureSizeLarge.toString()
+                            )
+                        }
+
+                        OutlinedTextField(
+                            value = smallText,
+                            onValueChange = { newVal ->
+                                smallText = newVal
+                                newVal.toIntOrNull()?.let { onPdfPictureSizeSmallChanged(it) }
+                            },
+                            label = { Text(stringResource(R.string.pdf_picture_size_s_label)) },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f),
+                        )
+                        OutlinedTextField(
+                            value = mediumText,
+                            onValueChange = { newVal ->
+                                mediumText = newVal
+                                newVal.toIntOrNull()?.let { onPdfPictureSizeMediumChanged(it) }
+                            },
+                            label = { Text(stringResource(R.string.pdf_picture_size_m_label)) },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f),
+                        )
+                        OutlinedTextField(
+                            value = largeText,
+                            onValueChange = { newVal ->
+                                largeText = newVal
+                                newVal.toIntOrNull()?.let { onPdfPictureSizeLargeChanged(it) }
+                            },
+                            label = { Text(stringResource(R.string.pdf_picture_size_l_label)) },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }
+
+
                 // Footer Design
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
@@ -309,6 +315,7 @@ fun PdfSettingsDialog(
                             userSettings.pdfFooterText
                         )
                     }
+
                     OutlinedTextField(
                         value = footerText,
                         onValueChange = { newText ->
@@ -320,11 +327,27 @@ fun PdfSettingsDialog(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                     )
+
+                    PdfSwitchRow(
+                        stringResource(R.string.include_timestamp),
+                        userSettings.includeTimestamp,
+                        onPdfIncludeTimestampChanged
+                    )
+
+                    PdfSwitchRow(
+                        stringResource(R.string.pdf_include_page_number),
+                        userSettings.pdfIncludePageNumber,
+                        onPdfIncludePageNumberChanged
+                    )
+
+                    /* Print date always, default is true */
                     PdfSwitchRow(
                         stringResource(R.string.pdf_include_date),
                         userSettings.pdfIncludeDate,
                         onPdfIncludeDateChanged
                     )
+
+                    /* Print Inspector always, default is true */
                     PdfSwitchRow(
                         stringResource(R.string.include_inspector),
                         userSettings.pdfIncludeInspector,
@@ -389,16 +412,6 @@ fun PdfSettingsDialog(
                             )
                         }
                     }
-                    PdfSwitchRow(
-                        stringResource(R.string.include_timestamp),
-                        userSettings.includeTimestamp,
-                        onPdfIncludeTimestampChanged
-                    )
-                    PdfSwitchRow(
-                        stringResource(R.string.pdf_include_page_number),
-                        userSettings.pdfIncludePageNumber,
-                        onPdfIncludePageNumberChanged
-                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))

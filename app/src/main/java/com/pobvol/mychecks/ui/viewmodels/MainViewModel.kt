@@ -699,7 +699,7 @@ class MainViewModel(
         description: String,
         category: String,
         icon: String?,
-        iconColor: String? = null
+        templateChecklistId: String? = null
     ) {
         val currentEdit = _checklistToEdit.value
         viewModelScope.launch(Dispatchers.IO) {
@@ -712,6 +712,26 @@ class MainViewModel(
                     icon = icon,
                 )
                 repository.insertChecklist(newChecklist)
+                if (!templateChecklistId.isNullOrBlank()) {
+                    val templateQuestions =
+                        questionRepository.getChecklistQuestionsByChecklistId(templateChecklistId)
+                            .first()
+                    templateQuestions.forEach { q ->
+                        questionRepository.insertChecklistQuestion(
+                            ChecklistQuestionEntity(
+                                checklistid = newChecklist.id,
+                                title = q.title,
+                                description = q.description,
+                                type = q.type,
+                                options = q.options,
+                                required = q.required,
+                                sortno = q.sortno,
+                                minValue = q.minValue,
+                                maxValue = q.maxValue,
+                            )
+                        )
+                    }
+                }
             } else {
                 val updated = currentEdit.copy(
                     title = title,
@@ -737,13 +757,13 @@ class MainViewModel(
                 category = sourceChecklist.category,
                 icon = sourceChecklist.icon,
             )
-            val newId = repository.insertChecklist(newChecklist)
+            repository.insertChecklist(newChecklist)
             val sourceQuestions =
                 questionRepository.getChecklistQuestionsByChecklistId(sourceChecklist.id).first()
             sourceQuestions.forEach { q ->
                 questionRepository.insertChecklistQuestion(
                     ChecklistQuestionEntity(
-                        checklistid = newId.toString(),
+                        checklistid = newChecklist.id,
                         title = q.title,
                         description = q.description,
                         type = q.type,
@@ -863,11 +883,7 @@ class MainViewModel(
             val allRequiredAnswered = questions.all { q ->
                 !q.required || answers[q.id]?.value?.isNotBlank() == true
             }
-            val finalStatus = if (status.equals(
-                    "COMPLETED",
-                    ignoreCase = true
-                ) || allRequiredAnswered
-            ) "COMPLETED" else status
+            val finalStatus = if (allRequiredAnswered) "COMPLETED" else "IN_PROGRESS"
 
             val submission = ChecklistSubmissionEntity(
                 checklistid = checklistId,
@@ -966,11 +982,7 @@ class MainViewModel(
             val allRequiredAnswered = questions.all { q ->
                 !q.required || updatedAnswersMap[q.id]?.value?.isNotBlank() == true
             }
-            val finalStatus = if (normalizedSubmission.status.equals(
-                    "COMPLETED",
-                    ignoreCase = true
-                ) || allRequiredAnswered
-            ) "COMPLETED" else normalizedSubmission.status
+            val finalStatus = if (allRequiredAnswered) "COMPLETED" else "IN_PROGRESS"
 
             val finalSubmission = normalizedSubmission.copy(status = finalStatus)
             submissionRepository.updateChecklistSubmission(finalSubmission)
@@ -1076,23 +1088,57 @@ class MainViewModel(
         }
     }
 
-    fun exportSubmissionPdf(context: Context, submission: ChecklistSubmissionEntity) {
+    fun signSubmissionPdf(context: Context, submission: ChecklistSubmissionEntity) {
+        if (!submission.status.equals("COMPLETED", ignoreCase = true)) return
         viewModelScope.launch(Dispatchers.IO) {
+            val settings = settingsRepository.userSettings.first()
+            if (settings.signaturePath.isBlank() || !java.io.File(settings.signaturePath)
+                    .exists()
+            ) {
+                _userMessage.value =
+                    context.getString(com.pobvol.mychecks.R.string.msg_no_signature_saved)
+                return@launch
+            }
+
+            val updatedSubmission = submission.copy(
+                status = "SIGNED",
+                timestamp = System.currentTimeMillis()
+            )
+            submissionRepository.updateChecklistSubmission(updatedSubmission)
+
             val checklist =
                 repository.getAllChecklists().first().find { it.id == submission.checklistid }
             val questions =
                 questionRepository.getChecklistQuestionsByChecklistId(submission.checklistid)
                     .first()
             val answers = answerRepository.getChecklistAnswersListBySubmissionId(submission.id)
-            val settings = settingsRepository.userSettings.first()
-            PdfExporter.generateAndOpenSubmissionPdf(
-                context,
-                submission,
-                checklist,
-                questions,
-                answers,
-                settings
-            )
+
+            try {
+                PdfExporter.savePdfToMyChecks(
+                    context,
+                    updatedSubmission,
+                    checklist,
+                    questions,
+                    answers,
+                    settings
+                )
+                _userMessage.value =
+                    context.getString(com.pobvol.mychecks.R.string.msg_pdf_signed_success)
+                withContext(Dispatchers.Main) {
+                    PdfExporter.openExistingSubmissionPdf(context, updatedSubmission.id)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun exportSubmissionPdf(context: Context, submission: ChecklistSubmissionEntity) {
+        viewModelScope.launch(Dispatchers.Main) {
+            val opened = PdfExporter.openExistingSubmissionPdf(context, submission.id)
+            if (!opened) {
+                _userMessage.value = "PDF file not found"
+            }
         }
     }
 
@@ -1195,8 +1241,8 @@ class MainViewModel(
         }
     }
 
-    fun loadDemoDatabase(c: Context) {
-        viewModelScope.launch(Dispatchers.IO) {
+    suspend fun loadDemoDatabase(c: Context): Boolean {
+        return withContext(Dispatchers.IO) {
             try {
                 val dbFile = c.getDatabasePath("mychecksdb.sqlite3")
                 AppDatabase.resetDatabaseInstance()
@@ -1208,24 +1254,28 @@ class MainViewModel(
                         inputStream.copyTo(outputStream)
                     }
                 }
-                _userMessage.value = "Demo database loaded"
+                true
             } catch (e: Exception) {
                 e.printStackTrace()
-                _userMessage.value = "Failed to load demo database: ${e.message}"
+                false
             }
         }
     }
 
-    fun resetDatabase(c: Context) {
-        viewModelScope.launch(Dispatchers.IO) {
+    suspend fun resetDatabase(c: Context): Boolean {
+        return withContext(Dispatchers.IO) {
             try {
                 val dbFile = c.getDatabasePath("mychecksdb.sqlite3")
                 AppDatabase.resetDatabaseInstance()
                 if (dbFile.exists()) dbFile.delete()
-                _userMessage.value = c.getString(com.pobvol.mychecks.R.string.msg_db_reset)
+                val walFile = c.getDatabasePath("mychecksdb.sqlite3-wal")
+                if (walFile.exists()) walFile.delete()
+                val shmFile = c.getDatabasePath("mychecksdb.sqlite3-shm")
+                if (shmFile.exists()) shmFile.delete()
+                true
             } catch (e: Exception) {
                 e.printStackTrace()
-                _userMessage.value = "Failed to reset database"
+                false
             }
         }
     }

@@ -5,6 +5,7 @@
 package com.pobvol.mychecks
 
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.nfc.NdefMessage
@@ -179,13 +180,7 @@ class MainActivity : AppCompatActivity() {
                                             R.string.msg_db_imported,
                                             Toast.LENGTH_LONG
                                         ).show()
-                                        val intent =
-                                            packageManager.getLaunchIntentForPackage(packageName)
-                                        if (intent != null) {
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                            startActivity(intent)
-                                            Runtime.getRuntime().exit(0)
-                                        }
+                                        restartApp(this@MainActivity)
                                     } else {
                                         Toast.makeText(
                                             this@MainActivity,
@@ -324,6 +319,9 @@ class MainActivity : AppCompatActivity() {
                             onExportPdfClick = { submission ->
                                 viewModel.exportSubmissionPdf(this, submission)
                             },
+                            onSignPdfClick = { submission ->
+                                viewModel.signSubmissionPdf(this, submission)
+                            },
                             onExportSqlClick = { submission ->
                                 viewModel.exportSubmissionSql(this, submission)
                             },
@@ -451,10 +449,50 @@ class MainActivity : AppCompatActivity() {
                             onPdfPictureSizeLargeChanged = viewModel::updatePdfPictureSizeLarge,
                             onAddCategory = viewModel::addCategory,
                             onDeleteCategory = viewModel::deleteCategory,
-                            onLoadDemoClick = { viewModel.loadDemoDatabase(this@MainActivity) },
+                            onLoadDemoClick = {
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    val success = viewModel.loadDemoDatabase(this@MainActivity)
+                                    withContext(Dispatchers.Main) {
+                                        if (success) {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                R.string.msg_demo_data_loaded,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                            restartApp(this@MainActivity)
+                                        } else {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "Failed to load demo database",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    }
+                                }
+                            },
                             onOpenManageDatabaseClick = viewModel::openManageDatabaseDialog,
                             onDismissManageDatabaseDialog = viewModel::closeManageDatabaseDialog,
-                            onResetDbClick = { viewModel.resetDatabase(this@MainActivity) },
+                            onResetDbClick = {
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    val success = viewModel.resetDatabase(this@MainActivity)
+                                    withContext(Dispatchers.Main) {
+                                        if (success) {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                R.string.msg_db_reset,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                            restartApp(this@MainActivity)
+                                        } else {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "Failed to reset database",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    }
+                                }
+                            },
                             onClearCacheClick = { viewModel.clearAppCache(this@MainActivity) },
                             onExportDbClick = {
                                 lifecycleScope.launch(Dispatchers.IO) {
@@ -481,6 +519,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    }
+
+    private fun restartApp(context: Context) {
+        val packageManager = context.packageManager
+        val intent = packageManager.getLaunchIntentForPackage(context.packageName)
+        if (intent != null) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            context.startActivity(intent)
+            Runtime.getRuntime().exit(0)
+        }
     }
 
     override fun onDestroy() {
@@ -587,7 +635,13 @@ fun LocalizedContent(
             Locale.setDefault(locale)
             val config = Configuration(configuration)
             config.setLocale(locale)
-            context.createConfigurationContext(config)
+            val configContext = context.createConfigurationContext(config)
+
+            object : android.content.ContextWrapper(context) {
+                override fun getResources(): android.content.res.Resources {
+                    return configContext.resources
+                }
+            }
         }
     }
     val registryOwner = LocalActivityResultRegistryOwner.current

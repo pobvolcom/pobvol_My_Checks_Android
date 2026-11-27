@@ -151,6 +151,8 @@
     <string name="manage_questions">Fragen verwalten</string>
     <string name="delete_checklist">Checkliste löschen</string>
     <string name="pdf_report_customization">PDF-Berichtanpassung</string>
+    <string name="pdf_designer">PDF-Designer</string>
+    <string name="settings_menu">Einstellungen</string>
     <string name="pdf_header_title_label">PDF-Kopfzeilentitel</string>
     <string name="include_timestamp">Zeitstempel-Fußzeile einschließen</string>
     <string name="include_inspector">Prüfernamen einschließen</string>
@@ -159,9 +161,13 @@
     <string name="compact_answer_layout">Kompaktes Antwortlayout</string>
     <string name="send_sql">SQL senden</string>
     <string name="status_all">Alle</string>
+    <string name="status_signed">Signiert</string>
     <string name="status_completed">Abgeschlossen</string>
     <string name="status_in_progress">in Bearbeitung</string>
     <string name="status_pending">Ausstehend</string>
+    <string name="sign_pdf">PDF signieren</string>
+    <string name="msg_no_signature_saved">Bitte speichern Sie zuerst eine Unterschrift in den PDF-Einstellungen</string>
+    <string name="msg_pdf_signed_success">PDF erfolgreich signiert und neu erstellt</string>
     <string name="edit">Ändern</string>
     <string name="back">Zurück</string>
     <string name="cannot_delete_checklist_with_submissions">Checkliste kann nicht gelöscht werden, da sie in Protokollen verwendet wird</string>
@@ -250,8 +256,7 @@
     <string name="license_text_content">"Danke, dass Sie ** pobvol My Checks ** installiert haben. Die App ist Freie Software und wird quelloffen ausgeliefert. Die App wurde entwickelt mit Google Android Studio und Gemini 3.5 Flash Lite and Gemini 3.6 Flash. Der Sourcecode wird über GitHub veröffentlicht.
 
 1. LIZENZERTEILUNG
-Sie können die App unter den Bedingungen der GNU General Public License v3 herunterladen,
-        installieren, betreiben, modifizieren und weiter verteilen. Siehe https://www.gnu.org/licenses/gpl-3.0
+Sie können die App unter den Bedingungen der GNU General Public License v3 herunterladen, installieren, betreiben, modifizieren und weiter verteilen. Siehe https://www.gnu.org/licenses/gpl-3.0
 
 2. COPYRIGHT
 Copyright © 2026 Volker Pobloth, pobvol Software Services

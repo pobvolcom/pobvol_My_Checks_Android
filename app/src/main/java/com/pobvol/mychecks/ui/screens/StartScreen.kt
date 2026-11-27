@@ -1,6 +1,11 @@
+/*
+ *  My software is <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Free Software</a>☯ and delivered as open source via <a href="https://github.com/pobvolcom/" target="_blank" rel="nofollow">GitHub</a>☯. You can download, install, operate, modify, and redistribute my software under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
+ */
+
 package com.pobvol.mychecks.ui.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,9 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
-import androidx.compose.material.icons.automirrored.rounded.FactCheck
 import androidx.compose.material.icons.automirrored.rounded.Help
-import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialog
@@ -50,7 +53,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -196,6 +200,27 @@ fun StartScreen(
                             }
                         )
                         DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_manage_database)) },
+                            onClick = {
+                                menuExpanded = false
+                                onOpenManageDatabaseClick()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.settings_menu)) },
+                            onClick = {
+                                menuExpanded = false
+                                onOpenSettingsClick()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.pdf_designer)) },
+                            onClick = {
+                                menuExpanded = false
+                                onOpenPdfSettingsClick()
+                            }
+                        )
+                        DropdownMenuItem(
                             text = { Text(stringResource(R.string.menu_text_blocks)) },
                             onClick = {
                                 menuExpanded = false
@@ -203,10 +228,10 @@ fun StartScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text(stringResource(R.string.menu_manage_database)) },
+                            text = { Text(stringResource(R.string.help)) },
                             onClick = {
                                 menuExpanded = false
-                                onOpenManageDatabaseClick()
+                                onOpenHelpClick()
                             }
                         )
                         DropdownMenuItem(
@@ -281,7 +306,7 @@ fun StartScreen(
             StartOptionBox(
                 title = stringResource(R.string.checklists),
                 subtitle = stringResource(R.string.checklists_subtitle),
-                icon = Icons.Rounded.Checklist,
+                imageResId = R.drawable.checklist,
                 badgeCount = uiState.checklists.size,
                 badgeLabel = stringResource(R.string.records),
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -289,12 +314,12 @@ fun StartScreen(
                 onClick = onOpenChecklistsClick,
             )
 
-            // Box 2: Submissions
+            // Box 2: Submissions / Logs
             StartOptionBox(
                 title = stringResource(R.string.submissions),
                 subtitle = stringResource(R.string.submissions_subtitle),
-                icon = Icons.AutoMirrored.Rounded.FactCheck,
-                badgeCount = uiState.submissions.size,
+                imageResId = R.drawable.logs_pdfs,
+                badgeCount = uiState.allSubmissions.size,
                 badgeLabel = stringResource(R.string.records),
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -388,7 +413,7 @@ fun StartScreen(
 fun StartOptionBox(
     title: String,
     subtitle: String,
-    icon: ImageVector,
+    imageResId: Int,
     badgeCount: Int,
     badgeLabel: String,
     containerColor: Color,
@@ -400,79 +425,87 @@ fun StartOptionBox(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = containerColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+            // Picture on the Left
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White.copy(alpha = 0.95f),
+                shadowElevation = 2.dp,
             ) {
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = contentColor.copy(alpha = 0.15f),
+                Box(
+                    modifier = Modifier.padding(8.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Box(
-                        modifier = Modifier.padding(12.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = contentColor,
-                            modifier = Modifier.size(36.dp),
-                        )
-                    }
-                }
-
-                if (badgeLabel.isNotBlank()) {
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = contentColor.copy(alpha = 0.2f),
-                    ) {
-                        Text(
-                            text = "$badgeLabel: $badgeCount ",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = contentColor,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        )
-                    }
+                    Image(
+                        painter = painterResource(id = imageResId),
+                        contentDescription = null,
+                        modifier = Modifier.size(64.dp),
+                        contentScale = ContentScale.Fit,
+                    )
                 }
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            // Text on the Right
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = contentColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
+
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = contentColor.copy(alpha = 0.8f),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = contentColor.copy(alpha = 0.85f),
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
                 )
-            }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                    contentDescription = null,
-                    tint = contentColor,
-                    modifier = Modifier.size(24.dp),
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (badgeLabel.isNotBlank()) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = contentColor.copy(alpha = 0.2f),
+                        ) {
+                            Text(
+                                text = "$badgeLabel: $badgeCount",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = contentColor,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                            )
+                        }
+                    } else {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                        contentDescription = null,
+                        tint = contentColor,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
             }
         }
     }

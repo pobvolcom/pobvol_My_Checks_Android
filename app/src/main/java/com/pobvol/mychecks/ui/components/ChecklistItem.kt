@@ -1,3 +1,7 @@
+/*
+ *  My software is <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Free Software</a>☯ and delivered as open source via <a href="https://github.com/pobvolcom/" target="_blank" rel="nofollow">GitHub</a>☯. You can download, install, operate, modify, and redistribute my software under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
+ */
+
 package com.pobvol.mychecks.ui.components
 
 import androidx.compose.foundation.clickable
@@ -14,7 +18,6 @@ import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.QuestionAnswer
-import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
@@ -107,6 +110,8 @@ fun ChecklistItem(
                 )
             }
 
+            // Timestamp
+            /*
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -123,7 +128,7 @@ fun ChecklistItem(
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                 )
-            }
+            }*/
 
             Row(
                 modifier = Modifier
@@ -167,15 +172,18 @@ fun ChecklistItem(
                         )
                     }
 
-                    // DELETE CHECKLIST
-                    IconButton(onClick = { onDeleteClick(checklist) }) {
-                        Icon(
-                            imageVector = Icons.Rounded.Delete,
-                            contentDescription = stringResource(R.string.delete_checklist),
-                            tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(28.dp)
-                        )
+                    // DELETE CHECKLIST (Only visible if no submissions are assigned)
+                    if (submissionCount == 0) {
+                        IconButton(onClick = { onDeleteClick(checklist) }) {
+                            Icon(
+                                imageVector = Icons.Rounded.Delete,
+                                contentDescription = stringResource(R.string.delete_checklist),
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
                     }
+
                     // CHART (Only if more than 2 submissions are recorded)
                     if (submissionCount > 2) {
                         IconButton(onClick = { onChartClick(checklist) }) {
@@ -187,13 +195,7 @@ fun ChecklistItem(
                             )
                         }
                     }
-                }
 
-                // Right group: Chart (if submissionCount > 2) and Submissions/Fill
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(0.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
                 }
             }
         }

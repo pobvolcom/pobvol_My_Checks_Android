@@ -151,6 +151,8 @@
     <string name="manage_questions">Gestionar preguntas</string>
     <string name="delete_checklist">Eliminar lista</string>
     <string name="pdf_report_customization">Personalización de informe PDF</string>
+    <string name="pdf_designer">Diseñador PDF</string>
+    <string name="settings_menu">Configuración</string>
     <string name="pdf_header_title_label">Título de cabecera PDF</string>
     <string name="include_timestamp">Incluir pie de página con marca de tiempo</string>
     <string name="include_inspector">Incluir nombre del inspector</string>
@@ -159,9 +161,13 @@
     <string name="compact_answer_layout">Diseño de respuesta compacto</string>
     <string name="send_sql">Enviar SQL</string>
     <string name="status_all">Todos</string>
+    <string name="status_signed">Firmado</string>
     <string name="status_completed">COMPLETADO</string>
     <string name="status_in_progress">EN PROGRESO</string>
     <string name="status_pending">PENDIENTE</string>
+    <string name="sign_pdf">Firmar PDF</string>
+    <string name="msg_no_signature_saved">Guarde primero una firma en la configuración del PDF</string>
+    <string name="msg_pdf_signed_success">PDF firmado y actualizado correctamente</string>
     <string name="edit">Editar</string>
     <string name="back">Volver</string>
     <string name="cannot_delete_checklist_with_submissions">No se puede eliminar la lista de verificación porque se utiliza en envíos</string>

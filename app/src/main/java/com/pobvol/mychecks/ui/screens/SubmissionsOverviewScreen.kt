@@ -1,3 +1,7 @@
+/*
+ *  My software is <a href="https://en.wikipedia.org/wiki/Free_software" target="_blank" rel="nofollow">Free Software</a>☯ and delivered as open source via <a href="https://github.com/pobvolcom/" target="_blank" rel="nofollow">GitHub</a>☯. You can download, install, operate, modify, and redistribute my software under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="nofollow">GNU General Public License v3</a>☯. Copyright © 2026 Volker Pobloth, pobvol Software Services, poppi66292@gmail.com. Developed with Google Android Studio and Gemini 3.5 Flash Lite and Gemini 3.6 Flash
+ */
+
 package com.pobvol.mychecks.ui.screens
 
 import androidx.activity.compose.BackHandler
@@ -26,6 +30,7 @@ import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Draw
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.PictureAsPdf
 import androidx.compose.material.icons.rounded.Schedule
@@ -59,6 +64,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -123,6 +129,7 @@ fun SubmissionsOverviewScreen(
     onAddSubmissionClick: (ChecklistEntity) -> Unit = {},
     onLoadMoreClick: () -> Unit = {},
     onExportPdfClick: (ChecklistSubmissionEntity) -> Unit = {},
+    onSignPdfClick: (ChecklistSubmissionEntity) -> Unit = {},
     onExportSqlClick: (ChecklistSubmissionEntity) -> Unit = {},
     onEditSubmissionClick: (ChecklistSubmissionEntity) -> Unit,
     onDeleteSubmissionClick: (ChecklistSubmissionEntity) -> Unit,
@@ -154,8 +161,8 @@ fun SubmissionsOverviewScreen(
                 FloatingActionButton(
                     onClick = { onAddSubmissionClick(uiState.selectedChecklistForSubmissions) },
                     shape = CircleShape,
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Add,
@@ -267,8 +274,7 @@ fun SubmissionsOverviewScreen(
                 }
             }
 
-            //val statuses = listOf("All", "COMPLETED", "IN_PROGRESS", "PENDING")
-            val statuses = listOf("All", "COMPLETED", "IN_PROGRESS")
+            val statuses = listOf("All", "SIGNED", "COMPLETED", "IN_PROGRESS")
 
             Row(
                 modifier = Modifier
@@ -286,6 +292,7 @@ fun SubmissionsOverviewScreen(
 
                     val labelText = when (status) {
                         "All" -> stringResource(R.string.status_all)
+                        "SIGNED" -> stringResource(R.string.status_signed)
                         "COMPLETED" -> stringResource(R.string.status_completed)
                         "IN_PROGRESS" -> stringResource(R.string.status_in_progress)
                         "PENDING" -> stringResource(R.string.status_pending)
@@ -356,6 +363,7 @@ fun SubmissionsOverviewScreen(
                                 checklistTitle = checklistTitle,
                                 preferredLang = uiState.userSettings.preferredLanguage,
                                 onExportPdfClick = { onExportPdfClick(submission) },
+                                onSignPdfClick = { onSignPdfClick(submission) },
                                 onExportSqlClick = { onExportSqlClick(submission) },
                                 onEditClick = { onEditSubmissionClick(submission) },
                                 onDeleteClick = { onDeleteSubmissionClick(submission) },
@@ -447,6 +455,7 @@ fun SubmissionItem(
     checklistTitle: String,
     preferredLang: String = "en",
     onExportPdfClick: () -> Unit = {},
+    onSignPdfClick: () -> Unit = {},
     onExportSqlClick: () -> Unit = {},
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
@@ -516,8 +525,9 @@ fun SubmissionItem(
             }
 
             // Spacer(modifier = Modifier.height(12.dp))
-            val submissionStatusText = when (submission.status) {
+            val submissionStatusText = when (submission.status.uppercase()) {
                 "All" -> stringResource(R.string.status_all)
+                "SIGNED" -> stringResource(R.string.status_signed)
                 "COMPLETED" -> stringResource(R.string.status_completed)
                 "IN_PROGRESS" -> stringResource(R.string.status_in_progress)
                 "PENDING" -> stringResource(R.string.status_pending)
@@ -557,21 +567,44 @@ fun SubmissionItem(
                         )
                     }
 
-                    IconButton(onClick = onDeleteClick) {
-                        Icon(
-                            imageVector = Icons.Rounded.Delete,
-                            contentDescription = stringResource(R.string.delete),
-                            tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(28.dp)
+                    if (!submission.status.equals("SIGNED", ignoreCase = true)) {
+                        IconButton(onClick = onDeleteClick) {
+                            Icon(
+                                imageVector = Icons.Rounded.Delete,
+                                contentDescription = stringResource(R.string.delete),
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                    }
+                    if (submission.status.equals("COMPLETED", ignoreCase = true)) {
+                        IconButton(onClick = onSignPdfClick) {
+                            Icon(
+                                imageVector = Icons.Rounded.Draw,
+                                contentDescription = stringResource(R.string.sign_pdf),
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                    }
+
+                    val context = LocalContext.current
+                    val hasPdfFile = remember(submission.id, submission.status) {
+                        com.pobvol.mychecks.util.PdfExporter.doesSubmissionPdfExist(
+                            context,
+                            submission.id
                         )
                     }
-                    IconButton(onClick = onExportPdfClick) {
-                        Icon(
-                            imageVector = Icons.Rounded.PictureAsPdf,
-                            contentDescription = stringResource(R.string.pdf_report),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier = Modifier.size(28.dp)
-                        )
+
+                    if (hasPdfFile) {
+                        IconButton(onClick = onExportPdfClick) {
+                            Icon(
+                                imageVector = Icons.Rounded.PictureAsPdf,
+                                contentDescription = stringResource(R.string.pdf_report),
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
                     }
                 }
 

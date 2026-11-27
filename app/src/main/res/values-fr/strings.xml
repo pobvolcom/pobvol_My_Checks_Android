@@ -151,6 +151,8 @@
     <string name="manage_questions">Gérer les questions</string>
     <string name="delete_checklist">Supprimer la liste</string>
     <string name="pdf_report_customization">Personnalisation du rapport PDF</string>
+    <string name="pdf_designer">Concepteur PDF</string>
+    <string name="settings_menu">Paramètres</string>
     <string name="pdf_header_title_label">"Titre d'en-tête PDF"</string>
     <string name="include_timestamp">Inclure le pied de page avec horodatage</string>
     <string name="include_inspector">"Inclure le nom de l'inspecteur"</string>
@@ -159,9 +161,13 @@
     <string name="compact_answer_layout">Mise en page compacte des réponses</string>
     <string name="send_sql">Envoyer SQL</string>
     <string name="status_all">Tous</string>
+    <string name="status_signed">Signé</string>
     <string name="status_completed">TERMINÉ</string>
     <string name="status_in_progress">EN COURS</string>
     <string name="status_pending">EN ATTENTE</string>
+    <string name="sign_pdf">Signer PDF</string>
+    <string name="msg_no_signature_saved">Veuillez d\'abord enregistrer une signature dans les paramètres PDF</string>
+    <string name="msg_pdf_signed_success">PDF signé et mis à jour avec succès</string>
     <string name="edit">Modifier</string>
     <string name="back">Retour </string>
     <string name="cannot_delete_checklist_with_submissions">Impossible de supprimer la liste de contrôle car elle est utilisée dans les soumissions</string>

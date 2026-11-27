@@ -8,6 +8,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -24,7 +25,7 @@ fun SplashScreen(
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(Unit) {
-        delay(1000) // Show splash for 1 second, timeMillis = 1000
+        delay(3000) // Show splash for 3 second, timeMillis = 1000
         onTimeout()
     }
 
@@ -34,14 +35,16 @@ fun SplashScreen(
         if (isLandscape) R.drawable.pobvol_my_checks_start_landscape else R.drawable.pobvol_my_checks_start
 
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         Image(
             painter = painterResource(id = splashRes),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxWidth(),
+            contentScale = ContentScale.FillHeight,
+
         )
     }
 }
